@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>BDTV VOD – Search</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Search BDTV VOD for movies and TV shows." />
+
+  <link
+    rel="icon"
+    type="image/webp"
+    href="https://raw.githubusercontent.com/Mubtasim2009/Aboutme/232a54166d3b45fb72b6b14f2675fc830088693f/assets/brand/ICON.webp"
+  />
+
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+  <header class="top-nav">
+    <a href="index.html" class="top-brand">
+      <img
+        src="https://raw.githubusercontent.com/Mubtasim2009/BDTV-V1.2/083560282207d33699f744583e5da7fa0e8af350/assets/Brand/LOGO.webp"
+        alt="BDTV VOD logo"
+      />
+    </a>
+    <button id="navToggle" class="nav-toggle" aria-label="Toggle navigation">☰</button>
+    <div class="top-right">
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="search.html" class="nav-link active">Search</a>
+        <a href="about.html" class="nav-link">About</a>
+      </nav>
+      <button class="live-btn-nav" onclick="window.location.href='live.html'">Live TV</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-text">
+        <h1>Search BDTV VOD</h1>
+        <p>Find movies and TV shows using TMDB.</p>
+
+        <form id="searchForm" class="hero-search">
+          <input
+            type="search"
+            id="searchInput"
+            name="q"
+            placeholder="Search for a movie or TV show..."
+            autocomplete="off"
+          />
+          <select
+            id="searchType"
+            name="type"
+            style="border-radius:999px;border:1px solid var(--border-subtle);background:rgba(12,12,12,0.95);color:#f5f5f5;padding:0.35rem 0.5rem;font-size:0.8rem;"
+          >
+            <option value="multi">All</option>
+            <option value="movie">Movies</option>
+            <option value="tv">TV</option>
+          </select>
+          <button id="searchBtn" type="submit">Search</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <header class="section-header">
+        <h2>Results</h2>
+        <span id="resultsInfo" class="section-status"></span>
+      </header>
+
+      <div id="emptyState" class="section-status">
+        Type a query above and press Enter.
+      </div>
+      <div id="errorState" class="section-status" style="color:#ff6b81;display:none;">
+        Error loading results. Please try again.
+      </div>
+
+      <div id="resultsGrid" class="card-row" style="flex-wrap:wrap;overflow-x:visible;"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">BDTV VOD.</footer>
+
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/search.js"></script>
+</body>
+</html>

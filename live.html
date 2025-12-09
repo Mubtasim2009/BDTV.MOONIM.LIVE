@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>BDTV VOD – Live TV</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="BDTV VOD Live TV – BDIX IPTV player." />
+
+  <link
+    rel="icon"
+    type="image/webp"
+    href="https://raw.githubusercontent.com/Mubtasim2009/Aboutme/232a54166d3b45fb72b6b14f2675fc830088693f/assets/brand/ICON.webp"
+  />
+
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+  <header class="top-nav">
+    <a href="index.html" class="top-brand">
+      <img
+        src="https://raw.githubusercontent.com/Mubtasim2009/BDTV-V1.2/083560282207d33699f744583e5da7fa0e8af350/assets/Brand/LOGO.webp"
+        alt="BDTV VOD logo"
+      />
+    </a>
+    <button id="navToggle" class="nav-toggle" aria-label="Toggle navigation">☰</button>
+    <div class="top-right">
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="search.html" class="nav-link">Search</a>
+        <a href="about.html" class="nav-link">About</a>
+      </nav>
+      <button class="live-btn-nav" onclick="window.location.href='live.html'">Live TV</button>
+    </div>
+  </header>
+
+  <main class="live-layout">
+    <section class="live-player">
+      <video id="liveVideo" controls playsinline></video>
+    </section>
+
+    <section>
+      <div class="playlist-header">
+        <h1 style="font-size:1rem;margin:0;">Live Channels</h1>
+        <select id="playlistSelect" class="playlist-select">
+          <option value="ayna">Mirror BDIX Server</option>
+          <option value="mrgify">Merge BDIX</option>
+          <option value="falcon">Falcon Cast</option>
+        </select>
+      </div>
+      <div id="liveStatus" class="section-status" style="margin:0.4rem 0;"></div>
+      <div id="channelList" class="channel-list"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">BDTV VOD.</footer>
+
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/live.js"></script>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>BDTV VOD – Home</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="BDTV VOD – Live TV and on‑demand movies & series with a Netflix‑style interface." />
+  <link
+    rel="icon"
+    type="image/webp"
+    href="https://raw.githubusercontent.com/Mubtasim2009/Aboutme/232a54166d3b45fb72b6b14f2675fc830088693f/assets/brand/ICON.webp"
+  />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+  <header class="top-nav">
+    <a href="index.html" class="top-brand">
+      <img
+        src="https://raw.githubusercontent.com/Mubtasim2009/BDTV-V1.2/083560282207d33699f744583e5da7fa0e8af350/assets/Brand/LOGO.webp"
+        alt="BDTV VOD logo"
+      />
+    </a>
+    <button id="navToggle" class="nav-toggle" aria-label="Toggle navigation">☰</button>
+    <div class="top-right">
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html" class="nav-link active">Home</a>
+        <a href="search.html" class="nav-link">Search</a>
+        <a href="about.html" class="nav-link">About</a>
+      </nav>
+      <button class="live-btn-nav" onclick="window.location.href='live.html'">Live TV</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-text">
+        <h1>Watch instantly.</h1>
+        <p>Browse movies, TV shows and BDIX live TV in a Netflix‑red dark theme.</p>
+
+        <form class="hero-search" action="search.html" method="get">
+          <input
+            type="search"
+            name="q"
+            placeholder="Search for a movie or TV show..."
+            aria-label="Search BDTV VOD"
+          />
+          <button type="submit">Search</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Trending Movies Today: landscape + portrait -->
+    <section class="content-section">
+      <header class="section-header">
+        <h2>Trending Movies Today</h2>
+        <span id="trendingMoviesStatus" class="section-status">Loading…</span>
+      </header>
+      <div id="trendingMoviesLandscape" class="landscape-row"></div>
+      <div id="trendingMoviesPortrait" class="card-row" style="margin-top:0.45rem;"></div>
+    </section>
+
+    <!-- Trending TV Today: landscape + portrait -->
+    <section class="content-section">
+      <header class="section-header">
+        <h2>Trending TV Today</h2>
+        <span id="trendingTvStatus" class="section-status">Loading…</span>
+      </header>
+      <div id="trendingTvLandscape" class="landscape-row"></div>
+      <div id="trendingTvPortrait" class="card-row" style="margin-top:0.45rem;"></div>
+    </section>
+
+    <!-- Now Playing (Movies) – portrait -->
+    <section class="content-section">
+      <header class="section-header">
+        <h2>Now Playing (Movies)</h2>
+        <span id="nowPlayingMoviesStatus" class="section-status">Loading…</span>
+      </header>
+      <div id="nowPlayingMovies" class="card-row"></div>
+    </section>
+
+    <!-- Popular TV Shows – portrait -->
+    <section class="content-section">
+      <header class="section-header">
+        <h2>Popular TV Shows</h2>
+        <span id="popularTvStatus" class="section-status">Loading…</span>
+      </header>
+      <div id="popularTv" class="card-row"></div>
+    </section>
+
+    <!-- Popular Movies – portrait -->
+    <section class="content-section">
+      <header class="section-header">
+        <h2>Popular Movies</h2>
+        <span id="popularMoviesStatus" class="section-status">Loading…</span>
+      </header>
+      <div id="popularMovies" class="card-row"></div>
+    </section>
+
+    <!-- Top Rated Movies – portrait -->
+    <section class="content-section">
+      <header class="section-header">
+        <h2>Top Rated Movies</h2>
+        <span id="topRatedMoviesStatus" class="section-status">Loading…</span>
+      </header>
+      <div id="topRatedMovies" class="card-row"></div>
+    </section>
+
+    <!-- Top Rated TV Shows – portrait -->
+    <section class="content-section">
+      <header class="section-header">
+        <h2>Top Rated TV Shows</h2>
+        <span id="topRatedTvStatus" class="section-status">Loading…</span>
+      </header>
+      <div id="topRatedTv" class="card-row"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">BDTV VOD.</footer>
+
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/home.js"></script>
+</body>
+</html>

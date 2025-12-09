@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>BDTV VOD – Movie Player</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link
+    rel="icon"
+    type="image/webp"
+    href="https://raw.githubusercontent.com/Mubtasim2009/Aboutme/232a54166d3b45fb72b6b14f2675fc830088693f/assets/brand/ICON.webp"
+  />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+</head>
+<body>
+  <header class="top-nav">
+    <a class="top-brand" href="index.html">
+      <img
+        src="https://raw.githubusercontent.com/Mubtasim2009/BDTV-V1.2/083560282207d33699f744583e5da7fa0e8af350/assets/Brand/LOGO.webp"
+        alt="logo"
+      />
+    </a>
+    <button id="navToggle" class="nav-toggle" aria-label="Toggle navigation">☰</button>
+    <div class="top-right">
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="search.html" class="nav-link">Search</a>
+        <a href="about.html" class="nav-link">About</a>
+      </nav>
+      <button class="live-btn-nav" onclick="location.href='live.html'">Live TV</button>
+    </div>
+  </header>
+
+  <main class="player-layout">
+    <section class="player-card">
+      <div class="player-title" id="movieTitle">Loading…</div>
+      <div class="player-meta" id="movieMeta"></div>
+
+      <div class="vidking-wrapper">
+        <iframe id="movieFrame" allowfullscreen referrerpolicy="no-referrer"></iframe>
+      </div>
+
+      <p class="disclaimer">
+        Streams are provided by a third‑party host and may contain their own ads or external links.
+      </p>
+
+      <div id="castSection" class="cast-section" style="display:none;">
+        <div class="cast-title">Top Cast</div>
+        <div id="castList" class="cast-list"></div>
+      </div>
+    </section>
+
+    <aside class="info-card">
+      <div class="poster-wrapper">
+        <img id="posterImg" src="" alt="Poster" />
+        <div style="flex:1">
+          <div class="tags" id="movieTags"></div>
+          <div class="overview" id="movieOverview"></div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="site-footer">BDTV VOD.</footer>
+
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/player-movie.js"></script>
+</body>
+</html>
