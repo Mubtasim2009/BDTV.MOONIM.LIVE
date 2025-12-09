@@ -6,13 +6,387 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="Search BDTV VOD for movies and TV shows." />
 
+  <!-- Favicon -->
   <link
     rel="icon"
     type="image/webp"
     href="https://raw.githubusercontent.com/Mubtasim2009/Aboutme/232a54166d3b45fb72b6b14f2675fc830088693f/assets/brand/ICON.webp"
   />
 
-  <link rel="stylesheet" href="assets/css/styles.css" />
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg-main: #000000;
+      --accent: #e50914;
+      --text-main: #f5f5f5;
+      --text-muted: #a7b0c5;
+      --border-subtle: rgba(255,255,255,0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      overflow-x: hidden; /* prevent sideways scrolling */
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #141414 0, #000000 55%);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* Top nav (aligned with new layout) */
+    .top-nav {
+      padding: 0.9rem 1rem 0.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-shrink: 0;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.96), rgba(0,0,0,0.85));
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(18px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .top-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .top-brand img {
+      height: 30px;
+      width: auto;
+      display: block;
+    }
+
+    .top-right {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.88rem;
+    }
+
+    .nav-links a {
+      padding: 0.25rem 0.7rem;
+      border-radius: 999px;
+      color: var(--text-muted);
+      border: 1px solid transparent;
+      transition: background 0.16s ease, color 0.16s ease, border-color 0.16s ease;
+    }
+
+    .nav-links a:hover {
+      background: rgba(255,255,255,0.05);
+      color: #f9fafb;
+    }
+
+    .nav-links .active {
+      background: rgba(229, 9, 20, 0.22);
+      border-color: rgba(229, 9, 20, 0.4);
+      color: #fef2f2;
+    }
+
+    .live-btn-nav {
+      border-radius: 999px;
+      border: none;
+      outline: none;
+      padding: 0.4rem 0.9rem;
+      background: linear-gradient(135deg, #ffb800, #ff6a00);
+      color: #111827;
+      font-weight: 600;
+      font-size: 0.8rem;
+      cursor: pointer;
+      white-space: nowrap;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.55);
+    }
+
+    /* Page layout */
+
+    main {
+      flex: 1;
+      padding: 1.0rem 1rem 1.4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      max-width: 1100px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .page-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .page-sub {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 0.9rem;
+    }
+
+    .search-row {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      margin-bottom: 0.6rem;
+      flex-wrap: nowrap;
+    }
+
+    .search-input-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      background: rgba(8, 8, 8, 0.98);
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      padding: 0.25rem 0.55rem 0.25rem 0.9rem;
+      min-width: 0; /* allow shrinking */
+    }
+
+    .search-input {
+      flex: 1;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      min-width: 0;
+    }
+
+    .search-input::placeholder {
+      color: #6b7280;
+    }
+
+    .search-type-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      margin-left: 0.4rem;
+      padding-left: 0.4rem;
+      border-left: 1px solid rgba(55,65,81,0.6);
+      max-width: 40%;
+    }
+
+    .search-type {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: var(--text-main);
+      font-size: 0.8rem;
+      padding-right: 1.1rem;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .search-type-arrow {
+      position: absolute;
+      right: 0.15rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.7rem;
+      color: #9ca3af;
+      pointer-events: none;
+    }
+
+    .search-btn {
+      border-radius: 999px;
+      border: none;
+      outline: none;
+      padding: 0.5rem 1.2rem;
+      background: linear-gradient(135deg, #ff2a40, #e50914);
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      white-space: nowrap;
+      box-shadow: 0 10px 30px rgba(229, 9, 20, 0.4);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .search-btn:disabled {
+      opacity: 0.6;
+      cursor: default;
+      box-shadow: none;
+    }
+
+    .results-info {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .card {
+      background: rgba(8, 12, 28, 0.96);
+      border-radius: 0.65rem;
+      overflow: hidden;
+      cursor: pointer;
+      border: 1px solid rgba(36, 42, 68, 0.8);
+      box-shadow: 0 14px 40px rgba(0,0,0,0.8);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease, background 0.16s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+      background: rgba(15, 20, 40, 0.98);
+    }
+
+    .card img {
+      width: 100%;
+      aspect-ratio: 2 / 3;
+      object-fit: cover;
+      display: block;
+      background: #000;
+    }
+
+    .card-body {
+      padding: 0.45rem 0.55rem 0.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.18rem;
+    }
+
+    .card-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .card-meta {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.12rem 0.5rem;
+      border-radius: 999px;
+      background: #18213a;
+      color: #c0c8e0;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .empty, .error {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: 0.6rem;
+    }
+
+    .error {
+      color: #fecaca;
+    }
+
+    footer {
+      padding: 0.8rem 1rem 1.2rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      border-top: 1px solid rgba(255,255,255,0.05);
+      text-align:center;
+      margin-top:auto;
+    }
+
+    /* Mobile tweaks */
+    @media (max-width: 768px) {
+      .top-nav {
+        padding-inline:4vw;
+        flex-wrap:wrap;
+      }
+      .top-right { justify-content:flex-start; }
+
+      main {
+        padding-inline:4vw;
+      }
+
+      .search-row {
+        flex-direction:column;
+        align-items:stretch;
+      }
+
+      .search-input-wrap {
+        width: 100%;
+      }
+
+      .search-btn {
+        width: 100%;
+      }
+
+      .grid {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      }
+    }
+
+    @media (max-width: 480px) {
+      .top-brand img {
+        height: 26px;
+      }
+
+      .nav-links {
+        font-size:0.8rem;
+        gap:0.5rem;
+        flex-wrap:wrap;
+      }
+      .nav-links a {
+        padding:0.2rem 0.5rem;
+      }
+
+      .live-btn-nav {
+        padding:0.35rem 0.8rem;
+        font-size:0.78rem;
+      }
+
+      .search-input-wrap {
+        padding-left: 0.7rem;
+        padding-right: 0.6rem;
+      }
+
+      .search-input {
+        font-size: 0.85rem;
+      }
+
+      .search-type {
+        font-size: 0.75rem;
+      }
+    }
+  </style>
 </head>
 <body>
   <header class="top-nav">
@@ -22,65 +396,219 @@
         alt="BDTV VOD logo"
       />
     </a>
-    <button id="navToggle" class="nav-toggle" aria-label="Toggle navigation">☰</button>
     <div class="top-right">
-      <nav class="nav-links" id="navLinks">
-        <a href="index.html" class="nav-link">Home</a>
-        <a href="search.html" class="nav-link active">Search</a>
-        <a href="about.html" class="nav-link">About</a>
+      <nav class="nav-links">
+        <a href="index.html" class="nav-home">Home</a>
+        <a href="search.html" class="nav-search active">Search</a>
+        <a href="about.html" class="nav-about">About</a>
       </nav>
       <button class="live-btn-nav" onclick="window.location.href='live.html'">Live TV</button>
     </div>
   </header>
 
   <main>
-    <section class="hero">
-      <div class="hero-text">
-        <h1>Search BDTV VOD</h1>
-        <p>Find movies and TV shows using TMDB.</p>
+    <div>
+      <div class="page-title">Search</div>
+      <div class="page-sub">Find movies and TV shows by title.</div>
+    </div>
 
-        <form id="searchForm" class="hero-search">
-          <input
-            type="search"
-            id="searchInput"
-            name="q"
-            placeholder="Search for a movie or TV show..."
-            autocomplete="off"
-          />
-          <select
-            id="searchType"
-            name="type"
-            style="border-radius:999px;border:1px solid var(--border-subtle);background:rgba(12,12,12,0.95);color:#f5f5f5;padding:0.35rem 0.5rem;font-size:0.8rem;"
-          >
+    <div class="search-row">
+      <div class="search-input-wrap">
+        <input
+          id="searchInput"
+          class="search-input"
+          type="text"
+          placeholder="Search movies or TV shows..."
+        />
+        <div class="search-type-wrap">
+          <select id="searchType" class="search-type">
             <option value="multi">All</option>
             <option value="movie">Movies</option>
             <option value="tv">TV</option>
           </select>
-          <button id="searchBtn" type="submit">Search</button>
-        </form>
+          <span class="search-type-arrow">▾</span>
+        </div>
       </div>
-    </section>
+      <button id="searchBtn" class="search-btn">Search</button>
+    </div>
 
-    <section class="content-section">
-      <header class="section-header">
-        <h2>Results</h2>
-        <span id="resultsInfo" class="section-status"></span>
-      </header>
-
-      <div id="emptyState" class="section-status">
-        Type a query above and press Enter.
-      </div>
-      <div id="errorState" class="section-status" style="color:#ff6b81;display:none;">
-        Error loading results. Please try again.
-      </div>
-
-      <div id="resultsGrid" class="card-row" style="flex-wrap:wrap;overflow-x:visible;"></div>
-    </section>
+    <div class="results-info" id="resultsInfo">Enter a query to begin.</div>
+    <section class="grid" id="resultsGrid"></section>
+    <div class="empty" id="emptyState" style="display:none;">No results found.</div>
+    <div class="error" id="errorState" style="display:none;">Error loading results. Check console.</div>
   </main>
 
-  <footer class="site-footer">BDTV VOD.</footer>
+  <footer>BDTV VOD.</footer>
 
-  <script src="assets/js/main.js"></script>
-  <script src="assets/js/search.js"></script>
+  <script>
+    const TMDB_API_KEY = "b14194d00ce48c36318eefa745bcdeec";
+    const TMDB_BASE = "https://api.themoviedb.org/3";
+    const TMDB_IMG_BASE = "https://image.tmdb.org/t/p/w300";
+
+    const searchInput = document.getElementById("searchInput");
+    const searchType  = document.getElementById("searchType");
+    const searchBtn   = document.getElementById("searchBtn");
+    const resultsInfo = document.getElementById("resultsInfo");
+    const resultsGrid = document.getElementById("resultsGrid");
+    const emptyState  = document.getElementById("emptyState");
+    const errorState  = document.getElementById("errorState");
+
+    function getQueryFromUrl() {
+      const url = new URL(window.location.href);
+      return {
+        q: url.searchParams.get("q") || "",
+        type: url.searchParams.get("type") || "multi",
+      };
+    }
+
+    function updateUrl(q, type) {
+      const url = new URL(window.location.href);
+      if (q) url.searchParams.set("q", q);
+      else url.searchParams.delete("q");
+      url.searchParams.set("type", type || "multi");
+      window.history.replaceState({}, "", url.toString());
+    }
+
+    function openMovie(id) {
+      const url = new URL("player-movie.html", window.location.href);
+      url.searchParams.set("id", id);
+      window.location.href = url.toString();
+    }
+
+    function openTv(id) {
+      const url = new URL("player-tv.html", window.location.href);
+      url.searchParams.set("id", id);
+      window.location.href = url.toString();
+    }
+
+    function createCard(item, mediaType) {
+      const card = document.createElement("div");
+      card.className = "card";
+
+      const img = document.createElement("img");
+      img.src = item.poster_path
+        ? TMDB_IMG_BASE + item.poster_path
+        : item.backdrop_path
+        ? TMDB_IMG_BASE + item.backdrop_path
+        : "https://via.placeholder.com/300x450?text=No+Image";
+      img.alt = item.title || item.name || "Poster";
+
+      const body = document.createElement("div");
+      body.className = "card-body";
+
+      const titleEl = document.createElement("div");
+      titleEl.className = "card-title";
+      titleEl.textContent = item.title || item.name || "Untitled";
+
+      const metaEl = document.createElement("div");
+      metaEl.className = "card-meta";
+      const year =
+        (item.release_date && item.release_date.slice(0,4)) ||
+        (item.first_air_date && item.first_air_date.slice(0,4)) || "";
+      const badgeText = mediaType.toUpperCase();
+      metaEl.textContent = [year, badgeText].filter(Boolean).join(" • ");
+
+      const badgeEl = document.createElement("span");
+      badgeEl.className = "badge";
+      badgeEl.textContent = mediaType;
+
+      body.appendChild(titleEl);
+      body.appendChild(metaEl);
+      body.appendChild(badgeEl);
+
+      card.appendChild(img);
+      card.appendChild(body);
+
+      card.addEventListener("click", () => {
+        if (mediaType === "tv") openTv(item.id);
+        else openMovie(item.id);
+      });
+
+      return card;
+    }
+
+    async function fetchJson(url) {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("TMDB error " + res.status);
+      return res.json();
+    }
+
+    async function runSearch(q, type) {
+      if (!TMDB_API_KEY) {
+        resultsInfo.textContent = "API key missing.";
+        return;
+      }
+
+      if (!q.trim()) {
+        resultsInfo.textContent = "Enter a query to begin.";
+        resultsGrid.innerHTML = "";
+        emptyState.style.display = "none";
+        errorState.style.display = "none";
+        return;
+      }
+
+      resultsInfo.textContent = "Searching…";
+      resultsGrid.innerHTML = "";
+      emptyState.style.display = "none";
+      errorState.style.display = "none";
+
+      try {
+        const endpoint =
+          type === "movie"
+            ? "search/movie"
+            : type === "tv"
+            ? "search/tv"
+            : "search/multi";
+
+        const url = `${TMDB_BASE}/${endpoint}?api_key=${TMDB_API_KEY}&language=en-US&query=${encodeURIComponent(
+          q
+        )}&page=1&include_adult=false`;
+
+        const data = await fetchJson(url);
+        const results = (data.results || []).filter(
+          (r) => r.media_type !== "person"
+        );
+
+        if (!results.length) {
+          resultsInfo.textContent = "No results.";
+          emptyState.style.display = "block";
+          return;
+        }
+
+        resultsInfo.textContent = `Showing ${results.length} result${
+          results.length === 1 ? "" : "s"
+        } for “${q}”`;
+
+        results.forEach((item) => {
+          let mType = item.media_type || type;
+          if (mType !== "movie" && mType !== "tv") {
+            mType = "movie";
+          }
+          resultsGrid.appendChild(createCard(item, mType));
+        });
+      } catch (err) {
+        console.error(err);
+        resultsInfo.textContent = "";
+        errorState.style.display = "block";
+      }
+    }
+
+    function startSearch() {
+      const q = searchInput.value.trim();
+      const type = searchType.value;
+      updateUrl(q, type);
+      runSearch(q, type);
+    }
+
+    searchBtn.addEventListener("click", startSearch);
+    searchInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") startSearch();
+    });
+
+    const { q, type } = getQueryFromUrl();
+    if (q) searchInput.value = q;
+    searchType.value = type || "multi";
+    if (q) runSearch(q, searchType.value);
+  </script>
 </body>
 </html>
