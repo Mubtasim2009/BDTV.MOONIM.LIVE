@@ -322,6 +322,127 @@
       margin-left:0.15rem;
     }
 
+    /* Loading & error states */
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      background: #000;
+    }
+
+    .video-loading,
+    .video-error {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .video-loading {
+      display: none;
+    }
+
+    .video-loading.active {
+      display: block;
+    }
+
+    .spinner {
+      border: 3px solid rgba(255,255,255,0.1);
+      border-top: 3px solid var(--accent);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 0.5rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      color: rgba(255,255,255,0.8);
+      font-size: 0.85rem;
+    }
+
+    .video-error {
+      display: none;
+      background: rgba(0,0,0,0.85);
+      border-radius: 12px;
+      padding: 1.5rem;
+      max-width: 400px;
+      border: 1px solid rgba(229,9,20,0.4);
+    }
+
+    .video-error.active {
+      display: block;
+      pointer-events: auto;
+    }
+
+    .error-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .error-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #fef2f2;
+      margin-bottom: 0.5rem;
+    }
+
+    .error-message {
+      font-size: 0.85rem;
+      color: #d1d5db;
+      margin-bottom: 1rem;
+      line-height: 1.4;
+    }
+
+    .retry-btn {
+      border-radius: 999px;
+      border: 1px solid rgba(229,9,20,0.5);
+      background: rgba(229,9,20,0.25);
+      color: #fef2f2;
+      font-size: 0.85rem;
+      padding: 0.5rem 1.2rem;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .retry-btn:hover {
+      background: rgba(229,9,20,0.35);
+      border-color: rgba(229,9,20,0.7);
+    }
+
+    .current-channel {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(8px);
+      padding: 0.5rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #f5f5f5;
+      z-index: 5;
+      border: 1px solid rgba(255,255,255,0.15);
+      display: none;
+    }
+
+    .current-channel.active {
+      display: block;
+    }
+
+    .channel-item.loading {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
     footer {
       padding: 0.9rem 1rem 1.3rem;
       text-align: center;
@@ -413,7 +534,20 @@
 
     <section class="live-layout">
       <div class="live-player-card">
-        <video id="liveVideo" controls playsinline></video>
+        <div class="video-wrapper">
+          <div id="currentChannel" class="current-channel"></div>
+          <video id="liveVideo" controls playsinline></video>
+          <div id="videoLoading" class="video-loading">
+            <div class="spinner"></div>
+            <div class="loading-text">Loading stream...</div>
+          </div>
+          <div id="videoError" class="video-error">
+            <div class="error-icon">⚠️</div>
+            <div class="error-title">Stream Error</div>
+            <div class="error-message" id="errorMessage">Unable to load the stream. Please try another channel.</div>
+            <button id="retryBtn" class="retry-btn">Retry</button>
+          </div>
+        </div>
       </div>
 
       <div class="live-bottom">
@@ -451,11 +585,14 @@
 
   <footer>BDTV VOD.</footer>
 
+  <!-- HLS.js Library -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+
   <script>
     const PLAYLISTS = {
       ayna: {
         name: "Mirror BDIX Server",
-        url: "https://raw.githubusercontent.com/abusaeeidx/Ayna-BDIX-IPTV-Playlist/refs/heads/main/ayna-playlist.m3u",
+        url: "https://is.gd/XspRNu.m3u",
       },
       mrgify: {
         name: "Merge BDIX",
@@ -505,14 +642,211 @@
       const listEl   = document.getElementById("channelList");
       const video    = document.getElementById("liveVideo");
       const searchEl = document.getElementById("channelSearchInput");
+      const loadingEl = document.getElementById("videoLoading");
+      const errorEl = document.getElementById("videoError");
+      const errorMsg = document.getElementById("errorMessage");
+      const retryBtn = document.getElementById("retryBtn");
+      const currentChannelEl = document.getElementById("currentChannel");
+
+      // HLS instance and retry logic
+      let hls = null;
+      let currentStreamUrl = null;
+      let currentChannelName = null;
+      let retryCount = 0;
+      const MAX_RETRIES = 3;
+      const RETRY_DELAY = 2000; // 2 seconds base delay
 
       // unfiltered list for current playlist
       let currentChannels = [];
 
-      function playChannel(url) {
-        video.src = url;
-        video.play().catch(() => {});
+      function showLoading() {
+        loadingEl.classList.add("active");
+        errorEl.classList.remove("active");
       }
+
+      function hideLoading() {
+        loadingEl.classList.remove("active");
+      }
+
+      function showError(message) {
+        errorMsg.textContent = message;
+        errorEl.classList.add("active");
+        loadingEl.classList.remove("active");
+      }
+
+      function hideError() {
+        errorEl.classList.remove("active");
+      }
+
+      function updateCurrentChannel(name) {
+        if (name) {
+          currentChannelName = name;
+          currentChannelEl.textContent = name;
+          currentChannelEl.classList.add("active");
+        } else {
+          currentChannelEl.classList.remove("active");
+        }
+      }
+
+      function cleanupHLS() {
+        if (hls) {
+          hls.destroy();
+          hls = null;
+        }
+      }
+
+      function playChannel(url, channelName = null) {
+        currentStreamUrl = url;
+        retryCount = 0;
+        updateCurrentChannel(channelName);
+        attemptPlay(url);
+      }
+
+      function attemptPlay(url) {
+        showLoading();
+        hideError();
+        cleanupHLS();
+
+        // Check if HLS stream (m3u8)
+        const isHLS = url.toLowerCase().includes('.m3u8');
+
+        if (isHLS && typeof Hls !== 'undefined') {
+          if (Hls.isSupported()) {
+            hls = new Hls({
+              enableWorker: true,
+              lowLatencyMode: false,
+              backBufferLength: 90
+            });
+
+            hls.loadSource(url);
+            hls.attachMedia(video);
+
+            hls.on(Hls.Events.MANIFEST_PARSED, () => {
+              video.play().catch(err => {
+                console.error('Play error:', err);
+                showError('Playback failed. Please try another channel.');
+              });
+            });
+
+            hls.on(Hls.Events.ERROR, (event, data) => {
+              console.error('HLS error:', data);
+              
+              if (data.fatal) {
+                switch (data.type) {
+                  case Hls.ErrorTypes.NETWORK_ERROR:
+                    console.error('Network error encountered');
+                    if (retryCount < MAX_RETRIES) {
+                      retryCount++;
+                      const delay = RETRY_DELAY * Math.pow(2, retryCount - 1);
+                      showError(`Network error. Retrying in ${delay/1000}s... (${retryCount}/${MAX_RETRIES})`);
+                      setTimeout(() => {
+                        if (currentStreamUrl === url) {
+                          attemptPlay(url);
+                        }
+                      }, delay);
+                    } else {
+                      showError('Network error: Unable to load stream after multiple attempts. Please check your connection or try another channel.');
+                    }
+                    break;
+                  case Hls.ErrorTypes.MEDIA_ERROR:
+                    console.error('Media error encountered, trying to recover');
+                    hls.recoverMediaError();
+                    break;
+                  default:
+                    showError('Fatal error: Stream cannot be played. Please try another channel.');
+                    cleanupHLS();
+                    break;
+                }
+              }
+            });
+          } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            // Native HLS support (Safari)
+            video.src = url;
+            video.play().catch(err => {
+              console.error('Native HLS play error:', err);
+              showError('Playback failed. Please try another channel.');
+            });
+          } else {
+            showError('HLS not supported in this browser. Please use a modern browser.');
+          }
+        } else {
+          // Non-HLS stream (mp4, webm, etc.)
+          video.src = url;
+          video.play().catch(err => {
+            console.error('Play error:', err);
+            showError('Playback failed. Please try another channel.');
+          });
+        }
+      }
+
+      // Video event listeners
+      video.addEventListener('loadstart', () => {
+        showLoading();
+      });
+
+      video.addEventListener('waiting', () => {
+        showLoading();
+      });
+
+      video.addEventListener('canplay', () => {
+        hideLoading();
+        hideError();
+      });
+
+      video.addEventListener('playing', () => {
+        hideLoading();
+        hideError();
+      });
+
+      video.addEventListener('error', (e) => {
+        console.error('Video element error:', e);
+        const error = video.error;
+        let errorMessage = 'Video error: ';
+        
+        if (error) {
+          switch (error.code) {
+            case error.MEDIA_ERR_ABORTED:
+              errorMessage += 'Playback aborted.';
+              break;
+            case error.MEDIA_ERR_NETWORK:
+              errorMessage += 'Network error while loading stream.';
+              if (retryCount < MAX_RETRIES && currentStreamUrl) {
+                retryCount++;
+                const delay = RETRY_DELAY * Math.pow(2, retryCount - 1);
+                showError(`${errorMessage} Retrying in ${delay/1000}s... (${retryCount}/${MAX_RETRIES})`);
+                setTimeout(() => {
+                  if (currentStreamUrl) {
+                    attemptPlay(currentStreamUrl);
+                  }
+                }, delay);
+                return;
+              } else {
+                errorMessage += ' Please try another channel.';
+              }
+              break;
+            case error.MEDIA_ERR_DECODE:
+              errorMessage += 'Stream format not supported or corrupted.';
+              break;
+            case error.MEDIA_ERR_SRC_NOT_SUPPORTED:
+              errorMessage += 'Stream source not supported.';
+              break;
+            default:
+              errorMessage += 'Unknown error occurred.';
+          }
+        } else {
+          errorMessage += 'Unable to load stream.';
+        }
+        
+        showError(errorMessage);
+      });
+
+      // Retry button handler
+      retryBtn.addEventListener('click', () => {
+        if (currentStreamUrl) {
+          retryCount = 0;
+          attemptPlay(currentStreamUrl);
+        }
+      });
 
       function renderChannelList(filterText = "") {
         const q = filterText.trim().toLowerCase();
@@ -583,11 +917,18 @@
           item.appendChild(index);
 
           item.addEventListener("click", () => {
-            document
-              .querySelectorAll(".channel-item.active")
-              .forEach((el) => el.classList.remove("active"));
-            item.classList.add("active");
-            playChannel(ch.url);
+            // Add loading state to channel item
+            document.querySelectorAll(".channel-item").forEach((el) => {
+              el.classList.remove("active", "loading");
+            });
+            item.classList.add("active", "loading");
+            
+            playChannel(ch.url, ch.name);
+            
+            // Remove loading state after a short delay
+            setTimeout(() => {
+              item.classList.remove("loading");
+            }, 1000);
           });
 
           listEl.appendChild(item);
@@ -599,7 +940,9 @@
           const first = listEl.querySelector(".channel-item");
           if (first) {
             first.classList.add("active");
-            playChannel(first.dataset.url);
+            const url = first.dataset.url;
+            const name = first.querySelector(".channel-name")?.textContent || "Channel";
+            playChannel(url, name);
           }
         }
       }
@@ -613,6 +956,10 @@
         listEl.innerHTML = "";
         video.removeAttribute("src");
         video.load();
+        cleanupHLS();
+        hideError();
+        hideLoading();
+        updateCurrentChannel(null);
         if (searchEl) searchEl.value = "";
 
         try {
