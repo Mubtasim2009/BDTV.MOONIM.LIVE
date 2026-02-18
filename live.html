@@ -653,6 +653,7 @@
       let currentStreamUrl = null;
       let currentChannelName = null;
       let retryCount = 0;
+      let retryTimer = null;
       const MAX_RETRIES = 3;
       const RETRY_DELAY = 2000; // 2 seconds base delay
 
@@ -690,12 +691,32 @@
 
       function cleanupHLS() {
         if (hls) {
+          // Remove all event listeners before destroying
+          hls.off(Hls.Events.MANIFEST_PARSED);
+          hls.off(Hls.Events.ERROR);
           hls.destroy();
           hls = null;
         }
       }
 
+      function cleanupRetryTimer() {
+        if (retryTimer) {
+          clearTimeout(retryTimer);
+          retryTimer = null;
+        }
+      }
+
+      function stopVideo() {
+        // Pause video and reset
+        video.pause();
+        video.removeAttribute('src');
+        video.load();
+      }
+
       function playChannel(url, channelName = null) {
+        // Clear any pending retries from previous stream
+        cleanupRetryTimer();
+        
         currentStreamUrl = url;
         retryCount = 0;
         updateCurrentChannel(channelName);
@@ -705,6 +726,11 @@
       function attemptPlay(url) {
         showLoading();
         hideError();
+        
+        // Stop current video playback
+        stopVideo();
+        
+        // Cleanup HLS instance
         cleanupHLS();
 
         // Check if HLS stream (m3u8)
@@ -740,7 +766,7 @@
                       // Exponential backoff: 2s, 4s, 8s for retries 1-3
                       const delay = RETRY_DELAY * Math.pow(2, retryCount - 1);
                       showError(`Network error. Retrying in ${delay/1000}s... (${retryCount}/${MAX_RETRIES})`);
-                      setTimeout(() => {
+                      retryTimer = setTimeout(() => {
                         if (currentStreamUrl === url) {
                           attemptPlay(url);
                         }
@@ -816,7 +842,7 @@
                 // Exponential backoff: 2s, 4s, 8s for retries 1-3
                 const delay = RETRY_DELAY * Math.pow(2, retryCount - 1);
                 showError(`${errorMessage} Retrying in ${delay/1000}s... (${retryCount}/${MAX_RETRIES})`);
-                setTimeout(() => {
+                retryTimer = setTimeout(() => {
                   if (currentStreamUrl) {
                     attemptPlay(currentStreamUrl);
                   }
@@ -956,8 +982,10 @@
         statusEl.textContent = `Loading ${cfg.name}…`;
         currentChannels = [];
         listEl.innerHTML = "";
-        video.removeAttribute("src");
-        video.load();
+        
+        // Cleanup all ongoing operations
+        cleanupRetryTimer();
+        stopVideo();
         cleanupHLS();
         hideError();
         hideLoading();
