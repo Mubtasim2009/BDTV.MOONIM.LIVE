@@ -691,9 +691,8 @@
 
       function cleanupHLS() {
         if (hls) {
-          // Remove all event listeners before destroying
-          hls.off(Hls.Events.MANIFEST_PARSED);
-          hls.off(Hls.Events.ERROR);
+          // Detach media and destroy instance (this removes all listeners automatically)
+          hls.detachMedia();
           hls.destroy();
           hls = null;
         }
