@@ -2,57 +2,52 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>BDTV VOD – Actor</title>
+  <title>BDTV – Actor</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <link
-    rel="icon"
-    type="image/webp"
-    href="https://raw.githubusercontent.com/Mubtasim2009/Aboutme/232a54166d3b45fb72b6b14f2675fc830088693f/assets/brand/ICON.webp"
-  />
+  <link rel="icon" type="image/webp" href="https://raw.githubusercontent.com/Mubtasim2009/Aboutme/232a54166d3b45fb72b6b14f2675fc830088693f/assets/brand/ICON.webp" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/css/styles.css" />
 </head>
 <body>
   <header class="top-nav">
     <a class="top-brand" href="index.html">
-      <img
-        src="https://raw.githubusercontent.com/Mubtasim2009/BDTV-V1.2/083560282207d33699f744583e5da7fa0e8af350/assets/Brand/LOGO.webp"
-        alt="logo"
-      />
+      <img src="https://raw.githubusercontent.com/Mubtasim2009/BDTV-V1.2/083560282207d33699f744583e5da7fa0e8af350/assets/Brand/LOGO.webp" alt="BDTV logo" />
     </a>
-    <button id="navToggle" class="nav-toggle" aria-label="Toggle navigation">☰</button>
+    <button id="navToggle" class="nav-toggle" aria-label="Toggle navigation">
+      <span></span><span></span><span></span>
+    </button>
     <div class="top-right">
       <nav class="nav-links" id="navLinks">
         <a href="index.html" class="nav-link">Home</a>
         <a href="search.html" class="nav-link">Search</a>
         <a href="about.html" class="nav-link">About</a>
       </nav>
-      <button class="live-btn-nav" onclick="location.href='live.html'">Live TV</button>
+      <a href="live.html" class="live-btn-nav">&#x25CF; Live TV</a>
     </div>
   </header>
 
-  <main style="padding:1rem 1rem 1.4rem;max-width:900px;margin:0 auto;">
-    <section class="info-card" style="margin-bottom:1rem;">
-      <div class="poster-wrapper">
-        <img id="actorImg" src="" alt="Actor" />
-        <div style="flex:1">
-          <div class="player-title" id="actorName">Loading…</div>
-          <div class="player-meta" id="actorMeta"></div>
-          <div class="overview" id="actorBio" style="margin-top:0.4rem;"></div>
-        </div>
+  <main class="actor-page">
+    <div class="actor-banner">
+      <img id="actorImg" src="" alt="Actor" />
+      <div class="actor-info">
+        <div class="actor-name" id="actorName">Loading&#x2026;</div>
+        <div class="actor-meta" id="actorMeta"></div>
+        <div class="actor-bio" id="actorBio"></div>
       </div>
-    </section>
+    </div>
 
     <section class="content-section" style="padding-inline:0;">
       <header class="section-header">
         <h2>Known For</h2>
-        <span id="knownForStatus" class="section-status">Loading…</span>
+        <span id="knownForStatus" class="section-status">Loading&#x2026;</span>
       </header>
-      <div id="knownForGrid" class="card-row" style="flex-wrap:wrap;overflow-x:visible;"></div>
+      <div id="knownForGrid" class="search-grid"></div>
     </section>
   </main>
 
-  <footer class="site-footer">BDTV VOD.</footer>
+  <footer class="site-footer">BDTV VOD &#xB7; Powered by TMDB</footer>
 
   <script src="assets/js/main.js"></script>
   <script src="assets/js/actor.js"></script>
