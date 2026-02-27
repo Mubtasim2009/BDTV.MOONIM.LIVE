@@ -37,6 +37,7 @@ function createMediaCard(item, type) {
   const img = document.createElement("img");
   img.src = buildImageUrl(item.poster_path || item.backdrop_path);
   img.alt = title;
+  img.loading = "lazy";
 
   const body = document.createElement("div");
   body.className = "media-card-body";
@@ -87,6 +88,7 @@ function createLandscapeTile(item, type) {
   const img = document.createElement("img");
   img.src = buildBackdropUrl(item.backdrop_path || item.poster_path);
   img.alt = title;
+  img.loading = "lazy";
 
   const body = document.createElement("div");
   body.className = "landscape-body";
@@ -118,6 +120,20 @@ function createLandscapeTile(item, type) {
   a.appendChild(body);
 
   return a;
+}
+
+// Show skeleton placeholder items in a container
+function showSkeletons(containerId, count, type) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = "";
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement("div");
+    el.className = type === "landscape"
+      ? "skeleton skeleton-landscape"
+      : "skeleton skeleton-portrait";
+    container.appendChild(el);
+  }
 }
 
 // Mobile nav toggle

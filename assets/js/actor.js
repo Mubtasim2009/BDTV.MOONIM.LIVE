@@ -55,8 +55,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     topCredits.forEach((item) => {
       const type = item.media_type === "tv" ? "tv" : "movie";
       const card = createMediaCard(item, type);
-      card.style.minWidth = "45%";
-      card.style.maxWidth = "48%";
       knownForGrid.appendChild(card);
     });
 

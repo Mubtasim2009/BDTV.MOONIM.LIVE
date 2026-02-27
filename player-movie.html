@@ -2,38 +2,35 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>BDTV VOD – Movie Player</title>
+  <title>BDTV – Movie Player</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <link
-    rel="icon"
-    type="image/webp"
-    href="https://raw.githubusercontent.com/Mubtasim2009/Aboutme/232a54166d3b45fb72b6b14f2675fc830088693f/assets/brand/ICON.webp"
-  />
+  <link rel="icon" type="image/webp" href="https://raw.githubusercontent.com/Mubtasim2009/Aboutme/232a54166d3b45fb72b6b14f2675fc830088693f/assets/brand/ICON.webp" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/css/styles.css" />
 </head>
 <body>
   <header class="top-nav">
     <a class="top-brand" href="index.html">
-      <img
-        src="https://raw.githubusercontent.com/Mubtasim2009/BDTV-V1.2/083560282207d33699f744583e5da7fa0e8af350/assets/Brand/LOGO.webp"
-        alt="logo"
-      />
+      <img src="https://raw.githubusercontent.com/Mubtasim2009/BDTV-V1.2/083560282207d33699f744583e5da7fa0e8af350/assets/Brand/LOGO.webp" alt="BDTV logo" />
     </a>
-    <button id="navToggle" class="nav-toggle" aria-label="Toggle navigation">☰</button>
+    <button id="navToggle" class="nav-toggle" aria-label="Toggle navigation">
+      <span></span><span></span><span></span>
+    </button>
     <div class="top-right">
       <nav class="nav-links" id="navLinks">
         <a href="index.html" class="nav-link">Home</a>
         <a href="search.html" class="nav-link">Search</a>
         <a href="about.html" class="nav-link">About</a>
       </nav>
-      <button class="live-btn-nav" onclick="location.href='live.html'">Live TV</button>
+      <a href="live.html" class="live-btn-nav">&#x25CF; Live TV</a>
     </div>
   </header>
 
   <main class="player-layout">
     <section class="player-card">
-      <div class="player-title" id="movieTitle">Loading…</div>
+      <div class="player-title" id="movieTitle">Loading&#x2026;</div>
       <div class="player-meta" id="movieMeta"></div>
 
       <div class="vidking-wrapper">
@@ -41,7 +38,7 @@
       </div>
 
       <p class="disclaimer">
-        Streams are provided by a third‑party host and may contain their own ads or external links.
+        Streams are provided by a third-party host and may contain their own ads or external links.
       </p>
 
       <div id="castSection" class="cast-section" style="display:none;">
@@ -58,19 +55,14 @@
           <div class="overview" id="movieOverview"></div>
         </div>
       </div>
-      <!-- Advertisement Script -->
-      <script async="async" data-cfasync="false" src="https://pl28353113.effectivegatecpm.com/92d4392296fa5e19466bef5378e5a980/invoke.js"></script>
-      <div id="container-92d4392296fa5e19466bef5378e5a980"></div>
+      <div class="ad-section">
+        <script async data-cfasync="false" src="https://pl28353113.effectivegatecpm.com/92d4392296fa5e19466bef5378e5a980/invoke.js"></script>
+        <div id="container-92d4392296fa5e19466bef5378e5a980"></div>
+      </div>
     </aside>
   </main>
 
-  <footer class="site-footer">
-    BDTV VOD.
-    <div class="language-composition">
-      <script async="async" data-cfasync="false" src="https://pl28353113.effectivegatecpm.com/92d4392296fa5e19466bef5378e5a980/invoke.js"></script>
-      <div id="container-92d4392296fa5e19466bef5378e5a980"></div>
-    </div>
-  </footer>
+  <footer class="site-footer">BDTV VOD &#xB7; Powered by TMDB</footer>
 
   <script src="assets/js/main.js"></script>
   <script src="assets/js/player-movie.js"></script>

@@ -1,5 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   // 1. Trending Movies Today (landscape + portrait)
+  showSkeletons("trendingMoviesLandscape", 5, "landscape");
+  showSkeletons("trendingMoviesPortrait", 10, "portrait");
   loadDualSection(
     `${TMDB_BASE}/trending/movie/day?api_key=${TMDB_API_KEY}`,
     "trendingMoviesLandscape",
@@ -9,6 +11,8 @@ document.addEventListener("DOMContentLoaded", () => {
   );
 
   // 2. Trending TV Today (landscape + portrait)
+  showSkeletons("trendingTvLandscape", 5, "landscape");
+  showSkeletons("trendingTvPortrait", 10, "portrait");
   loadDualSection(
     `${TMDB_BASE}/trending/tv/day?api_key=${TMDB_API_KEY}`,
     "trendingTvLandscape",
@@ -18,6 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
   );
 
   // 3. Now Playing (Movies)
+  showSkeletons("nowPlayingMovies", 10, "portrait");
   loadPortraitSection(
     `${TMDB_BASE}/movie/now_playing?api_key=${TMDB_API_KEY}&language=en-US&page=1`,
     "nowPlayingMovies",
@@ -26,6 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
   );
 
   // 4. Popular TV Shows
+  showSkeletons("popularTv", 10, "portrait");
   loadPortraitSection(
     `${TMDB_BASE}/tv/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`,
     "popularTv",
@@ -34,6 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
   );
 
   // 5. Popular Movies
+  showSkeletons("popularMovies", 10, "portrait");
   loadPortraitSection(
     `${TMDB_BASE}/movie/popular?api_key=${TMDB_API_KEY}&language=en-US&page=1`,
     "popularMovies",
@@ -42,6 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
   );
 
   // 6. Top Rated Movies
+  showSkeletons("topRatedMovies", 10, "portrait");
   loadPortraitSection(
     `${TMDB_BASE}/movie/top_rated?api_key=${TMDB_API_KEY}&language=en-US&page=1`,
     "topRatedMovies",
@@ -50,6 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
   );
 
   // 7. Top Rated TV Shows
+  showSkeletons("topRatedTv", 10, "portrait");
   loadPortraitSection(
     `${TMDB_BASE}/tv/top_rated?api_key=${TMDB_API_KEY}&language=en-US&page=1`,
     "topRatedTv",

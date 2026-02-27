@@ -85,8 +85,6 @@ async function runSearch(query, type, els) {
       const mediaType = item.media_type || type || "movie";
       const finalType = mediaType === "tv" ? "tv" : "movie";
       const card = createMediaCard(item, finalType);
-      card.style.minWidth = "45%";
-      card.style.maxWidth = "48%";
       resultsGrid.appendChild(card);
     });
 
