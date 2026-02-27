@@ -28,10 +28,16 @@
     </div>
   </header>
 
+  <div id="playerBackdrop" class="player-backdrop"></div>
+
   <main class="player-layout">
     <section class="player-card">
       <div class="player-title" id="tvTitle">Loading&#x2026;</div>
-      <div class="player-meta" id="tvMeta"></div>
+      <div class="player-tagline" id="tvTagline"></div>
+      <div class="player-meta-row">
+        <div class="player-meta" id="tvMeta"></div>
+        <span id="tvRating" class="rating-badge" style="display:none;"></span>
+      </div>
 
       <div class="vidking-wrapper">
         <iframe id="tvFrame" allowfullscreen referrerpolicy="no-referrer"></iframe>
@@ -40,6 +46,8 @@
       <p class="disclaimer">
         Streams are provided by a third-party host and may contain their own ads or external links.
       </p>
+
+      <div id="crewRow" class="crew-row" style="display:none;"></div>
 
       <div id="castSection" class="cast-section" style="display:none;">
         <div class="cast-title">Top Cast</div>
@@ -55,6 +63,7 @@
           <div class="overview" id="tvOverview"></div>
         </div>
       </div>
+      <div id="tvStatsGrid" class="stats-grid"></div>
       <div class="ad-section">
         <script async data-cfasync="false" src="https://pl28353113.effectivegatecpm.com/92d4392296fa5e19466bef5378e5a980/invoke.js"></script>
         <div id="container-92d4392296fa5e19466bef5378e5a980"></div>
