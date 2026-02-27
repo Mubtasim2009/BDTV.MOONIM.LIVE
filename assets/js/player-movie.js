@@ -7,6 +7,8 @@ function openActor(personId) {
   window.location.href = `actor.html?id=${encodeURIComponent(personId)}`;
 }
 
+const WRITING_JOBS = ["Screenplay", "Writer", "Story"];
+
 async function loadMovie() {
   const id = getMovieIdFromUrl();
   if (!id) {
@@ -37,11 +39,32 @@ async function loadMovie() {
     const title = data.title || "Untitled";
     const year = data.release_date ? data.release_date.slice(0, 4) : "";
     const runtime = data.runtime ? `${data.runtime} min` : "";
-    const rating = data.vote_average ? `⭐ ${data.vote_average.toFixed(1)}` : "";
+    const rating = data.vote_average ? data.vote_average.toFixed(1) : "";
+    const lang = data.original_language ? data.original_language.toUpperCase() : "";
+    const status = data.status || "";
 
     document.getElementById("movieTitle").textContent = title;
+
+    // Tagline
+    const taglineEl = document.getElementById("movieTagline");
+    if (data.tagline) taglineEl.textContent = `"${data.tagline}"`;
+
+    // Meta (year, runtime, language)
     document.getElementById("movieMeta").textContent =
-      [year, runtime, rating].filter(Boolean).join(" • ");
+      [year, runtime, lang].filter(Boolean).join(" \u2022 ");
+
+    // Rating badge
+    const ratingEl = document.getElementById("movieRating");
+    if (rating) {
+      ratingEl.textContent = `\u2B50 ${rating} / 10`;
+      ratingEl.style.display = "";
+    }
+
+    // Backdrop
+    const backdropEl = document.getElementById("playerBackdrop");
+    if (data.backdrop_path) {
+      backdropEl.style.backgroundImage = `url(${buildBackdropUrl(data.backdrop_path)})`;
+    }
 
     const tagContainer = document.getElementById("movieTags");
     tagContainer.innerHTML = "";
@@ -59,6 +82,45 @@ async function loadMovie() {
     if (data.poster_path) posterImg.src = TMDB_IMG_BASE + data.poster_path;
     else posterImg.src = "https://via.placeholder.com/300x450?text=No+Image";
     posterImg.alt = title + " poster";
+
+    // Stats grid
+    const statsGrid = document.getElementById("movieStatsGrid");
+    statsGrid.innerHTML = "";
+    const stats = [
+      { label: "Year", value: year || "\u2014" },
+      { label: "Runtime", value: runtime || "\u2014" },
+      { label: "Rating", value: rating ? `\u2B50 ${rating}` : "\u2014" },
+      { label: "Language", value: lang || "\u2014" },
+      { label: "Status", value: status || "\u2014" },
+      { label: "Votes", value: data.vote_count ? data.vote_count.toLocaleString() : "\u2014" },
+    ];
+    stats.forEach((s) => {
+      const item = document.createElement("div");
+      item.className = "stat-item";
+      item.innerHTML = `<div class="stat-label">${s.label}</div><div class="stat-value" title="${s.value}">${s.value}</div>`;
+      statsGrid.appendChild(item);
+    });
+
+    // Crew row (directors + writers)
+    const crewRow = document.getElementById("crewRow");
+    crewRow.innerHTML = "";
+    const directors = (credits.crew || []).filter((c) => c.job === "Director").slice(0, 2);
+    const writers = (credits.crew || [])
+      .filter((c) => c.department === "Writing" && WRITING_JOBS.includes(c.job))
+      .slice(0, 2);
+    const crewEntries = [
+      ...directors.map((d) => ({ role: "Director", name: d.name })),
+      ...writers.map((w) => ({ role: "Writer", name: w.name })),
+    ];
+    if (crewEntries.length) {
+      crewRow.style.display = "";
+      crewEntries.forEach(({ role, name }) => {
+        const div = document.createElement("div");
+        div.className = "crew-item";
+        div.innerHTML = `<span class="crew-role">${role}</span><span class="crew-name">${name}</span>`;
+        crewRow.appendChild(div);
+      });
+    }
 
     const castList = (credits.cast || []).slice(0, 12);
     const castContainer = document.getElementById("castList");
