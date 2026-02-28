@@ -1,8 +1,4 @@
 const PLAYLISTS = {
-  ayna: {
-    name: "Mirror BDIX Server",
-    url: "https://raw.githubusercontent.com/abusaeeidx/Ayna-BDIX-IPTV-Playlist/refs/heads/main/ayna-playlist.m3u",
-  },
   mrgify: {
     name: "Merge BDIX",
     url: "https://raw.githubusercontent.com/abusaeeidx/Mrgify-BDIX-IPTV/main/playlist.m3u",
