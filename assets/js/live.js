@@ -175,7 +175,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (searchEl) searchEl.value = "";
 
     try {
-      const res = await fetch(cfg.url);
+      const res = await fetch(`https://corsproxy.io/?${encodeURIComponent(cfg.url)}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const text = await res.text();
       currentChannels = parseM3U(text);
@@ -190,6 +190,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (err) {
       console.error(err);
       statusEl.textContent = "Failed to load playlist.";
+      listEl.innerHTML = `<div class="live-status" style="margin:1rem;color:#fca5a5;">⚠️ Could not load channels. The playlist URL may be down or blocked by CORS.</div>`;
     }
   }
 
