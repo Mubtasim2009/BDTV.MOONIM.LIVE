@@ -175,7 +175,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (searchEl) searchEl.value = "";
 
     try {
-      const res = await fetch(`https://corsproxy.io/?${encodeURIComponent(cfg.url)}`);
+      let res = await fetch(cfg.url).catch(() => null);
+      if (!res || !res.ok) {
+        res = await fetch(`https://corsproxy.io/?${encodeURIComponent(cfg.url)}`);
+      }
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const text = await res.text();
       currentChannels = parseM3U(text);
