@@ -773,6 +773,16 @@ a {
   color: #000;
 }
 
+.torrent-status {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.torrent-status--error {
+  color: #f87171;
+}
+
 /* Live TV */
 
 .live-shell {
