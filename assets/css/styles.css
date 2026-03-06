@@ -704,6 +704,75 @@ a {
   width: 100%;
 }
 
+/* Torrent download section */
+
+.torrent-section {
+  margin-top: 0.9rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+
+.torrent-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 0.6rem;
+  color: var(--text-primary);
+}
+
+.torrent-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.torrent-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.torrent-quality {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  min-width: 9rem;
+}
+
+.torrent-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: var(--radius-xs);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s var(--ease), color 0.15s var(--ease);
+}
+
+.torrent-btn--dl {
+  background: var(--accent-soft);
+  color: var(--accent-hover);
+  border: 1px solid rgba(124, 106, 247, 0.35);
+}
+
+.torrent-btn--dl:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+.torrent-btn--magnet {
+  background: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.torrent-btn--magnet:hover {
+  background: #f59e0b;
+  color: #000;
+}
+
 /* Live TV */
 
 .live-shell {
