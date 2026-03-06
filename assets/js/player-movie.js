@@ -18,7 +18,7 @@ async function loadMovie() {
 
   // VidKing embed (movie)
   const params = new URLSearchParams({
-    color: "e50914",
+    color: "7c6af7",
     autoPlay: "true",
     nextEpisode: "false",
   });
