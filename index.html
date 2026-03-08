@@ -14,7 +14,7 @@
 <body>
   <header class="top-nav">
     <a href="index.html" class="top-brand">
-      <img src="https://raw.githubusercontent.com/Mubtasim2009/BDTV-V1.2/083560282207d33699f744583e5da7fa0e8af350/assets/Brand/LOGO.webp" alt="BDTV logo" />
+      <img src="https://raw.githubusercontent.com/Mubtasim2009/BDTV.MOONIM.LIVE/refs/heads/main/assets/brand/LOGO.webp" alt="BDTV logo" />
     </a>
     <button id="navToggle" class="nav-toggle" aria-label="Toggle navigation">
       <span></span><span></span><span></span>
@@ -30,26 +30,37 @@
   </header>
 
   <main>
-    <section class="hero" id="heroBanner">
-      <div class="hero-bg" id="heroBg"></div>
-      <div class="hero-overlay"></div>
-      <div class="hero-content">
-        <span class="hero-type-label" id="heroTypeLabel"></span>
-        <h1 class="hero-title" id="heroTitle"></h1>
-        <div class="hero-meta" id="heroMeta"></div>
-        <div class="hero-search-wrap">
+    <!-- Hero Carousel -->
+    <section class="hero-carousel" id="heroCarousel" aria-label="Featured movies and series">
+      <div class="hero-carousel-track" id="heroCarouselTrack"></div>
+      <div class="hero-carousel-overlay"></div>
+      <div class="hero-carousel-content" id="heroCarouselContent">
+
+        <!-- Left column: brand tagline + search -->
+        <div class="hero-carousel-left">
+          <div class="hero-brand-tagline">
+            <span class="hero-brand-headline">Your world of entertainment.</span>
+            <span class="hero-brand-sub">Movies, TV shows and live BDIX channels — all in one place.</span>
+          </div>
           <form id="heroSearchForm" class="hero-search" action="search.html" method="get">
             <input id="heroSearchInput" type="search" name="q" placeholder="Search movies or TV shows…" aria-label="Search" autocomplete="off" />
             <button type="submit">Search</button>
           </form>
         </div>
-        <div class="hero-actions">
-          <a class="hero-play-btn" id="heroPlayBtn" href="#">&#x25B6; Play</a>
+
+        <!-- Right column: per-slide info -->
+        <div class="hero-carousel-info" id="heroCarouselInfo">
+          <div class="hero-carousel-logo-wrap" id="heroCarouselLogoWrap"></div>
+          <div class="hero-carousel-meta" id="heroCarouselMeta"></div>
+          <p class="hero-carousel-awards" id="heroCarouselAwards"></p>
+          <p class="hero-carousel-plot" id="heroCarouselPlot"></p>
+          <div class="hero-carousel-actions">
+            <a class="hero-watch-btn" id="heroWatchBtn" href="#">&#9654; Watch Now</a>
+          </div>
         </div>
+
       </div>
-      <button class="hero-arrow hero-arrow--prev" id="heroPrev">&#x2039;</button>
-      <button class="hero-arrow hero-arrow--next" id="heroNext">&#x203A;</button>
-      <div class="hero-dots" id="heroDots"></div>
+      <div class="hero-carousel-dots" id="heroCarouselDots"></div>
     </section>
 
     <section class="content-section">

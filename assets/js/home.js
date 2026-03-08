@@ -1,4 +1,254 @@
+// ─── Hero Carousel ──────────────────────────────────────────────────────────
+
+const CAROUSEL_COUNT = 5;
+const CAROUSEL_INTERVAL = 7000; // ms between auto-advance
+
+let carouselItems = [];    // { item: TMDBObject, type: 'movie'|'tv', logoPath: string|null, imdbId: string|null, omdbData: OmdbObject|null }
+let carouselIndex = 0;
+let carouselTimer = null;
+
+/** Fetch OMDb data by IMDb ID. Returns parsed object or null on failure/missing key. */
+async function fetchOmdbData(imdbId) {
+  if (!OMDB_API_KEY || !imdbId) return null;
+  try {
+    const data = await fetchJson(`https://www.omdbapi.com/?i=${encodeURIComponent(imdbId)}&apikey=${OMDB_API_KEY}`);
+    return data && data.Response === "True" ? data : null;
+  } catch (_) { return null; }
+}
+
+async function initHeroCarousel() {
+  const carousel = document.getElementById("heroCarousel");
+  if (carousel) carousel.classList.add("hero-carousel--loading");
+
+  try {
+    // Fetch top trending movies and TV combined (interleaved: movie, tv, movie, tv, movie)
+    const [moviesData, tvData] = await Promise.all([
+      fetchJson(`${TMDB_BASE}/trending/movie/day?api_key=${TMDB_API_KEY}`),
+      fetchJson(`${TMDB_BASE}/trending/tv/day?api_key=${TMDB_API_KEY}`)
+    ]);
+
+    const movies = (moviesData.results || []).slice(0, 3);
+    const tvShows = (tvData.results || []).slice(0, 2);
+
+    // Interleave: m, tv, m, tv, m
+    const mixed = [];
+    const maxLen = Math.max(movies.length, tvShows.length);
+    for (let i = 0; i < maxLen; i++) {
+      if (movies[i]) mixed.push({ item: movies[i], type: "movie" });
+      if (tvShows[i]) mixed.push({ item: tvShows[i], type: "tv" });
+    }
+    const picks = mixed.slice(0, CAROUSEL_COUNT);
+
+    // Fetch logos + external IDs in parallel per item, then OMDb if key is set
+    carouselItems = await Promise.all(picks.map(async ({ item, type }) => {
+      let logoPath = null;
+      let imdbId = null;
+      let omdbData = null;
+
+      try {
+        const endpoint = `${TMDB_BASE}/${type === "tv" ? "tv" : "movie"}/${item.id}`;
+        const [imgData, extData] = await Promise.all([
+          fetchJson(`${endpoint}/images?api_key=${TMDB_API_KEY}`),
+          fetchJson(`${endpoint}/external_ids?api_key=${TMDB_API_KEY}`)
+        ]);
+
+        const logos = (imgData.logos || []).filter(l => l.iso_639_1 === "en" || l.iso_639_1 === null);
+        if (logos.length) logoPath = logos[0].file_path;
+
+        imdbId = extData.imdb_id || null;
+      } catch (_) { /* logo / external-id fetch is best-effort */ }
+
+      omdbData = await fetchOmdbData(imdbId);
+
+      return { item, type, logoPath, imdbId, omdbData };
+    }));
+
+    if (carousel) carousel.classList.remove("hero-carousel--loading");
+    buildCarousel();
+    startCarouselTimer();
+  } catch (err) {
+    console.error("Hero carousel failed:", err);
+    const el = document.getElementById("heroCarousel");
+    if (el) el.style.display = "none";
+  }
+}
+
+function buildCarousel() {
+  const track = document.getElementById("heroCarouselTrack");
+  const dotsWrap = document.getElementById("heroCarouselDots");
+  if (!track || !dotsWrap) return;
+
+  track.innerHTML = "";
+  dotsWrap.innerHTML = "";
+
+  carouselItems.forEach((entry, i) => {
+    // Slide backdrop
+    const slide = document.createElement("div");
+    slide.className = "hero-carousel-slide" + (i === 0 ? " active" : "");
+    if (entry.item.backdrop_path) {
+      slide.style.backgroundImage = `url(https://image.tmdb.org/t/p/original${entry.item.backdrop_path})`;
+    }
+    track.appendChild(slide);
+
+    // Dot
+    const dot = document.createElement("button");
+    dot.className = "hero-carousel-dot" + (i === 0 ? " active" : "");
+    dot.setAttribute("aria-label", `Slide ${i + 1}`);
+    dot.addEventListener("click", () => goToSlide(i));
+    dotsWrap.appendChild(dot);
+  });
+
+  renderCarouselInfo(0);
+
+  // Pause on hover / focus
+  const carousel = document.getElementById("heroCarousel");
+  if (carousel) {
+    carousel.addEventListener("mouseenter", stopCarouselTimer);
+    carousel.addEventListener("mouseleave", startCarouselTimer);
+    carousel.addEventListener("focusin", stopCarouselTimer);
+    carousel.addEventListener("focusout", startCarouselTimer);
+  }
+}
+
+function goToSlide(index) {
+  const slides = document.querySelectorAll(".hero-carousel-slide");
+  const dots = document.querySelectorAll(".hero-carousel-dot");
+
+  if (slides[carouselIndex]) slides[carouselIndex].classList.remove("active");
+  if (dots[carouselIndex]) dots[carouselIndex].classList.remove("active");
+
+  carouselIndex = index;
+
+  if (slides[carouselIndex]) slides[carouselIndex].classList.add("active");
+  if (dots[carouselIndex]) dots[carouselIndex].classList.add("active");
+
+  renderCarouselInfo(carouselIndex);
+  resetCarouselTimer();
+}
+
+function renderCarouselInfo(index) {
+  const entry = carouselItems[index];
+  if (!entry) return;
+
+  const { item, type, logoPath, omdbData } = entry;
+  const title = item.title || item.name || "Untitled";
+  const plot = item.overview || "";
+  const year = (item.release_date || item.first_air_date || "").slice(0, 4);
+  const linkTarget = type === "tv" ? "player-tv.html" : "player-movie.html";
+  const href = `${linkTarget}?id=${encodeURIComponent(item.id)}`;
+
+  // ── Logo / title ──────────────────────────────────────────────────────────
+  const logoWrap = document.getElementById("heroCarouselLogoWrap");
+  if (logoWrap) {
+    logoWrap.innerHTML = "";
+    if (logoPath) {
+      const img = document.createElement("img");
+      img.src = `https://image.tmdb.org/t/p/w500${logoPath}`;
+      img.alt = title;
+      img.className = "hero-carousel-logo";
+      logoWrap.appendChild(img);
+    } else {
+      const h = document.createElement("h2");
+      h.className = "hero-carousel-title";
+      h.textContent = title;
+      logoWrap.appendChild(h);
+    }
+  }
+
+  // ── Meta row: type pill + year + ratings ──────────────────────────────────
+  const metaEl = document.getElementById("heroCarouselMeta");
+  if (metaEl) {
+    metaEl.innerHTML = "";
+
+    // Type badge
+    const typeBadge = document.createElement("span");
+    typeBadge.className = "carousel-badge carousel-badge--type";
+    typeBadge.textContent = type === "tv" ? "TV" : "MOVIE";
+    metaEl.appendChild(typeBadge);
+
+    // Year
+    if (year) {
+      const yearBadge = document.createElement("span");
+      yearBadge.className = "carousel-badge carousel-badge--year";
+      yearBadge.textContent = year;
+      metaEl.appendChild(yearBadge);
+    }
+
+    // TMDB rating
+    if (item.vote_average) {
+      const tmdbBadge = document.createElement("span");
+      tmdbBadge.className = "carousel-badge carousel-badge--tmdb";
+      tmdbBadge.innerHTML = `<span class="badge-icon">⭐</span>TMDB&nbsp;${item.vote_average.toFixed(1)}`;
+      metaEl.appendChild(tmdbBadge);
+    }
+
+    // IMDb rating (from OMDb)
+    if (omdbData && omdbData.imdbRating && omdbData.imdbRating !== "N/A") {
+      const imdbBadge = document.createElement("span");
+      imdbBadge.className = "carousel-badge carousel-badge--imdb";
+      imdbBadge.innerHTML = `<span class="badge-icon">IMDb</span>${omdbData.imdbRating}`;
+      metaEl.appendChild(imdbBadge);
+    }
+
+    // Rotten Tomatoes (from OMDb ratings array)
+    if (omdbData && omdbData.Ratings) {
+      const rt = omdbData.Ratings.find(r => r.Source === "Rotten Tomatoes");
+      if (rt) {
+        const rtBadge = document.createElement("span");
+        rtBadge.className = "carousel-badge carousel-badge--rt";
+        rtBadge.innerHTML = `<span class="badge-icon">🍅</span>${rt.Value}`;
+        metaEl.appendChild(rtBadge);
+      }
+    }
+  }
+
+  // ── Awards ────────────────────────────────────────────────────────────────
+  const awardsEl = document.getElementById("heroCarouselAwards");
+  if (awardsEl) {
+    const awards = omdbData && omdbData.Awards && omdbData.Awards !== "N/A" ? omdbData.Awards : "";
+    awardsEl.textContent = awards;
+    awardsEl.style.display = awards ? "" : "none";
+  }
+
+  // ── Plot & Watch button ───────────────────────────────────────────────────
+  const plotEl = document.getElementById("heroCarouselPlot");
+  if (plotEl) plotEl.textContent = plot;
+
+  const watchBtn = document.getElementById("heroWatchBtn");
+  if (watchBtn) watchBtn.href = href;
+
+  // Trigger re-animation
+  const info = document.getElementById("heroCarouselInfo");
+  if (info) {
+    info.style.animation = "none";
+    void info.offsetWidth; // force reflow
+    info.style.animation = "";
+  }
+}
+
+function startCarouselTimer() {
+  stopCarouselTimer();
+  carouselTimer = setInterval(() => {
+    goToSlide((carouselIndex + 1) % carouselItems.length);
+  }, CAROUSEL_INTERVAL);
+}
+
+function stopCarouselTimer() {
+  if (carouselTimer) { clearInterval(carouselTimer); carouselTimer = null; }
+}
+
+function resetCarouselTimer() {
+  if (carouselTimer) startCarouselTimer();
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 document.addEventListener("DOMContentLoaded", () => {
+  // Init hero carousel
+  initHeroCarousel();
+  // 0. Your Next Watch (trending all — landscape only)
+  showSkeletons("nextWatchLandscape", 5, "landscape");
+  loadNextWatchSection();
   // Hero search suggestions
   const heroInput = document.getElementById("heroSearchInput");
   if (heroInput) {
@@ -43,13 +293,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Animated hero banner
-  loadHeroBanner();
-
-  // 0. Your Next Watch (trending all — landscape only)
-  showSkeletons("nextWatchLandscape", 5, "landscape");
-  loadNextWatchSection();
-
   // 1. Trending Movies Today (landscape + portrait)
   showSkeletons("trendingMoviesLandscape", 5, "landscape");
   showSkeletons("trendingMoviesPortrait", 10, "portrait");
@@ -72,7 +315,7 @@ document.addEventListener("DOMContentLoaded", () => {
     "tv"
   );
 
-  // 3. Now Playing in Cinemas (Movies)
+  // 3. Now Playing (Movies)
   showSkeletons("nowPlayingMovies", 10, "portrait");
   loadPortraitSection(
     `${TMDB_BASE}/movie/now_playing?api_key=${TMDB_API_KEY}&language=en-US&page=1`,
@@ -118,160 +361,6 @@ document.addEventListener("DOMContentLoaded", () => {
   );
 });
 
-// ===========================
-// Animated Hero Banner
-// ===========================
-async function loadHeroBanner() {
-  const HERO_CYCLE_INTERVAL_MS = 8000;
-  const FADE_TRANSITION_DELAY_MS = 400;
-  const heroBanner = document.getElementById("heroBanner");
-  const heroBg = document.getElementById("heroBg");
-  const heroContent = heroBanner ? heroBanner.querySelector(".hero-content") : null;
-  const heroTypeLabel = document.getElementById("heroTypeLabel");
-  const heroTitle = document.getElementById("heroTitle");
-  const heroMeta = document.getElementById("heroMeta");
-  const heroPlayBtn = document.getElementById("heroPlayBtn");
-  const heroDots = document.getElementById("heroDots");
-  const heroPrev = document.getElementById("heroPrev");
-  const heroNext = document.getElementById("heroNext");
-
-  if (!heroBanner || !heroBg || !heroContent) return;
-
-  let items = [];
-  let currentIndex = 0;
-  let cycleTimer = null;
-
-  try {
-    const data = await fetchJson(`${TMDB_BASE}/trending/all/day?api_key=${TMDB_API_KEY}`);
-    items = (data.results || [])
-      .filter((i) => i.backdrop_path)
-      .slice(0, 5);
-  } catch (_) {
-    return;
-  }
-
-  if (!items.length) return;
-
-  // Create dot buttons
-  items.forEach((_, i) => {
-    const dot = document.createElement("button");
-    dot.className = "hero-dot" + (i === 0 ? " active" : "");
-    dot.setAttribute("aria-label", "Go to slide " + (i + 1));
-    dot.addEventListener("click", () => {
-      clearCycle();
-      showHeroItem(i);
-      startCycle();
-    });
-    heroDots.appendChild(dot);
-  });
-
-  function updateDots(index) {
-    heroDots.querySelectorAll(".hero-dot").forEach((d, i) => {
-      d.classList.toggle("active", i === index);
-    });
-  }
-
-  function showHeroItem(index) {
-    const item = items[index];
-    currentIndex = index;
-
-    // Fade out bg
-    heroBg.classList.add("fade-out");
-    heroContent.classList.add("text-fade");
-
-    setTimeout(() => {
-      // Update background
-      heroBg.style.backgroundImage = `url(https://image.tmdb.org/t/p/original${item.backdrop_path})`;
-      heroBg.classList.remove("fade-out");
-
-      // Update text
-      const mediaType = item.media_type === "tv" ? "tv" : "movie";
-      const title = item.title || item.name || "Untitled";
-      const year =
-        (item.release_date && item.release_date.slice(0, 4)) ||
-        (item.first_air_date && item.first_air_date.slice(0, 4)) ||
-        "";
-      const rating = item.vote_average ? item.vote_average.toFixed(1) : "";
-
-      if (heroTypeLabel) heroTypeLabel.textContent = mediaType === "tv" ? "TV Series" : "Movie";
-      if (heroTitle) heroTitle.textContent = title;
-      if (heroMeta) {
-        heroMeta.textContent = [year, rating ? rating + " ★" : ""].filter(Boolean).join("  ·  ");
-      }
-      if (heroPlayBtn) {
-        const playerPage = mediaType === "tv" ? "player-tv.html" : "player-movie.html";
-        heroPlayBtn.href = `${playerPage}?id=${encodeURIComponent(item.id)}`;
-      }
-
-      updateDots(index);
-
-      // Fade in text
-      setTimeout(() => {
-        heroContent.classList.remove("text-fade");
-      }, 60);
-    }, FADE_TRANSITION_DELAY_MS);
-  }
-
-  function startCycle() {
-    cycleTimer = setInterval(() => {
-      showHeroItem((currentIndex + 1) % items.length);
-    }, HERO_CYCLE_INTERVAL_MS);
-  }
-
-  function clearCycle() {
-    if (cycleTimer) clearInterval(cycleTimer);
-    cycleTimer = null;
-  }
-
-  // Arrow controls
-  if (heroPrev) {
-    heroPrev.addEventListener("click", () => {
-      clearCycle();
-      showHeroItem((currentIndex - 1 + items.length) % items.length);
-      startCycle();
-    });
-  }
-
-  if (heroNext) {
-    heroNext.addEventListener("click", () => {
-      clearCycle();
-      showHeroItem((currentIndex + 1) % items.length);
-      startCycle();
-    });
-  }
-
-  // Pause on hover
-  heroBanner.addEventListener("mouseenter", clearCycle);
-  heroBanner.addEventListener("mouseleave", startCycle);
-
-  // Show first item and start cycle
-  showHeroItem(0);
-  startCycle();
-}
-
-// ===========================
-// Your Next Watch section
-// ===========================
-async function loadNextWatchSection() {
-  const container = document.getElementById("nextWatchLandscape");
-  const statusEl = document.getElementById("nextWatchStatus");
-  if (!container || !statusEl) return;
-
-  try {
-    const data = await fetchJson(`${TMDB_BASE}/trending/all/day?api_key=${TMDB_API_KEY}`);
-    container.innerHTML = "";
-    const items = (data.results || []).filter((i) => i.backdrop_path).slice(0, 8);
-    items.forEach((item) => {
-      const mediaType = item.media_type === "tv" ? "tv" : "movie";
-      container.appendChild(createLandscapeTile(item, mediaType));
-    });
-    statusEl.textContent = "";
-  } catch (err) {
-    console.error(err);
-    statusEl.textContent = "Failed to load.";
-  }
-}
-
 // Combined section: landscape row + portrait row from same data
 async function loadDualSection(url, landscapeId, portraitId, statusId, type) {
   const landscape = document.getElementById(landscapeId);
@@ -311,6 +400,28 @@ async function loadPortraitSection(url, containerId, statusId, type) {
     container.innerHTML = "";
     (data.results || []).slice(0, 20).forEach((item) => {
       container.appendChild(createMediaCard(item, type));
+    });
+    statusEl.textContent = "";
+  } catch (err) {
+    console.error(err);
+    statusEl.textContent = "Failed to load.";
+  }
+}
+// ===========================
+// Your Next Watch section
+// ===========================
+async function loadNextWatchSection() {
+  const container = document.getElementById("nextWatchLandscape");
+  const statusEl = document.getElementById("nextWatchStatus");
+  if (!container || !statusEl) return;
+
+  try {
+    const data = await fetchJson(`${TMDB_BASE}/trending/all/day?api_key=${TMDB_API_KEY}`);
+    container.innerHTML = "";
+    const items = (data.results || []).filter((i) => i.backdrop_path).slice(0, 8);
+    items.forEach((item) => {
+      const mediaType = item.media_type === "tv" ? "tv" : "movie";
+      container.appendChild(createLandscapeTile(item, mediaType));
     });
     statusEl.textContent = "";
   } catch (err) {

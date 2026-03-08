@@ -4,6 +4,10 @@ const TMDB_BASE = "https://api.themoviedb.org/3";
 const TMDB_IMG_BASE = "https://image.tmdb.org/t/p/w300";
 const TMDB_IMG_BACKDROP = "https://image.tmdb.org/t/p/w780";
 
+// OMDb config – set your free key from https://www.omdbapi.com/apikey.aspx
+// Leave empty to skip IMDb/Rotten Tomatoes ratings (TMDB score still shows)
+const OMDB_API_KEY = "";
+
 async function fetchJson(url) {
   const res = await fetch(url);
   if (!res.ok) throw new Error("HTTP " + res.status);
@@ -209,8 +213,10 @@ function showSkeletons(containerId, count, type) {
 (function () {
   const nav = document.querySelector('.top-nav');
   if (!nav) return;
+  const hero = document.getElementById('heroCarousel');
   const onScroll = () => {
-    if (window.scrollY > 10) {
+    // On pages without a hero carousel, keep the navbar opaque at all times
+    if (!hero || window.scrollY > 80) {
       nav.classList.add('scrolled');
     } else {
       nav.classList.remove('scrolled');
@@ -219,7 +225,6 @@ function showSkeletons(containerId, count, type) {
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll(); // run once on load
 })();
-
 // ===========================
 // Card Preview Popup
 // ===========================
@@ -292,7 +297,7 @@ function showSkeletons(containerId, count, type) {
     }
     if (rating && rating !== '–') {
       const rSpan = document.createElement('span');
-      rSpan.textContent = rating + ' ★';
+      rSpan.textContent = rating + ' \u2605';
       meta.appendChild(rSpan);
     }
     const typePill = document.createElement('span');
@@ -303,7 +308,7 @@ function showSkeletons(containerId, count, type) {
     popup.querySelector('.card-preview-overview').textContent = overview;
 
     const playLink = type === 'tv' ? 'player-tv.html' : 'player-movie.html';
-    popup.querySelector('.card-preview-play').href = `${playLink}?id=${encodeURIComponent(id)}`;
+    popup.querySelector('.card-preview-play').href = playLink + '?id=' + encodeURIComponent(id);
 
     positionPopup(card);
     popup.classList.add('visible');
@@ -319,20 +324,20 @@ function showSkeletons(containerId, count, type) {
     if (!card) return;
     clearTimeout(hideTimer);
     clearTimeout(showTimer);
-    showTimer = setTimeout(() => showPopup(card), 400);
+    showTimer = setTimeout(function () { showPopup(card); }, 400);
   }, true);
 
   document.addEventListener('mouseleave', function (e) {
     const card = getCardEl(e.target);
     if (!card) return;
     clearTimeout(showTimer);
-    hideTimer = setTimeout(() => {
+    hideTimer = setTimeout(function () {
       if (!popup.matches(':hover')) hidePopup();
     }, 200);
   }, true);
 
-  popup.addEventListener('mouseenter', () => clearTimeout(hideTimer));
-  popup.addEventListener('mouseleave', () => {
+  popup.addEventListener('mouseenter', function () { clearTimeout(hideTimer); });
+  popup.addEventListener('mouseleave', function () {
     hideTimer = setTimeout(hidePopup, 200);
   });
 })();
@@ -341,42 +346,43 @@ function showSkeletons(containerId, count, type) {
 // Row Scroll Arrows + Drag Scroll
 // ===========================
 function initRowArrows() {
-  const SCROLL_TOLERANCE = 4;
-  const SCROLL_PERCENTAGE = 0.8;
+  var SCROLL_TOLERANCE = 4;
+  var SCROLL_PERCENTAGE = 0.8;
+
   function wrapRow(row) {
     // Already wrapped
     if (row.parentElement && row.parentElement.classList.contains('row-wrapper')) return;
 
-    const wrapper = document.createElement('div');
+    var wrapper = document.createElement('div');
     wrapper.className = 'row-wrapper';
     row.parentNode.insertBefore(wrapper, row);
     wrapper.appendChild(row);
 
-    const leftBtn = document.createElement('button');
+    var leftBtn = document.createElement('button');
     leftBtn.className = 'row-arrow row-arrow--left hidden';
     leftBtn.setAttribute('aria-label', 'Scroll left');
-    leftBtn.textContent = '‹';
+    leftBtn.textContent = '\u2039';
 
-    const rightBtn = document.createElement('button');
+    var rightBtn = document.createElement('button');
     rightBtn.className = 'row-arrow row-arrow--right';
     rightBtn.setAttribute('aria-label', 'Scroll right');
-    rightBtn.textContent = '›';
+    rightBtn.textContent = '\u203A';
 
     wrapper.insertBefore(leftBtn, row);
     wrapper.appendChild(rightBtn);
 
     function updateArrows() {
-      const atStart = row.scrollLeft <= SCROLL_TOLERANCE;
-      const atEnd = row.scrollLeft + row.clientWidth >= row.scrollWidth - SCROLL_TOLERANCE;
+      var atStart = row.scrollLeft <= SCROLL_TOLERANCE;
+      var atEnd = row.scrollLeft + row.clientWidth >= row.scrollWidth - SCROLL_TOLERANCE;
       leftBtn.classList.toggle('hidden', atStart);
       rightBtn.classList.toggle('hidden', atEnd);
     }
 
-    leftBtn.addEventListener('click', () => {
+    leftBtn.addEventListener('click', function () {
       row.scrollBy({ left: -row.clientWidth * SCROLL_PERCENTAGE, behavior: 'smooth' });
     });
 
-    rightBtn.addEventListener('click', () => {
+    rightBtn.addEventListener('click', function () {
       row.scrollBy({ left: row.clientWidth * SCROLL_PERCENTAGE, behavior: 'smooth' });
     });
 
@@ -384,11 +390,11 @@ function initRowArrows() {
     updateArrows();
 
     // Drag to scroll
-    let isDown = false;
-    let startX = 0;
-    let scrollStart = 0;
+    var isDown = false;
+    var startX = 0;
+    var scrollStart = 0;
 
-    row.addEventListener('mousedown', (e) => {
+    row.addEventListener('mousedown', function (e) {
       isDown = true;
       startX = e.pageX;
       scrollStart = row.scrollLeft;
@@ -396,17 +402,17 @@ function initRowArrows() {
       row.style.userSelect = 'none';
     });
 
-    row.addEventListener('mousemove', (e) => {
+    row.addEventListener('mousemove', function (e) {
       if (!isDown) return;
-      const delta = e.pageX - startX;
+      var delta = e.pageX - startX;
       row.scrollLeft = scrollStart - delta;
     });
 
-    const stopDrag = () => {
+    function stopDrag() {
       isDown = false;
       row.style.cursor = '';
       row.style.userSelect = '';
-    };
+    }
     row.addEventListener('mouseup', stopDrag);
     row.addEventListener('mouseleave', stopDrag);
   }
@@ -415,14 +421,16 @@ function initRowArrows() {
   document.querySelectorAll('.card-row, .landscape-row').forEach(wrapRow);
 
   // Watch for new rows added dynamically (async content)
-  const observer = new MutationObserver((mutations) => {
-    mutations.forEach((m) => {
-      m.addedNodes.forEach((node) => {
+  var observer = new MutationObserver(function (mutations) {
+    mutations.forEach(function (m) {
+      m.addedNodes.forEach(function (node) {
         if (node.nodeType !== 1) return;
-        if (node.matches('.card-row, .landscape-row')) {
+        if (node.matches && node.matches('.card-row, .landscape-row')) {
           wrapRow(node);
         }
-        node.querySelectorAll && node.querySelectorAll('.card-row, .landscape-row').forEach(wrapRow);
+        if (node.querySelectorAll) {
+          node.querySelectorAll('.card-row, .landscape-row').forEach(wrapRow);
+        }
       });
     });
   });
