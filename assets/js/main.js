@@ -137,13 +137,33 @@ function showSkeletons(containerId, count, type) {
 }
 
 // Mobile nav toggle
-document.addEventListener("DOMContentLoaded", () => {
-  const navToggle = document.getElementById("navToggle");
-  const navLinks = document.getElementById("navLinks");
-
-  if (navToggle && navLinks) {
-    navToggle.addEventListener("click", () => {
-      navLinks.classList.toggle("open");
+(function () {
+  const toggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  if (toggle && navLinks) {
+    toggle.addEventListener('click', () => {
+      navLinks.classList.toggle('open');
+    });
+    // Close menu when a link is clicked (event delegation)
+    navLinks.addEventListener('click', (e) => {
+      if (e.target.classList.contains('nav-link')) {
+        navLinks.classList.remove('open');
+      }
     });
   }
-});
+})();
+
+// Scroll-aware navbar
+(function () {
+  const nav = document.querySelector('.top-nav');
+  if (!nav) return;
+  const onScroll = () => {
+    if (window.scrollY > 10) {
+      nav.classList.add('scrolled');
+    } else {
+      nav.classList.remove('scrolled');
+    }
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll(); // run once on load
+})();
