@@ -230,7 +230,7 @@ async function runSearch(query, type, els) {
     );
     if (!items.length) {
       resultsInfo.textContent = "";
-      emptyState.textContent = "No match found.";
+      emptyState.innerHTML = "No match found. &mdash; Check the spelling or try a different name.";
       emptyState.style.display = "block";
       return;
     }

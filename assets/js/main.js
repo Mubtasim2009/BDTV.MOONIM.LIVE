@@ -20,7 +20,7 @@ function buildBackdropUrl(path) {
   return `${TMDB_IMG_BACKDROP}${path}`;
 }
 
-// Portrait card (posters)
+// Portrait card (posters) — info shown as overlay on the image
 function createMediaCard(item, type) {
   const linkTarget = type === "tv" ? "player-tv.html" : "player-movie.html";
   const title = item.title || item.name || "Untitled";
@@ -39,11 +39,11 @@ function createMediaCard(item, type) {
   img.alt = title;
   img.loading = "lazy";
 
-  const body = document.createElement("div");
-  body.className = "media-card-body";
+  const overlay = document.createElement("div");
+  overlay.className = "media-card-overlay";
 
   const titleEl = document.createElement("div");
-  titleEl.className = "media-title";
+  titleEl.className = "media-card-overlay-title";
   titleEl.textContent = title;
 
   const meta = document.createElement("div");
@@ -63,10 +63,10 @@ function createMediaCard(item, type) {
   if (ratingSpan.textContent) meta.appendChild(ratingSpan);
   meta.appendChild(typePill);
 
-  body.appendChild(titleEl);
-  body.appendChild(meta);
+  overlay.appendChild(titleEl);
+  overlay.appendChild(meta);
   a.appendChild(img);
-  a.appendChild(body);
+  a.appendChild(overlay);
 
   return a;
 }

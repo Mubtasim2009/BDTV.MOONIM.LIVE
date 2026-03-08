@@ -363,13 +363,12 @@ a {
 .media-card {
   min-width: 140px;
   flex: 0 0 auto;
-  background: var(--bg-surface);
   border-radius: var(--radius-sm);
   text-decoration: none;
   color: inherit;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
+  display: block;
+  position: relative;
   transition: transform 0.22s var(--ease), box-shadow 0.22s var(--ease);
 }
 
@@ -381,23 +380,32 @@ a {
   transition: transform 0.3s var(--ease), filter 0.3s var(--ease);
 }
 
-.media-card-body {
-  padding: 0.4rem 0.5rem 0.55rem;
+/* Gradient overlay on the poster image */
+.media-card-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 2rem 0.55rem 0.55rem;
+  background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.5) 55%, transparent 100%);
 }
 
-.media-title {
+.media-card-overlay-title {
   font-size: 0.8rem;
   font-weight: 600;
+  color: #fff;
   margin: 0 0 0.2rem;
+  /* show up to 3 lines, then fade */
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  line-height: 1.3;
 }
 
 .media-meta {
   font-size: 0.7rem;
-  color: var(--text-secondary);
+  color: rgba(255,255,255,0.75);
   display: flex;
   align-items: center;
   gap: 0.35rem;
@@ -419,11 +427,11 @@ a {
 .tile-type-pill {
   padding: 0.05rem 0.45rem;
   border-radius: 999px;
-  border: 1px solid var(--border-strong);
+  border: 1px solid rgba(255,255,255,0.3);
   font-size: 0.65rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--text-secondary);
+  color: rgba(255,255,255,0.7);
 }
 
 /* Skeleton loaders */
