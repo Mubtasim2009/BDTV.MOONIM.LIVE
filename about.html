@@ -8,84 +8,91 @@
   <link rel="icon" type="image/webp" href="https://raw.githubusercontent.com/Mubtasim2009/Aboutme/232a54166d3b45fb72b6b14f2675fc830088693f/assets/brand/ICON.webp" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/css/styles.css" />
 </head>
 <body>
-  <header class="top-nav">
-    <a href="index.html" class="top-brand">
-      <img src="https://raw.githubusercontent.com/Mubtasim2009/BDTV-V1.2/083560282207d33699f744583e5da7fa0e8af350/assets/Brand/LOGO.webp" alt="BDTV logo" />
-    </a>
-    <button id="navToggle" class="nav-toggle" aria-label="Toggle navigation">
-      <span></span><span></span><span></span>
-    </button>
-    <div class="top-right">
-      <nav class="nav-links" id="navLinks">
+  <div class="app-shell">
+    <header class="top-nav">
+      <div class="nav-left">
+        <div class="nav-profile">
+          <img src="https://raw.githubusercontent.com/Mubtasim2009/Aboutme/232a54166d3b45fb72b6b14f2675fc830088693f/assets/brand/ICON.webp" class="profile-icon" alt="Profile" />
+          <span class="nav-dropdown-arrow">▾</span>
+        </div>
+      </div>
+      <nav class="nav-center" id="navLinks">
         <a href="index.html" class="nav-link">Home</a>
-        <a href="search.html" class="nav-link">Search</a>
+        <a href="search.html?type=tv" class="nav-link">Shows</a>
+        <a href="search.html?type=movie" class="nav-link">Movies</a>
+        <a href="live.html" class="nav-link">Live TV</a>
         <a href="about.html" class="nav-link active">About</a>
       </nav>
-      <a href="live.html" class="live-btn-nav">&#x25CF; Live TV</a>
-    </div>
-  </header>
+      <button id="navToggle" class="nav-toggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="nav-right">
+        <span class="nav-logo-n">N</span>
+      </div>
+    </header>
 
-  <main class="about-page">
-    <h1>About BDTV</h1>
-    <p class="lead">
-      BDTV is a browser-based interface for browsing movies, TV shows, and BDIX IPTV streams
-      in a clean, modern dark layout.
-    </p>
+    <main class="about-page">
+      <h1>About BDTV</h1>
+      <p class="lead">
+        BDTV is a browser-based interface for browsing movies, TV shows, and BDIX IPTV streams
+        in a clean, modern dark layout.
+      </p>
 
-    <h2>Features</h2>
-    <div class="features-grid">
-      <div class="feature-card">
-        <div class="feature-icon">&#x1F3AC;</div>
-        <div class="feature-name">TMDB-powered metadata</div>
-        <div class="feature-desc">Trending, top-rated, and now-playing movie &amp; TV sections.</div>
+      <h2>Features</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">&#x1F3AC;</div>
+          <div class="feature-name">TMDB-powered metadata</div>
+          <div class="feature-desc">Trending, top-rated, and now-playing movie &amp; TV sections.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#x1F50D;</div>
+          <div class="feature-name">Search movies &amp; TV</div>
+          <div class="feature-desc">Integrated search across movies and TV series.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#x1F4FA;</div>
+          <div class="feature-name">BDIX Live TV with HLS</div>
+          <div class="feature-desc">Live TV player with BDIX IPTV playlists and HLS.js support.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#x1F4F1;</div>
+          <div class="feature-name">Mobile-friendly</div>
+          <div class="feature-desc">Responsive layout optimised for phones and tablets.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#x1F3AD;</div>
+          <div class="feature-name">Actor profiles</div>
+          <div class="feature-desc">Browse actor pages with biography and filmography.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">&#x1F5A5;</div>
+          <div class="feature-name">VidKing embeds</div>
+          <div class="feature-desc">Per-title player pages for movies and TV via VidKing.</div>
+        </div>
       </div>
-      <div class="feature-card">
-        <div class="feature-icon">&#x1F50D;</div>
-        <div class="feature-name">Search movies &amp; TV</div>
-        <div class="feature-desc">Integrated search across movies and TV series.</div>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">&#x1F4FA;</div>
-        <div class="feature-name">BDIX Live TV with HLS</div>
-        <div class="feature-desc">Live TV player with BDIX IPTV playlists and HLS.js support.</div>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">&#x1F4F1;</div>
-        <div class="feature-name">Mobile-friendly</div>
-        <div class="feature-desc">Responsive layout optimised for phones and tablets.</div>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">&#x1F3AD;</div>
-        <div class="feature-name">Actor profiles</div>
-        <div class="feature-desc">Browse actor pages with biography and filmography.</div>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">&#x1F5A5;</div>
-        <div class="feature-name">VidKing embeds</div>
-        <div class="feature-desc">Per-title player pages for movies and TV via VidKing.</div>
-      </div>
-    </div>
 
-    <h2>Data &amp; Streaming</h2>
-    <p>
-      Metadata (titles, posters, overviews, ratings) is provided by TMDB, while streams are hosted
-      by third-party providers (such as VidKing) and BDIX playlists. BDTV does not host or store
-      any video content.
-    </p>
+      <h2>Data &amp; Streaming</h2>
+      <p>
+        Metadata (titles, posters, overviews, ratings) is provided by TMDB, while streams are hosted
+        by third-party providers (such as VidKing) and BDIX playlists. BDTV does not host or store
+        any video content.
+      </p>
 
-    <h2>Disclaimer</h2>
-    <p>
-      Streams are provided by external hosts and BDIX playlists. Availability and quality can
-      change at any time. If a channel or VOD title does not play correctly, it is usually an
-      issue with the external source rather than BDTV itself.
-    </p>
-  </main>
+      <h2>Disclaimer</h2>
+      <p>
+        Streams are provided by external hosts and BDIX playlists. Availability and quality can
+        change at any time. If a channel or VOD title does not play correctly, it is usually an
+        issue with the external source rather than BDTV itself.
+      </p>
+    </main>
 
-  <footer class="site-footer">BDTV VOD &#xB7; Powered by TMDB</footer>
+    <footer class="site-footer">BDTV VOD &#xB7; Powered by TMDB</footer>
+  </div>
 
   <script src="assets/js/main.js"></script>
 </body>

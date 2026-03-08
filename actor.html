@@ -7,47 +7,54 @@
   <link rel="icon" type="image/webp" href="https://raw.githubusercontent.com/Mubtasim2009/Aboutme/232a54166d3b45fb72b6b14f2675fc830088693f/assets/brand/ICON.webp" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/css/styles.css" />
 </head>
 <body>
-  <header class="top-nav">
-    <a class="top-brand" href="index.html">
-      <img src="https://raw.githubusercontent.com/Mubtasim2009/BDTV-V1.2/083560282207d33699f744583e5da7fa0e8af350/assets/Brand/LOGO.webp" alt="BDTV logo" />
-    </a>
-    <button id="navToggle" class="nav-toggle" aria-label="Toggle navigation">
-      <span></span><span></span><span></span>
-    </button>
-    <div class="top-right">
-      <nav class="nav-links" id="navLinks">
+  <div class="app-shell">
+    <header class="top-nav">
+      <div class="nav-left">
+        <div class="nav-profile">
+          <img src="https://raw.githubusercontent.com/Mubtasim2009/Aboutme/232a54166d3b45fb72b6b14f2675fc830088693f/assets/brand/ICON.webp" class="profile-icon" alt="Profile" />
+          <span class="nav-dropdown-arrow">▾</span>
+        </div>
+      </div>
+      <nav class="nav-center" id="navLinks">
         <a href="index.html" class="nav-link">Home</a>
-        <a href="search.html" class="nav-link">Search</a>
+        <a href="search.html?type=tv" class="nav-link">Shows</a>
+        <a href="search.html?type=movie" class="nav-link">Movies</a>
+        <a href="live.html" class="nav-link">Live TV</a>
         <a href="about.html" class="nav-link">About</a>
       </nav>
-      <a href="live.html" class="live-btn-nav">&#x25CF; Live TV</a>
-    </div>
-  </header>
-
-  <main class="actor-page">
-    <div class="actor-banner">
-      <img id="actorImg" src="" alt="Actor" />
-      <div class="actor-info">
-        <div class="actor-name" id="actorName">Loading&#x2026;</div>
-        <div class="actor-meta" id="actorMeta"></div>
-        <div class="actor-bio" id="actorBio"></div>
+      <button id="navToggle" class="nav-toggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="nav-right">
+        <span class="nav-logo-n">N</span>
       </div>
-    </div>
+    </header>
 
-    <section class="content-section" style="padding-inline:0;">
-      <header class="section-header">
-        <h2>Known For</h2>
-        <span id="knownForStatus" class="section-status">Loading&#x2026;</span>
-      </header>
-      <div id="knownForGrid" class="search-grid"></div>
-    </section>
-  </main>
+    <main class="actor-page">
+      <div class="actor-banner">
+        <img id="actorImg" src="" alt="Actor" />
+        <div class="actor-info">
+          <div class="actor-name" id="actorName">Loading&#x2026;</div>
+          <div class="actor-meta" id="actorMeta"></div>
+          <div class="actor-bio" id="actorBio"></div>
+        </div>
+      </div>
 
-  <footer class="site-footer">BDTV VOD &#xB7; Powered by TMDB</footer>
+      <section class="content-section" style="padding-inline:0;">
+        <header class="section-header">
+          <h2>Known For</h2>
+          <span id="knownForStatus" class="section-status">Loading&#x2026;</span>
+        </header>
+        <div id="knownForGrid" class="search-grid"></div>
+      </section>
+    </main>
+
+    <footer class="site-footer">BDTV VOD &#xB7; Powered by TMDB</footer>
+  </div>
 
   <script src="assets/js/main.js"></script>
   <script src="assets/js/actor.js"></script>

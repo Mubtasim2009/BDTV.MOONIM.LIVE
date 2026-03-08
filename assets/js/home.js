@@ -1,45 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // Hero search suggestions
-  const heroInput = document.getElementById("heroSearchInput");
-  if (heroInput) {
-    const searchTypeConfig = { value: "multi" };
-    heroInput.setAttribute("autocomplete", "off");
-    heroInput.setAttribute("aria-autocomplete", "list");
-    heroInput.setAttribute("aria-controls", "searchSuggestionsDropdown");
+  // Hero banner with TMDB trending + auto-cycle
+  loadHeroBanner();
 
-    heroInput.addEventListener("input", () => {
-      const query = heroInput.value.trim();
-      clearTimeout(suggestDebounceTimer);
-      if (!query) { closeSuggestions(); return; }
-      suggestDebounceTimer = setTimeout(() => {
-        fetchSuggestions(query, searchTypeConfig, heroInput);
-      }, 220);
-    });
-
-    heroInput.addEventListener("keydown", (e) => {
-      const dropdown = document.getElementById("searchSuggestionsDropdown");
-      if (!dropdown) return;
-      const rows = dropdown.querySelectorAll(".suggestion-item");
-      if (!rows.length) return;
-      if (e.key === "ArrowDown") {
-        e.preventDefault();
-        activeSuggestionIndex = Math.min(activeSuggestionIndex + 1, rows.length - 1);
-        rows.forEach((r, i) => r.classList.toggle("suggestion-item--active", i === activeSuggestionIndex));
-        if (rows[activeSuggestionIndex]) heroInput.value = rows[activeSuggestionIndex].querySelector(".suggestion-title").textContent;
-      } else if (e.key === "ArrowUp") {
-        e.preventDefault();
-        activeSuggestionIndex = Math.max(activeSuggestionIndex - 1, -1);
-        rows.forEach((r, i) => r.classList.toggle("suggestion-item--active", i === activeSuggestionIndex));
-      } else if (e.key === "Enter" && activeSuggestionIndex >= 0) {
-        e.preventDefault();
-        rows[activeSuggestionIndex].click();
-      } else if (e.key === "Escape") {
-        closeSuggestions();
-      }
-    });
-
-    heroInput.addEventListener("blur", () => {
-      setTimeout(closeSuggestions, 150);
+  // Nav search button → go to search page
+  const navSearchBtn = document.getElementById("navSearchBtn");
+  if (navSearchBtn) {
+    navSearchBtn.addEventListener("click", () => {
+      window.location.href = "search.html";
     });
   }
 
@@ -110,6 +77,84 @@ document.addEventListener("DOMContentLoaded", () => {
     "tv"
   );
 });
+
+// ─── Hero Banner ──────────────────────────────────────────────────────────────
+
+let heroCycleTimer = null;
+let heroCycleItems = [];
+let heroCycleIndex = 0;
+
+async function loadHeroBanner() {
+  const hero = document.getElementById("heroBanner");
+  if (!hero) return;
+
+  try {
+    const data = await fetchJson(`${TMDB_BASE}/trending/all/day?api_key=${TMDB_API_KEY}`);
+    const items = (data.results || []).filter(item => item.backdrop_path).slice(0, 5);
+    if (!items.length) return;
+
+    heroCycleItems = items;
+    heroCycleIndex = 0;
+    applyHeroItem(hero, items[0]);
+
+    // Auto-cycle every 8 seconds
+    heroCycleTimer = setInterval(() => {
+      heroCycleIndex = (heroCycleIndex + 1) % heroCycleItems.length;
+      fadeHeroItem(hero, heroCycleItems[heroCycleIndex]);
+    }, 8000);
+  } catch (err) {
+    console.error("Hero banner failed:", err);
+  }
+}
+
+function applyHeroItem(hero, item) {
+  const backdropUrl = `https://image.tmdb.org/t/p/original${item.backdrop_path}`;
+  hero.style.backgroundImage = `url('${backdropUrl}')`;
+
+  const type = item.media_type === "tv" ? "SERIES" : "MOVIE";
+  const title = item.title || item.name || "Untitled";
+  const year =
+    (item.release_date && item.release_date.slice(0, 4)) ||
+    (item.first_air_date && item.first_air_date.slice(0, 4)) ||
+    "";
+  const rating = item.vote_average ? item.vote_average.toFixed(1) : null;
+
+  const typeLabel = document.getElementById("heroTypeLabel");
+  const titleEl = document.getElementById("heroTitle");
+  const metaEl = document.getElementById("heroMeta");
+  const badge = document.getElementById("heroComingBadge");
+
+  if (typeLabel) typeLabel.textContent = type;
+  if (titleEl) titleEl.textContent = title;
+
+  if (metaEl) {
+    const parts = [
+      type === "SERIES" ? "Show" : "Movie",
+      year,
+      rating ? `${rating} ★` : null,
+    ].filter(Boolean);
+    metaEl.innerHTML = parts.map((p, i) =>
+      i < parts.length - 1
+        ? `<span>${p}</span><span class="hero-meta-dot">·</span>`
+        : `<span>${p}</span>`
+    ).join("");
+  }
+
+  if (badge) {
+    badge.style.display = "flex";
+  }
+}
+
+function fadeHeroItem(hero, item) {
+  hero.style.transition = "opacity 0.4s ease";
+  hero.style.opacity = "0";
+  setTimeout(() => {
+    applyHeroItem(hero, item);
+    hero.style.opacity = "1";
+  }, 400);
+}
+
+// ─── Sections ─────────────────────────────────────────────────────────────────
 
 // Combined section: landscape row + portrait row from same data
 async function loadDualSection(url, landscapeId, portraitId, statusId, type) {

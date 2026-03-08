@@ -7,83 +7,90 @@
   <link rel="icon" type="image/webp" href="https://raw.githubusercontent.com/Mubtasim2009/Aboutme/232a54166d3b45fb72b6b14f2675fc830088693f/assets/brand/ICON.webp" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/css/styles.css" />
 </head>
 <body>
-  <header class="top-nav">
-    <a class="top-brand" href="index.html">
-      <img src="https://raw.githubusercontent.com/Mubtasim2009/BDTV-V1.2/083560282207d33699f744583e5da7fa0e8af350/assets/Brand/LOGO.webp" alt="BDTV logo" />
-    </a>
-    <button id="navToggle" class="nav-toggle" aria-label="Toggle navigation">
-      <span></span><span></span><span></span>
-    </button>
-    <div class="top-right">
-      <nav class="nav-links" id="navLinks">
-        <a href="index.html" class="nav-link">Home</a>
-        <a href="search.html" class="nav-link">Search</a>
-        <a href="about.html" class="nav-link">About</a>
-      </nav>
-      <a href="live.html" class="live-btn-nav">&#x25CF; Live TV</a>
-    </div>
-  </header>
-
-  <div id="playerBackdrop" class="player-backdrop">
-    <div class="player-backdrop-inner">
-      <img id="playerLogo" class="player-logo" src="" alt="" style="display:none;" />
-    </div>
-  </div>
-
-  <main class="player-layout">
-    <section class="player-card">
-      <div class="player-title" id="movieTitle">Loading&#x2026;</div>
-      <div class="player-tagline" id="movieTagline"></div>
-      <div class="player-meta-row">
-        <div class="player-meta" id="movieMeta"></div>
-        <span id="movieRating" class="rating-badge" style="display:none;"></span>
-      </div>
-
-      <div class="vidking-wrapper">
-        <iframe id="movieFrame" allowfullscreen referrerpolicy="no-referrer"></iframe>
-      </div>
-
-      <p class="disclaimer">
-        Streams are provided by a third-party host and may contain their own ads or external links.
-      </p>
-
-      <div id="crewRow" class="crew-row" style="display:none;"></div>
-
-      <div id="castSection" class="cast-section" style="display:none;">
-        <div class="cast-title">Top Cast</div>
-        <div id="castList" class="cast-list"></div>
-      </div>
-    </section>
-
-    <aside class="info-card">
-      <div class="poster-wrapper">
-        <img id="posterImg" src="" alt="Poster" />
-        <div style="flex:1">
-          <div class="tags" id="movieTags"></div>
-          <div class="overview" id="movieOverview"></div>
+  <div class="app-shell">
+    <header class="top-nav">
+      <div class="nav-left">
+        <div class="nav-profile">
+          <img src="https://raw.githubusercontent.com/Mubtasim2009/Aboutme/232a54166d3b45fb72b6b14f2675fc830088693f/assets/brand/ICON.webp" class="profile-icon" alt="Profile" />
+          <span class="nav-dropdown-arrow">▾</span>
         </div>
       </div>
-      <div id="movieStatsGrid" class="stats-grid"></div>
-      <div class="ad-section">
-        <script async data-cfasync="false" src="https://pl28353113.effectivegatecpm.com/92d4392296fa5e19466bef5378e5a980/invoke.js"></script>
-        <div id="container-92d4392296fa5e19466bef5378e5a980"></div>
+      <nav class="nav-center" id="navLinks">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="search.html?type=tv" class="nav-link">Shows</a>
+        <a href="search.html?type=movie" class="nav-link active">Movies</a>
+        <a href="live.html" class="nav-link">Live TV</a>
+        <a href="about.html" class="nav-link">About</a>
+      </nav>
+      <button id="navToggle" class="nav-toggle" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="nav-right">
+        <span class="nav-logo-n">N</span>
       </div>
-    </aside>
-  </main>
-
-  <section class="content-section" id="movieRecommendationsSection" style="display:none;">
-    <header class="section-header">
-      <h2>More Like This</h2>
-      <span id="movieRecommendationsStatus" class="section-status"></span>
     </header>
-    <div id="movieRecommendations" class="card-row"></div>
-  </section>
 
-  <footer class="site-footer">BDTV VOD &#xB7; Powered by TMDB</footer>
+    <div id="playerBackdrop" class="player-backdrop">
+      <div class="player-backdrop-inner">
+        <img id="playerLogo" class="player-logo" src="" alt="" style="display:none;" />
+      </div>
+    </div>
+
+    <main class="player-layout">
+      <section class="player-card">
+        <div class="player-title" id="movieTitle">Loading&#x2026;</div>
+        <div class="player-tagline" id="movieTagline"></div>
+        <div class="player-meta-row">
+          <div class="player-meta" id="movieMeta"></div>
+          <span id="movieRating" class="rating-badge" style="display:none;"></span>
+        </div>
+
+        <div class="vidking-wrapper">
+          <iframe id="movieFrame" allowfullscreen referrerpolicy="no-referrer"></iframe>
+        </div>
+
+        <p class="disclaimer">
+          Streams are provided by a third-party host and may contain their own ads or external links.
+        </p>
+
+        <div id="crewRow" class="crew-row" style="display:none;"></div>
+
+        <div id="castSection" class="cast-section" style="display:none;">
+          <div class="cast-title">Top Cast</div>
+          <div id="castList" class="cast-list"></div>
+        </div>
+      </section>
+
+      <aside class="info-card">
+        <div class="poster-wrapper">
+          <img id="posterImg" src="" alt="Poster" />
+          <div style="flex:1">
+            <div class="tags" id="movieTags"></div>
+            <div class="overview" id="movieOverview"></div>
+          </div>
+        </div>
+        <div id="movieStatsGrid" class="stats-grid"></div>
+        <div class="ad-section">
+          <script async data-cfasync="false" src="https://pl28353113.effectivegatecpm.com/92d4392296fa5e19466bef5378e5a980/invoke.js"></script>
+          <div id="container-92d4392296fa5e19466bef5378e5a980"></div>
+        </div>
+      </aside>
+    </main>
+
+    <section class="content-section" id="movieRecommendationsSection" style="display:none;">
+      <header class="section-header">
+        <h2>More Like This</h2>
+        <span id="movieRecommendationsStatus" class="section-status"></span>
+      </header>
+      <div id="movieRecommendations" class="card-row"></div>
+    </section>
+
+    <footer class="site-footer">BDTV VOD &#xB7; Powered by TMDB</footer>
+  </div>
 
   <script src="assets/js/main.js"></script>
   <script src="assets/js/player-movie.js"></script>
