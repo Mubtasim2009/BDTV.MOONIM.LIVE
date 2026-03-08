@@ -4,6 +4,10 @@ const TMDB_BASE = "https://api.themoviedb.org/3";
 const TMDB_IMG_BASE = "https://image.tmdb.org/t/p/w300";
 const TMDB_IMG_BACKDROP = "https://image.tmdb.org/t/p/w780";
 
+// OMDb config – set your free key from https://www.omdbapi.com/apikey.aspx
+// Leave empty to skip IMDb/Rotten Tomatoes ratings (TMDB score still shows)
+const OMDB_API_KEY = "";
+
 async function fetchJson(url) {
   const res = await fetch(url);
   if (!res.ok) throw new Error("HTTP " + res.status);
@@ -195,8 +199,10 @@ function showSkeletons(containerId, count, type) {
 (function () {
   const nav = document.querySelector('.top-nav');
   if (!nav) return;
+  const hero = document.getElementById('heroCarousel');
   const onScroll = () => {
-    if (window.scrollY > 10) {
+    // On pages without a hero carousel, keep the navbar opaque at all times
+    if (!hero || window.scrollY > 80) {
       nav.classList.add('scrolled');
     } else {
       nav.classList.remove('scrolled');
