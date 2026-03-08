@@ -30,51 +30,67 @@
   </header>
 
   <main>
-    <section class="hero">
-      <div class="hero-text">
-        <h1>Your world of entertainment.</h1>
-        <p>Movies, TV shows and live BDIX channels — all in one place.</p>
-        <form id="heroSearchForm" class="hero-search" action="search.html" method="get">
-          <input id="heroSearchInput" type="search" name="q" placeholder="Search movies or TV shows…" aria-label="Search" autocomplete="off" />
-          <button type="submit">Search</button>
-        </form>
+    <section class="hero" id="heroBanner">
+      <div class="hero-bg" id="heroBg"></div>
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <span class="hero-type-label" id="heroTypeLabel"></span>
+        <h1 class="hero-title" id="heroTitle"></h1>
+        <div class="hero-meta" id="heroMeta"></div>
+        <div class="hero-search-wrap">
+          <form id="heroSearchForm" class="hero-search" action="search.html" method="get">
+            <input id="heroSearchInput" type="search" name="q" placeholder="Search movies or TV shows…" aria-label="Search" autocomplete="off" />
+            <button type="submit">Search</button>
+          </form>
+        </div>
+        <div class="hero-actions">
+          <a class="hero-play-btn" id="heroPlayBtn" href="#">&#x25B6; Play</a>
+        </div>
       </div>
+      <button class="hero-arrow hero-arrow--prev" id="heroPrev">&#x2039;</button>
+      <button class="hero-arrow hero-arrow--next" id="heroNext">&#x203A;</button>
+      <div class="hero-dots" id="heroDots"></div>
     </section>
 
     <section class="content-section">
-      <header class="section-header"><h2>Trending Movies</h2><span id="trendingMoviesStatus" class="section-status"></span></header>
+      <header class="section-header"><h2>✨ Your Next Watch</h2><span id="nextWatchStatus" class="section-status"></span></header>
+      <div id="nextWatchLandscape" class="landscape-row"></div>
+    </section>
+
+    <section class="content-section">
+      <header class="section-header"><h2>🔥 Trending Movies Today</h2><span id="trendingMoviesStatus" class="section-status"></span></header>
       <div id="trendingMoviesLandscape" class="landscape-row"></div>
       <div id="trendingMoviesPortrait" class="card-row"></div>
     </section>
 
     <section class="content-section">
-      <header class="section-header"><h2>Trending TV</h2><span id="trendingTvStatus" class="section-status"></span></header>
+      <header class="section-header"><h2>📺 Trending TV Today</h2><span id="trendingTvStatus" class="section-status"></span></header>
       <div id="trendingTvLandscape" class="landscape-row"></div>
       <div id="trendingTvPortrait" class="card-row"></div>
     </section>
 
     <section class="content-section">
-      <header class="section-header"><h2>Now Playing</h2><span id="nowPlayingMoviesStatus" class="section-status"></span></header>
+      <header class="section-header"><h2>🎬 Now Playing in Cinemas</h2><span id="nowPlayingMoviesStatus" class="section-status"></span></header>
       <div id="nowPlayingMovies" class="card-row"></div>
     </section>
 
     <section class="content-section">
-      <header class="section-header"><h2>Popular TV Shows</h2><span id="popularTvStatus" class="section-status"></span></header>
+      <header class="section-header"><h2>⭐ Popular TV Shows</h2><span id="popularTvStatus" class="section-status"></span></header>
       <div id="popularTv" class="card-row"></div>
     </section>
 
     <section class="content-section">
-      <header class="section-header"><h2>Popular Movies</h2><span id="popularMoviesStatus" class="section-status"></span></header>
+      <header class="section-header"><h2>🎞 Popular Movies</h2><span id="popularMoviesStatus" class="section-status"></span></header>
       <div id="popularMovies" class="card-row"></div>
     </section>
 
     <section class="content-section">
-      <header class="section-header"><h2>Top Rated Movies</h2><span id="topRatedMoviesStatus" class="section-status"></span></header>
+      <header class="section-header"><h2>🏆 Top Rated Movies</h2><span id="topRatedMoviesStatus" class="section-status"></span></header>
       <div id="topRatedMovies" class="card-row"></div>
     </section>
 
     <section class="content-section">
-      <header class="section-header"><h2>Top Rated TV Shows</h2><span id="topRatedTvStatus" class="section-status"></span></header>
+      <header class="section-header"><h2>🏅 Top Rated TV Shows</h2><span id="topRatedTvStatus" class="section-status"></span></header>
       <div id="topRatedTv" class="card-row"></div>
     </section>
   </main>
