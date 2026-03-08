@@ -226,8 +226,8 @@ async function runSearch(query, type, els) {
       (x) => x.media_type !== "person" && (x.poster_path || x.backdrop_path)
     );
     if (!items.length) {
-      resultsInfo.textContent = "No results.";
-      emptyState.textContent = "No results found.";
+      resultsInfo.textContent = "";
+      emptyState.textContent = "No match found.";
       emptyState.style.display = "block";
       return;
     }
