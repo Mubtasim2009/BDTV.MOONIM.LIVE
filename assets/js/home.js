@@ -3,9 +3,18 @@
 const CAROUSEL_COUNT = 5;
 const CAROUSEL_INTERVAL = 7000; // ms between auto-advance
 
-let carouselItems = [];    // { item, type, logoPath }
+let carouselItems = [];    // { item: TMDBObject, type: 'movie'|'tv', logoPath: string|null, imdbId: string|null, omdbData: OmdbObject|null }
 let carouselIndex = 0;
 let carouselTimer = null;
+
+/** Fetch OMDb data by IMDb ID. Returns parsed object or null on failure/missing key. */
+async function fetchOmdbData(imdbId) {
+  if (!OMDB_API_KEY || !imdbId) return null;
+  try {
+    const data = await fetchJson(`https://www.omdbapi.com/?i=${encodeURIComponent(imdbId)}&apikey=${OMDB_API_KEY}`);
+    return data && data.Response === "True" ? data : null;
+  } catch (_) { return null; }
+}
 
 async function initHeroCarousel() {
   const carousel = document.getElementById("heroCarousel");
@@ -30,17 +39,28 @@ async function initHeroCarousel() {
     }
     const picks = mixed.slice(0, CAROUSEL_COUNT);
 
-    // Fetch logo images for each item
+    // Fetch logos + external IDs in parallel per item, then OMDb if key is set
     carouselItems = await Promise.all(picks.map(async ({ item, type }) => {
       let logoPath = null;
+      let imdbId = null;
+      let omdbData = null;
+
       try {
-        const imgData = await fetchJson(
-          `${TMDB_BASE}/${type === "tv" ? "tv" : "movie"}/${item.id}/images?api_key=${TMDB_API_KEY}`
-        );
+        const endpoint = `${TMDB_BASE}/${type === "tv" ? "tv" : "movie"}/${item.id}`;
+        const [imgData, extData] = await Promise.all([
+          fetchJson(`${endpoint}/images?api_key=${TMDB_API_KEY}`),
+          fetchJson(`${endpoint}/external_ids?api_key=${TMDB_API_KEY}`)
+        ]);
+
         const logos = (imgData.logos || []).filter(l => l.iso_639_1 === "en" || l.iso_639_1 === null);
         if (logos.length) logoPath = logos[0].file_path;
-      } catch (_) { /* logo fetch is best-effort; fall back to text title */ }
-      return { item, type, logoPath };
+
+        imdbId = extData.imdb_id || null;
+      } catch (_) { /* logo / external-id fetch is best-effort */ }
+
+      omdbData = await fetchOmdbData(imdbId);
+
+      return { item, type, logoPath, imdbId, omdbData };
     }));
 
     if (carousel) carousel.classList.remove("hero-carousel--loading");
@@ -48,7 +68,6 @@ async function initHeroCarousel() {
     startCarouselTimer();
   } catch (err) {
     console.error("Hero carousel failed:", err);
-    // Hide carousel gracefully
     const el = document.getElementById("heroCarousel");
     if (el) el.style.display = "none";
   }
@@ -81,13 +100,7 @@ function buildCarousel() {
 
   renderCarouselInfo(0);
 
-  // Arrow buttons
-  const prev = document.getElementById("heroCarouselPrev");
-  const next = document.getElementById("heroCarouselNext");
-  if (prev) prev.addEventListener("click", () => goToSlide((carouselIndex - 1 + carouselItems.length) % carouselItems.length));
-  if (next) next.addEventListener("click", () => goToSlide((carouselIndex + 1) % carouselItems.length));
-
-  // Pause on hover
+  // Pause on hover / focus
   const carousel = document.getElementById("heroCarousel");
   if (carousel) {
     carousel.addEventListener("mouseenter", stopCarouselTimer);
@@ -117,16 +130,15 @@ function renderCarouselInfo(index) {
   const entry = carouselItems[index];
   if (!entry) return;
 
-  const { item, type, logoPath } = entry;
+  const { item, type, logoPath, omdbData } = entry;
   const title = item.title || item.name || "Untitled";
   const plot = item.overview || "";
+  const year = (item.release_date || item.first_air_date || "").slice(0, 4);
   const linkTarget = type === "tv" ? "player-tv.html" : "player-movie.html";
   const href = `${linkTarget}?id=${encodeURIComponent(item.id)}`;
 
+  // ── Logo / title ──────────────────────────────────────────────────────────
   const logoWrap = document.getElementById("heroCarouselLogoWrap");
-  const plotEl = document.getElementById("heroCarouselPlot");
-  const watchBtn = document.getElementById("heroWatchBtn");
-
   if (logoWrap) {
     logoWrap.innerHTML = "";
     if (logoPath) {
@@ -143,15 +155,73 @@ function renderCarouselInfo(index) {
     }
   }
 
+  // ── Meta row: type pill + year + ratings ──────────────────────────────────
+  const metaEl = document.getElementById("heroCarouselMeta");
+  if (metaEl) {
+    metaEl.innerHTML = "";
+
+    // Type badge
+    const typeBadge = document.createElement("span");
+    typeBadge.className = "carousel-badge carousel-badge--type";
+    typeBadge.textContent = type === "tv" ? "TV" : "MOVIE";
+    metaEl.appendChild(typeBadge);
+
+    // Year
+    if (year) {
+      const yearBadge = document.createElement("span");
+      yearBadge.className = "carousel-badge carousel-badge--year";
+      yearBadge.textContent = year;
+      metaEl.appendChild(yearBadge);
+    }
+
+    // TMDB rating
+    if (item.vote_average) {
+      const tmdbBadge = document.createElement("span");
+      tmdbBadge.className = "carousel-badge carousel-badge--tmdb";
+      tmdbBadge.innerHTML = `<span class="badge-icon">⭐</span>TMDB&nbsp;${item.vote_average.toFixed(1)}`;
+      metaEl.appendChild(tmdbBadge);
+    }
+
+    // IMDb rating (from OMDb)
+    if (omdbData && omdbData.imdbRating && omdbData.imdbRating !== "N/A") {
+      const imdbBadge = document.createElement("span");
+      imdbBadge.className = "carousel-badge carousel-badge--imdb";
+      imdbBadge.innerHTML = `<span class="badge-icon">IMDb</span>${omdbData.imdbRating}`;
+      metaEl.appendChild(imdbBadge);
+    }
+
+    // Rotten Tomatoes (from OMDb ratings array)
+    if (omdbData && omdbData.Ratings) {
+      const rt = omdbData.Ratings.find(r => r.Source === "Rotten Tomatoes");
+      if (rt) {
+        const rtBadge = document.createElement("span");
+        rtBadge.className = "carousel-badge carousel-badge--rt";
+        rtBadge.innerHTML = `<span class="badge-icon">🍅</span>${rt.Value}`;
+        metaEl.appendChild(rtBadge);
+      }
+    }
+  }
+
+  // ── Awards ────────────────────────────────────────────────────────────────
+  const awardsEl = document.getElementById("heroCarouselAwards");
+  if (awardsEl) {
+    const awards = omdbData && omdbData.Awards && omdbData.Awards !== "N/A" ? omdbData.Awards : "";
+    awardsEl.textContent = awards;
+    awardsEl.style.display = awards ? "" : "none";
+  }
+
+  // ── Plot & Watch button ───────────────────────────────────────────────────
+  const plotEl = document.getElementById("heroCarouselPlot");
   if (plotEl) plotEl.textContent = plot;
+
+  const watchBtn = document.getElementById("heroWatchBtn");
   if (watchBtn) watchBtn.href = href;
 
   // Trigger re-animation
   const info = document.getElementById("heroCarouselInfo");
   if (info) {
     info.style.animation = "none";
-    // Force reflow
-    void info.offsetWidth;
+    void info.offsetWidth; // force reflow
     info.style.animation = "";
   }
 }

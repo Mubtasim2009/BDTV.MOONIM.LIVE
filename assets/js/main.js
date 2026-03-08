@@ -4,6 +4,10 @@ const TMDB_BASE = "https://api.themoviedb.org/3";
 const TMDB_IMG_BASE = "https://image.tmdb.org/t/p/w300";
 const TMDB_IMG_BACKDROP = "https://image.tmdb.org/t/p/w780";
 
+// OMDb config – set your free key from https://www.omdbapi.com/apikey.aspx
+// Leave empty to skip IMDb/Rotten Tomatoes ratings (TMDB score still shows)
+const OMDB_API_KEY = "";
+
 async function fetchJson(url) {
   const res = await fetch(url);
   if (!res.ok) throw new Error("HTTP " + res.status);
