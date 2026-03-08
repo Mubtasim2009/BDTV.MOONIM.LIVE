@@ -146,4 +146,14 @@ document.addEventListener("DOMContentLoaded", () => {
       navLinks.classList.toggle("open");
     });
   }
+
+  // Transparent navbar: add/remove 'scrolled' class on scroll
+  const topNav = document.querySelector(".top-nav");
+  if (topNav) {
+    const onScroll = () => {
+      topNav.classList.toggle("scrolled", window.scrollY > 10);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+  }
 });

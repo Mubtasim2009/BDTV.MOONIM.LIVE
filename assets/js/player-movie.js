@@ -172,9 +172,26 @@ async function loadMovie() {
     } else {
       document.getElementById("castSection").style.display = "none";
     }
-  } catch (err) {
-    console.error(err);
-    document.getElementById("movieTitle").textContent = "Failed to load movie details.";
+
+    // Suggestions (You May Also Like)
+    try {
+      const similarUrl = `${TMDB_BASE}/movie/${encodeURIComponent(id)}/similar?api_key=${TMDB_API_KEY}&language=en-US&page=1`;
+      const similarData = await fetchJson(similarUrl);
+      const results = (similarData.results || []).slice(0, 12);
+      if (results.length) {
+        const suggestionsList = document.getElementById("suggestionsList");
+        if (suggestionsList) {
+          results.forEach((item) => {
+            const card = createMediaCard(item, "movie");
+            suggestionsList.appendChild(card);
+          });
+          const suggestionsSection = document.getElementById("suggestionsSection");
+          if (suggestionsSection) suggestionsSection.style.display = "";
+        }
+      }
+    } catch (_) {
+      console.warn("Failed to load movie suggestions:", _);
+    }
   }
 }
 
