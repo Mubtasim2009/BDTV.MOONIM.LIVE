@@ -18,7 +18,7 @@ async function loadMovie() {
 
   // VidKing embed (movie)
   const params = new URLSearchParams({
-    color: "e50914",
+    color: "7c6af7",
     autoPlay: "true",
     nextEpisode: "false",
   });
@@ -172,9 +172,88 @@ async function loadMovie() {
     } else {
       document.getElementById("castSection").style.display = "none";
     }
+
+    loadTorrents(data.imdb_id || null, title);
   } catch (err) {
     console.error(err);
     document.getElementById("movieTitle").textContent = "Failed to load movie details.";
+  }
+}
+
+async function loadTorrents(imdbId, movieTitle) {
+  const YTS_TRACKERS = [
+    "udp://open.demonii.com:1337/announce",
+    "udp://tracker.openbittorrent.com:80",
+    "udp://tracker.opentrackr.org:1337/announce",
+    "udp://p4p.arenabg.com:1337",
+    "udp://tracker.torrent.eu.org:451/announce",
+    "udp://open.stealth.si:80/announce",
+  ].map((t) => `&tr=${encodeURIComponent(t)}`).join("");
+
+  const section = document.getElementById("torrentSection");
+  const container = document.getElementById("torrentButtons");
+
+  section.style.display = "";
+
+  if (!imdbId) {
+    container.innerHTML = '<span class="torrent-status">No IMDb ID — cannot look up torrents.</span>';
+    return;
+  }
+
+  // Show section immediately with a loading indicator
+  container.innerHTML = '<span class="torrent-status">Searching for torrents\u2026</span>';
+
+  try {
+    const ytsUrl = `https://yts.mx/api/v2/list_movies.json?query_term=${encodeURIComponent(imdbId)}`;
+    const ytsData = await fetchJson(ytsUrl);
+
+    const movies = ytsData && ytsData.data && ytsData.data.movies;
+    if (!movies || !movies.length) {
+      container.innerHTML = '<span class="torrent-status">No torrents found for this title on YTS.</span>';
+      return;
+    }
+
+    const torrents = movies[0].torrents;
+    if (!torrents || !torrents.length) {
+      container.innerHTML = '<span class="torrent-status">No torrents found for this title on YTS.</span>';
+      return;
+    }
+
+    container.innerHTML = "";
+
+    torrents.forEach((t) => {
+      const label = t.type ? `${t.quality} ${t.type.toUpperCase()}` : t.quality;
+      const size = t.size || "";
+
+      const group = document.createElement("div");
+      group.className = "torrent-group";
+
+      const qualityBadge = document.createElement("span");
+      qualityBadge.className = "torrent-quality";
+      qualityBadge.textContent = label + (size ? ` \u00b7 ${size}` : "");
+
+      const dlBtn = document.createElement("a");
+      dlBtn.className = "torrent-btn torrent-btn--dl";
+      dlBtn.href = t.url;
+      dlBtn.target = "_blank";
+      dlBtn.rel = "noopener noreferrer";
+      dlBtn.textContent = "⬇ Torrent";
+
+      const magnetUri =
+        `magnet:?xt=urn:btih:${t.hash}&dn=${encodeURIComponent(movieTitle)}${YTS_TRACKERS}`;
+      const magBtn = document.createElement("a");
+      magBtn.className = "torrent-btn torrent-btn--magnet";
+      magBtn.href = magnetUri;
+      magBtn.textContent = "🧲 Magnet";
+
+      group.appendChild(qualityBadge);
+      group.appendChild(dlBtn);
+      group.appendChild(magBtn);
+      container.appendChild(group);
+    });
+  } catch (err) {
+    console.warn("Torrent lookup failed:", err);
+    container.innerHTML = '<span class="torrent-status torrent-status--error">Could not load torrents. YTS may be unavailable.</span>';
   }
 }
 
