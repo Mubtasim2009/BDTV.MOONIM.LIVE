@@ -199,8 +199,10 @@ function showSkeletons(containerId, count, type) {
 (function () {
   const nav = document.querySelector('.top-nav');
   if (!nav) return;
+  const hero = document.getElementById('heroCarousel');
   const onScroll = () => {
-    if (window.scrollY > 10) {
+    // On pages without a hero carousel, keep the navbar opaque at all times
+    if (!hero || window.scrollY > 80) {
       nav.classList.add('scrolled');
     } else {
       nav.classList.remove('scrolled');

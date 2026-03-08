@@ -38,6 +38,9 @@
   --shadow-card:  0 4px 24px rgba(0,0,0,0.55);
   --shadow-nav:   0 8px 40px rgba(0,0,0,0.7);
 
+  /* Navbar height offset for fixed positioning */
+  --nav-offset: 3.5rem;
+
   /* Transitions */
   --ease:  cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -67,24 +70,27 @@ a {
 /* Top nav */
 
 .top-nav {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 50;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
   padding: 0.65rem 1rem;
-  background: var(--bg-overlay);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 1px solid var(--border);
+  background: transparent;
+  border-bottom: 1px solid transparent;
   box-shadow: none;
-  transition: background 0.3s var(--ease), box-shadow 0.3s var(--ease);
+  transition: background 0.4s var(--ease), box-shadow 0.4s var(--ease), border-color 0.4s var(--ease), backdrop-filter 0.4s var(--ease);
 }
 
 .top-nav.scrolled {
   background: var(--bg-overlay-scrolled);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--border);
   box-shadow: var(--shadow-nav);
 }
 
@@ -909,7 +915,7 @@ a {
 }
 
 .player-layout {
-  padding: 0.75rem 1rem 1.5rem;
+  padding: calc(var(--nav-offset) + 0.75rem) 1rem 1.5rem;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 1rem;
@@ -1170,7 +1176,7 @@ a {
 .live-shell {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 1rem 1rem 1.5rem;
+  padding: calc(var(--nav-offset) + 1rem) 1rem 1.5rem;
 }
 
 .live-header {
@@ -1398,7 +1404,7 @@ a {
 .about-page {
   max-width: 800px;
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: calc(var(--nav-offset) + 2rem) 1rem 2rem;
 }
 
 .about-page h1 {
@@ -1463,7 +1469,7 @@ a {
 .actor-page {
   max-width: 900px;
   margin: 0 auto;
-  padding: 1.5rem 1rem;
+  padding: calc(var(--nav-offset) + 1.5rem) 1rem 1.5rem;
 }
 
 .actor-banner {
@@ -1511,7 +1517,7 @@ a {
 .search-page {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 1.5rem 1rem;
+  padding: calc(var(--nav-offset) + 1.5rem) 1rem 1.5rem;
 }
 
 .search-bar-wrap {
