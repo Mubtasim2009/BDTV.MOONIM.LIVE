@@ -1,8 +1,4 @@
 const PLAYLISTS = {
-  mrgify: {
-    name: "Merge BDIX",
-    url: "https://raw.githubusercontent.com/abusaeeidx/Mrgify-BDIX-IPTV/main/playlist.m3u",
-  },
   falcon: {
     name: "Falcon Cast",
     url: "https://raw.githubusercontent.com/FunctionError/PiratesTv/refs/heads/main/combined_playlist.m3u",
