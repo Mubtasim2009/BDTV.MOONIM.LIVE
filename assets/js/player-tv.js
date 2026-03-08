@@ -163,6 +163,21 @@ async function loadTvShow() {
     } else {
       document.getElementById("castSection").style.display = "none";
     }
+
+    // Recommendations
+    try {
+      const recUrl = `${TMDB_BASE}/tv/${encodeURIComponent(tvId)}/recommendations?api_key=${TMDB_API_KEY}&language=en-US&page=1`;
+      const recData = await fetchJson(recUrl);
+      const recItems = (recData.results || []).filter((x) => x.poster_path || x.backdrop_path).slice(0, 16);
+      const recSection = document.getElementById("tvRecommendationsSection");
+      const recGrid = document.getElementById("tvRecommendations");
+      if (recItems.length && recSection && recGrid) {
+        recItems.forEach((item) => {
+          recGrid.appendChild(createMediaCard(item, "tv"));
+        });
+        recSection.style.display = "";
+      }
+    } catch (_) {}
   } catch (err) {
     console.error(err);
     document.getElementById("tvTitle").textContent = "Failed to load TV details.";

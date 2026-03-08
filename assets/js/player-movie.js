@@ -172,6 +172,21 @@ async function loadMovie() {
     } else {
       document.getElementById("castSection").style.display = "none";
     }
+
+    // Recommendations
+    try {
+      const recUrl = `${TMDB_BASE}/movie/${encodeURIComponent(id)}/recommendations?api_key=${TMDB_API_KEY}&language=en-US&page=1`;
+      const recData = await fetchJson(recUrl);
+      const recItems = (recData.results || []).filter((x) => x.poster_path || x.backdrop_path).slice(0, 16);
+      const recSection = document.getElementById("movieRecommendationsSection");
+      const recGrid = document.getElementById("movieRecommendations");
+      if (recItems.length && recSection && recGrid) {
+        recItems.forEach((item) => {
+          recGrid.appendChild(createMediaCard(item, "movie"));
+        });
+        recSection.style.display = "";
+      }
+    } catch (_) {}
   } catch (err) {
     console.error(err);
     document.getElementById("movieTitle").textContent = "Failed to load movie details.";
