@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>BDTV – Home</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="BDTV – Live TV, movies & series." />
+  <meta name="description" content="BDTV – Live TV, movies &amp; series." />
   <link rel="icon" type="image/webp" href="https://raw.githubusercontent.com/Mubtasim2009/Aboutme/232a54166d3b45fb72b6b14f2675fc830088693f/assets/brand/ICON.webp" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -25,7 +25,7 @@
         <a href="search.html" class="nav-link">Search</a>
         <a href="about.html" class="nav-link">About</a>
       </nav>
-      <a href="live.html" class="live-btn-nav">● Live TV</a>
+      <a href="live.html" class="live-btn-nav">&#x25CF; Live TV</a>
     </div>
   </header>
 
@@ -34,8 +34,8 @@
       <div class="hero-text">
         <h1>Your world of entertainment.</h1>
         <p>Movies, TV shows and live BDIX channels — all in one place.</p>
-        <form class="hero-search" action="search.html" method="get">
-          <input type="search" name="q" placeholder="Search movies or TV shows…" aria-label="Search" />
+        <form id="heroSearchForm" class="hero-search" action="search.html" method="get">
+          <input id="heroSearchInput" type="search" name="q" placeholder="Search movies or TV shows…" aria-label="Search" autocomplete="off" />
           <button type="submit">Search</button>
         </form>
       </div>
@@ -74,19 +74,15 @@
     </section>
 
     <section class="content-section">
-      <header class="section-header"><h2>Top Rated TV</h2><span id="topRatedTvStatus" class="section-status"></span></header>
+      <header class="section-header"><h2>Top Rated TV Shows</h2><span id="topRatedTvStatus" class="section-status"></span></header>
       <div id="topRatedTv" class="card-row"></div>
-    </section>
-
-    <section class="ad-section">
-      <div id="container-92d4392296fa5e19466bef5378e5a980"></div>
-      <script async data-cfasync="false" src="https://pl28353113.effectivegatecpm.com/92d4392296fa5e19466bef5378e5a980/invoke.js"></script>
     </section>
   </main>
 
-  <footer class="site-footer">BDTV VOD · Powered by TMDB</footer>
+  <footer class="site-footer">BDTV VOD &#xB7; Powered by TMDB</footer>
 
   <script src="assets/js/main.js"></script>
+  <script src="assets/js/search.js"></script>
   <script src="assets/js/home.js"></script>
 </body>
 </html>
