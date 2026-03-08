@@ -42,7 +42,10 @@ function renderSuggestions(items, input, select) {
   activeSuggestionIndex = -1;
 
   if (!items.length) {
-    closeSuggestions();
+    const empty = document.createElement("div");
+    empty.className = "suggestion-empty";
+    empty.textContent = "No match found.";
+    dropdown.appendChild(empty);
     return;
   }
 
@@ -226,8 +229,8 @@ async function runSearch(query, type, els) {
       (x) => x.media_type !== "person" && (x.poster_path || x.backdrop_path)
     );
     if (!items.length) {
-      resultsInfo.textContent = "No results.";
-      emptyState.textContent = "No results found.";
+      resultsInfo.textContent = "";
+      emptyState.innerHTML = "No match found. &mdash; Check the spelling or try a different name.";
       emptyState.style.display = "block";
       return;
     }

@@ -236,18 +236,27 @@ a {
 .hero-search button {
   border-radius: 999px;
   border: none;
-  background: var(--accent);
+  background: linear-gradient(135deg, var(--accent) 0%, #9b8cfa 100%);
   color: #fff;
-  padding: 0.55rem 1.2rem;
+  padding: 0.55rem 1.4rem;
   font-size: 0.9rem;
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
-  transition: background 0.18s var(--ease);
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 14px rgba(124, 106, 247, 0.45);
+  transition: filter 0.18s var(--ease), box-shadow 0.22s var(--ease), transform 0.18s var(--ease);
 }
 
 .hero-search button:hover {
-  background: var(--accent-hover);
+  filter: brightness(1.14);
+  box-shadow: 0 4px 22px rgba(124, 106, 247, 0.62);
+  transform: translateY(-1px);
+}
+
+.hero-search button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(124, 106, 247, 0.35);
 }
 
 /* Sections / rows */
@@ -310,6 +319,7 @@ a {
   display: block;
   aspect-ratio: 16/9;
   object-fit: cover;
+  transition: transform 0.3s var(--ease), filter 0.3s var(--ease);
 }
 
 .landscape-body {
@@ -339,8 +349,50 @@ a {
 }
 
 .landscape-tile:hover {
-  transform: scale(1.03) translateY(-3px);
-  box-shadow: var(--accent-glow);
+  transform: translateY(-5px);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.6);
+}
+
+.landscape-tile:hover img {
+  transform: scale(1.05);
+  filter: blur(3px) brightness(0.45);
+}
+
+/* Plot overlay for landscape tiles — fades in on hover */
+.landscape-tile-plot {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1rem 0.9rem;
+  background: rgba(0, 0, 0, 0.75);
+  opacity: 0;
+  transition: opacity 0.25s var(--ease);
+  pointer-events: none;
+}
+
+.landscape-tile:hover .landscape-tile-plot {
+  opacity: 1;
+}
+
+.landscape-tile-plot-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 0.45rem;
+  line-height: 1.25;
+}
+
+.landscape-tile-plot-text {
+  font-size: 0.76rem;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.5;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 /* Portrait media cards */
@@ -348,13 +400,12 @@ a {
 .media-card {
   min-width: 140px;
   flex: 0 0 auto;
-  background: var(--bg-surface);
   border-radius: var(--radius-sm);
   text-decoration: none;
   color: inherit;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
+  display: block;
+  position: relative;
   transition: transform 0.22s var(--ease), box-shadow 0.22s var(--ease);
 }
 
@@ -363,25 +414,35 @@ a {
   display: block;
   aspect-ratio: 2/3;
   object-fit: cover;
+  transition: transform 0.3s var(--ease), filter 0.3s var(--ease);
 }
 
-.media-card-body {
-  padding: 0.4rem 0.5rem 0.55rem;
+/* Gradient overlay on the poster image */
+.media-card-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 2rem 0.55rem 0.55rem;
+  background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.5) 55%, transparent 100%);
 }
 
-.media-title {
+.media-card-overlay-title {
   font-size: 0.8rem;
   font-weight: 600;
+  color: #fff;
   margin: 0 0 0.2rem;
+  /* show up to 3 lines, then fade */
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  line-height: 1.3;
 }
 
 .media-meta {
   font-size: 0.7rem;
-  color: var(--text-secondary);
+  color: rgba(255,255,255,0.75);
   display: flex;
   align-items: center;
   gap: 0.35rem;
@@ -390,7 +451,49 @@ a {
 
 .media-card:hover {
   transform: translateY(-4px);
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.65);
+}
+
+.media-card:hover img {
+  transform: scale(1.06);
+  filter: blur(3px) brightness(0.5);
+}
+
+/* Plot overlay — fades in on hover */
+.media-card-plot {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0.9rem 0.7rem;
+  background: rgba(0, 0, 0, 0.78);
+  opacity: 0;
+  transition: opacity 0.25s var(--ease);
+  pointer-events: none;
+}
+
+.media-card:hover .media-card-plot {
+  opacity: 1;
+}
+
+.media-card-plot-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 0.45rem;
+  line-height: 1.25;
+}
+
+.media-card-plot-text {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.5;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 7;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 /* Small type pill (MOVIE / TV) */
@@ -398,11 +501,11 @@ a {
 .tile-type-pill {
   padding: 0.05rem 0.45rem;
   border-radius: 999px;
-  border: 1px solid var(--border-strong);
+  border: 1px solid rgba(255,255,255,0.3);
   font-size: 0.65rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--text-secondary);
+  color: rgba(255,255,255,0.7);
 }
 
 /* Skeleton loaders */
@@ -1127,19 +1230,28 @@ a {
 .search-bar-wrap button[type="submit"] {
   border-radius: 999px;
   border: none;
-  background: var(--accent);
+  background: linear-gradient(135deg, var(--accent) 0%, #9b8cfa 100%);
   color: #fff;
   padding: 0.6rem 1.4rem;
   font-size: 0.9rem;
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
-  transition: background 0.18s var(--ease);
   white-space: nowrap;
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 14px rgba(124, 106, 247, 0.45);
+  transition: filter 0.18s var(--ease), box-shadow 0.22s var(--ease), transform 0.18s var(--ease);
 }
 
 .search-bar-wrap button[type="submit"]:hover {
-  background: var(--accent-hover);
+  filter: brightness(1.14);
+  box-shadow: 0 4px 22px rgba(124, 106, 247, 0.62);
+  transform: translateY(-1px);
+}
+
+.search-bar-wrap button[type="submit"]:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(124, 106, 247, 0.35);
 }
 
 /* Search suggestions dropdown */
@@ -1193,6 +1305,13 @@ a {
   flex-direction: column;
   gap: 0.15rem;
   min-width: 0;
+}
+
+.suggestion-empty {
+  padding: 0.75rem 1rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-align: center;
 }
 
 .suggestion-title {
