@@ -213,6 +213,7 @@ a {
 .hero-search {
   display: flex;
   gap: 0.5rem;
+  position: relative;
 }
 
 .hero-search input[type="search"] {
@@ -452,11 +453,23 @@ a {
   display: none;
 }
 
+/* Inner wrapper mirrors .player-layout centering so the logo aligns with content */
+.player-backdrop-inner {
+  position: absolute;
+  inset: 0;
+  max-width: 1300px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 1rem;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
 /* Movie / TV logo overlay on backdrop – aligned with .player-layout horizontal padding */
 .player-logo {
   position: absolute;
   bottom: 1.5rem;
-  left: max(1rem, 5vw);
+  left: 1rem;
   z-index: 2;
   max-height: 72px;
   max-width: 240px;
