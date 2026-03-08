@@ -167,15 +167,25 @@ async function loadTvShow() {
     // Recommendations
     try {
       const recUrl = `${TMDB_BASE}/tv/${encodeURIComponent(tvId)}/recommendations?api_key=${TMDB_API_KEY}&language=en-US&page=1`;
-      const recData = await fetchJson(recUrl);
-      const recItems = (recData.results || []).filter((x) => x.poster_path || x.backdrop_path).slice(0, 16);
+      const simUrl = `${TMDB_BASE}/tv/${encodeURIComponent(tvId)}/similar?api_key=${TMDB_API_KEY}&language=en-US&page=1`;
+      const [recData, simData] = await Promise.all([fetchJson(recUrl), fetchJson(simUrl)]);
+      const seen = new Set();
+      const recItems = [];
+      for (const item of [...(recData.results || []), ...(simData.results || [])]) {
+        if (!seen.has(item.id) && item.media_type !== "person" && (item.poster_path || item.backdrop_path)) {
+          seen.add(item.id);
+          recItems.push(item);
+          if (recItems.length >= 16) break;
+        }
+      }
       const recSection = document.getElementById("tvRecommendationsSection");
       const recGrid = document.getElementById("tvRecommendations");
       if (recSection && recGrid) {
         recSection.style.display = "";
         if (recItems.length) {
           recItems.forEach((item) => {
-            recGrid.appendChild(createMediaCard(item, "tv"));
+            const itemType = item.media_type === "tv" ? "tv" : "movie";
+            recGrid.appendChild(createMediaCard(item, itemType));
           });
         } else {
           const msg = document.createElement("p");
