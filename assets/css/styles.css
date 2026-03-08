@@ -42,9 +42,7 @@
   --ease:  cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-*,
-*::before,
-*::after {
+*,*::before,*::after {
   box-sizing: border-box;
 }
 
@@ -1080,6 +1078,7 @@ a {
   gap: 0.5rem;
   margin-bottom: 1rem;
   flex-wrap: wrap;
+  position: relative;
 }
 
 .search-bar-wrap input {
@@ -1128,6 +1127,72 @@ a {
 
 .search-bar-wrap button[type="submit"]:hover {
   background: var(--accent-hover);
+}
+
+/* Search suggestions dropdown */
+
+.suggestions-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  /* Span the same width as the text input (flex: 1) minus select + button */
+  width: calc(100% - 0px);
+  max-width: 520px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  z-index: 100;
+  overflow: hidden;
+}
+
+.suggestion-item {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.5rem 0.75rem;
+  text-decoration: none;
+  color: var(--text-primary);
+  transition: background 0.14s var(--ease);
+  cursor: pointer;
+}
+
+.suggestion-item:hover,
+.suggestion-item--active {
+  background: var(--accent-soft);
+}
+
+.suggestion-thumb {
+  width: 36px;
+  height: 54px;
+  border-radius: var(--radius-xs);
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--bg-elevated);
+}
+
+.suggestion-thumb--empty {
+  display: block;
+}
+
+.suggestion-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.suggestion-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.suggestion-meta {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
 }
 
 .results-info {
