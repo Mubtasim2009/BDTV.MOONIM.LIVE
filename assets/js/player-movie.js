@@ -180,11 +180,18 @@ async function loadMovie() {
       const recItems = (recData.results || []).filter((x) => x.poster_path || x.backdrop_path).slice(0, 16);
       const recSection = document.getElementById("movieRecommendationsSection");
       const recGrid = document.getElementById("movieRecommendations");
-      if (recItems.length && recSection && recGrid) {
-        recItems.forEach((item) => {
-          recGrid.appendChild(createMediaCard(item, "movie"));
-        });
+      if (recSection && recGrid) {
         recSection.style.display = "";
+        if (recItems.length) {
+          recItems.forEach((item) => {
+            recGrid.appendChild(createMediaCard(item, "movie"));
+          });
+        } else {
+          const msg = document.createElement("p");
+          msg.className = "empty-state";
+          msg.textContent = "No match found.";
+          recGrid.appendChild(msg);
+        }
       }
     } catch (_) {}
   } catch (err) {
