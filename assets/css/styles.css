@@ -217,8 +217,8 @@ a {
   inset: 0;
   z-index: 1;
   background:
-    linear-gradient(to right, rgba(13,15,20,0.90) 0%, rgba(13,15,20,0.65) 50%, rgba(13,15,20,0.15) 100%),
-    linear-gradient(to top, rgba(13,15,20,0.70) 0%, transparent 40%);
+    linear-gradient(to right, rgba(13,15,20,0.80) 0%, rgba(13,15,20,0.45) 50%, rgba(13,15,20,0.80) 100%),
+    linear-gradient(to top, rgba(13,15,20,0.75) 0%, transparent 45%);
   pointer-events: none;
 }
 
@@ -228,15 +228,32 @@ a {
   z-index: 2;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
   min-height: 56vh;
-  padding: 5rem 1.25rem 8rem;
+  padding: 5rem 3rem 5rem;
   max-width: 1300px;
   margin: 0 auto;
 }
 
+/* Left column: tagline + search */
+.hero-carousel-left {
+  flex: 0 0 auto;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  animation: slideInLeft 0.6s var(--ease);
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-32px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
 .hero-carousel-info {
-  max-width: 520px;
-  margin-left: auto;
+  flex: 0 0 auto;
+  max-width: 480px;
   text-align: left;
   animation: slideInRight 0.6s var(--ease);
 }
@@ -253,18 +270,15 @@ a {
   .hero-carousel-dot { transition: none; }
 }
 
-/* Brand tagline – static "Your world of entertainment" header */
+/* Brand tagline – in left column */
 .hero-brand-tagline {
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
-  margin-bottom: 1.1rem;
-  padding-bottom: 0.9rem;
-  border-bottom: 1px solid rgba(255,255,255,0.12);
+  gap: 0.35rem;
 }
 
 .hero-brand-headline {
-  font-size: clamp(1rem, 2.2vw, 1.35rem);
+  font-size: clamp(1.25rem, 2.8vw, 1.85rem);
   font-weight: 700;
   color: #fff;
   line-height: 1.2;
@@ -272,9 +286,9 @@ a {
 }
 
 .hero-brand-sub {
-  font-size: 0.82rem;
-  color: rgba(255,255,255,0.65);
-  line-height: 1.4;
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.7);
+  line-height: 1.5;
 }
 
 .hero-carousel-logo-wrap {
@@ -439,8 +453,9 @@ a {
 /* Dot indicators */
 .hero-carousel-dots {
   position: absolute;
-  bottom: 5.5rem;
-  left: 1.25rem;
+  bottom: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 3;
   display: flex;
   gap: 0.45rem;
@@ -463,16 +478,7 @@ a {
   border-radius: 999px;
 }
 
-/* Search bar at the bottom of carousel */
-.hero-search-wrap {
-  position: absolute;
-  bottom: 1.5rem;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 3;
-  width: min(560px, calc(100% - 2rem));
-}
-
+/* Search bar – inside the left carousel column */
 .hero-search {
   display: flex;
   gap: 0.5rem;
@@ -524,21 +530,31 @@ a {
 }
 
 /* Responsive adjustments */
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .hero-carousel {
-    min-height: 80vw;
+    min-height: 90vw;
   }
 
   .hero-carousel-content {
-    min-height: 80vw;
-    padding: 4rem 1rem 7rem;
-    justify-content: flex-start;
-    align-items: flex-end;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-end;
+    min-height: 90vw;
+    padding: 4rem 1.25rem 2rem;
+    gap: 1.25rem;
   }
 
-  .hero-carousel-info {
-    margin-left: 0;
+  .hero-carousel-left {
     max-width: 100%;
+    gap: 1rem;
+    animation: none;
+  }
+
+  .hero-brand-tagline { display: none; }
+
+  .hero-carousel-info {
+    max-width: 100%;
+    animation: none;
   }
 
   .hero-carousel-overlay {
@@ -546,15 +562,13 @@ a {
       linear-gradient(to top, rgba(13,15,20,0.95) 0%, rgba(13,15,20,0.5) 60%, rgba(13,15,20,0.2) 100%);
   }
 
-  .hero-brand-tagline { display: none; }
-
   .hero-carousel-logo { max-height: 60px; max-width: 200px; }
 
   .hero-carousel-title { font-size: 1.35rem; }
 
   .hero-carousel-plot { -webkit-line-clamp: 3; font-size: 0.85rem; }
 
-  .hero-carousel-dots { bottom: 5rem; left: 1rem; }
+  .hero-carousel-dots { bottom: 1rem; left: 50%; transform: translateX(-50%); }
 }
 
 /* Sections / rows */
