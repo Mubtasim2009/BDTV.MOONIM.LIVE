@@ -151,7 +151,7 @@ function fadeHeroItem(hero, item) {
   setTimeout(() => {
     applyHeroItem(hero, item);
     hero.style.opacity = "1";
-  }, 420);
+  }, 400);
 }
 
 // ─── Sections ─────────────────────────────────────────────────────────────────
