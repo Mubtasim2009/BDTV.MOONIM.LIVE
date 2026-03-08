@@ -69,7 +69,15 @@ async function initHeroCarousel() {
   } catch (err) {
     console.error("Hero carousel failed:", err);
     const el = document.getElementById("heroCarousel");
-    if (el) el.style.display = "none";
+    if (el) {
+      // Remove loading state to reveal the static left column (tagline + search)
+      el.classList.remove("hero-carousel--loading");
+      // Hide the slide-specific right column and dots – no data to show there
+      const infoEl = document.getElementById("heroCarouselInfo");
+      if (infoEl) infoEl.style.display = "none";
+      const dotsEl = document.getElementById("heroCarouselDots");
+      if (dotsEl) dotsEl.style.display = "none";
+    }
   }
 }
 

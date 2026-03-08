@@ -834,10 +834,9 @@ a {
   animation: shimmer 1.5s infinite;
 }
 
-.hero-carousel--loading .hero-carousel-content,
+.hero-carousel--loading .hero-carousel-info,
 .hero-carousel--loading .hero-carousel-arrow,
-.hero-carousel--loading .hero-carousel-dots,
-.hero-carousel--loading .hero-search-wrap {
+.hero-carousel--loading .hero-carousel-dots {
   visibility: hidden;
 }
 
