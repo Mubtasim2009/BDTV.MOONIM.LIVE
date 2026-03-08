@@ -30,10 +30,23 @@
   </header>
 
   <main>
-    <section class="hero">
-      <div class="hero-text">
-        <h1>Your world of entertainment.</h1>
-        <p>Movies, TV shows and live BDIX channels — all in one place.</p>
+    <!-- Hero Carousel -->
+    <section class="hero-carousel" id="heroCarousel" aria-label="Featured movies and series">
+      <div class="hero-carousel-track" id="heroCarouselTrack"></div>
+      <div class="hero-carousel-overlay"></div>
+      <div class="hero-carousel-content" id="heroCarouselContent">
+        <div class="hero-carousel-info" id="heroCarouselInfo">
+          <div class="hero-carousel-logo-wrap" id="heroCarouselLogoWrap"></div>
+          <p class="hero-carousel-plot" id="heroCarouselPlot"></p>
+          <div class="hero-carousel-actions">
+            <a class="hero-watch-btn" id="heroWatchBtn" href="#">&#9654; Watch Now</a>
+          </div>
+        </div>
+      </div>
+      <button class="hero-carousel-arrow hero-carousel-arrow--prev" id="heroCarouselPrev" aria-label="Previous">&#8249;</button>
+      <button class="hero-carousel-arrow hero-carousel-arrow--next" id="heroCarouselNext" aria-label="Next">&#8250;</button>
+      <div class="hero-carousel-dots" id="heroCarouselDots"></div>
+      <div class="hero-search-wrap">
         <form id="heroSearchForm" class="hero-search" action="search.html" method="get">
           <input id="heroSearchInput" type="search" name="q" placeholder="Search movies or TV shows…" aria-label="Search" autocomplete="off" />
           <button type="submit">Search</button>
