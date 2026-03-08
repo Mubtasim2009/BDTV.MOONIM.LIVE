@@ -20,7 +20,7 @@ function buildBackdropUrl(path) {
   return `${TMDB_IMG_BACKDROP}${path}`;
 }
 
-// Portrait card (posters) — info shown as overlay on the image
+// Portrait card (posters) — info shown as overlay; plot revealed on hover
 function createMediaCard(item, type) {
   const linkTarget = type === "tv" ? "player-tv.html" : "player-movie.html";
   const title = item.title || item.name || "Untitled";
@@ -29,6 +29,7 @@ function createMediaCard(item, type) {
     (item.first_air_date && item.first_air_date.slice(0, 4)) ||
     "";
   const rating = item.vote_average ? item.vote_average.toFixed(1) : "–";
+  const overview = item.overview || "No plot available.";
 
   const a = document.createElement("a");
   a.href = `${linkTarget}?id=${encodeURIComponent(item.id)}`;
@@ -39,6 +40,7 @@ function createMediaCard(item, type) {
   img.alt = title;
   img.loading = "lazy";
 
+  // Bottom gradient: always-visible title + meta
   const overlay = document.createElement("div");
   overlay.className = "media-card-overlay";
 
@@ -65,8 +67,25 @@ function createMediaCard(item, type) {
 
   overlay.appendChild(titleEl);
   overlay.appendChild(meta);
+
+  // Plot overlay: shown on hover (blurs image, displays overview)
+  const plotOverlay = document.createElement("div");
+  plotOverlay.className = "media-card-plot";
+
+  const plotTitle = document.createElement("div");
+  plotTitle.className = "media-card-plot-title";
+  plotTitle.textContent = title;
+
+  const plotText = document.createElement("p");
+  plotText.className = "media-card-plot-text";
+  plotText.textContent = overview;
+
+  plotOverlay.appendChild(plotTitle);
+  plotOverlay.appendChild(plotText);
+
   a.appendChild(img);
   a.appendChild(overlay);
+  a.appendChild(plotOverlay);
 
   return a;
 }

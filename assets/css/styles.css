@@ -350,7 +350,7 @@ a {
 
 .landscape-tile:hover {
   transform: translateY(-5px);
-  box-shadow: 0 0 0 2px var(--accent), var(--accent-glow), 0 14px 36px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.6);
 }
 
 .landscape-tile:hover img {
@@ -413,13 +413,50 @@ a {
 }
 
 .media-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 0 0 2px var(--accent), 0 14px 36px rgba(0, 0, 0, 0.65);
+  transform: translateY(-4px);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.65);
 }
 
 .media-card:hover img {
   transform: scale(1.06);
-  filter: brightness(1.1);
+  filter: blur(3px) brightness(0.5);
+}
+
+/* Plot overlay — fades in on hover */
+.media-card-plot {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0.9rem 0.7rem;
+  background: rgba(0, 0, 0, 0.78);
+  opacity: 0;
+  transition: opacity 0.25s var(--ease);
+  pointer-events: none;
+}
+
+.media-card:hover .media-card-plot {
+  opacity: 1;
+}
+
+.media-card-plot-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 0.45rem;
+  line-height: 1.25;
+}
+
+.media-card-plot-text {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.5;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 7;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 /* Small type pill (MOVIE / TV) */
