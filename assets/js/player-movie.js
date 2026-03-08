@@ -66,6 +66,21 @@ async function loadMovie() {
       backdropEl.style.backgroundImage = `url(${buildBackdropUrl(data.backdrop_path)})`;
     }
 
+    // Logo overlay
+    try {
+      const imagesUrl = `${TMDB_BASE}/movie/${encodeURIComponent(id)}/images?api_key=${TMDB_API_KEY}&include_image_language=en,null`;
+      const imagesData = await fetchJson(imagesUrl);
+      const logos = (imagesData.logos || []).filter(l => l.file_path);
+      if (logos.length) {
+        const logoEl = document.getElementById('playerLogo');
+        if (logoEl) {
+          logoEl.src = buildImageUrl(logos[0].file_path);
+          logoEl.alt = (data.title || '') + ' logo';
+          logoEl.style.display = '';
+        }
+      }
+    } catch (_) {}
+
     const tagContainer = document.getElementById("movieTags");
     tagContainer.innerHTML = "";
     (data.genres || []).forEach((g) => {

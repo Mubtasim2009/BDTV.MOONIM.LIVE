@@ -59,6 +59,21 @@ async function loadTvShow() {
       backdropEl.style.backgroundImage = `url(${buildBackdropUrl(data.backdrop_path)})`;
     }
 
+    // Logo overlay
+    try {
+      const imagesUrl = `${TMDB_BASE}/tv/${encodeURIComponent(tvId)}/images?api_key=${TMDB_API_KEY}&include_image_language=en,null`;
+      const imagesData = await fetchJson(imagesUrl);
+      const logos = (imagesData.logos || []).filter(l => l.file_path);
+      if (logos.length) {
+        const logoEl = document.getElementById('playerLogo');
+        if (logoEl) {
+          logoEl.src = buildImageUrl(logos[0].file_path);
+          logoEl.alt = (data.name || '') + ' logo';
+          logoEl.style.display = '';
+        }
+      }
+    } catch (_) {}
+
     const tagContainer = document.getElementById("tvTags");
     tagContainer.innerHTML = "";
     (data.genres || []).forEach((g) => {
