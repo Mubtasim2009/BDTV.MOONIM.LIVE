@@ -42,7 +42,10 @@ function renderSuggestions(items, input, select) {
   activeSuggestionIndex = -1;
 
   if (!items.length) {
-    closeSuggestions();
+    const empty = document.createElement("div");
+    empty.className = "suggestion-empty";
+    empty.textContent = "No match found.";
+    dropdown.appendChild(empty);
     return;
   }
 
