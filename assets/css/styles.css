@@ -213,6 +213,7 @@ a {
 .hero-search {
   display: flex;
   gap: 0.5rem;
+  position: relative;
 }
 
 .hero-search input[type="search"] {

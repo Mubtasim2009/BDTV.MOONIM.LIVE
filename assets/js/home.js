@@ -1,4 +1,48 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // Hero search suggestions
+  const heroInput = document.getElementById("heroSearchInput");
+  if (heroInput) {
+    const searchTypeConfig = { value: "multi" };
+    heroInput.setAttribute("autocomplete", "off");
+    heroInput.setAttribute("aria-autocomplete", "list");
+    heroInput.setAttribute("aria-controls", "searchSuggestionsDropdown");
+
+    heroInput.addEventListener("input", () => {
+      const query = heroInput.value.trim();
+      clearTimeout(suggestDebounceTimer);
+      if (!query) { closeSuggestions(); return; }
+      suggestDebounceTimer = setTimeout(() => {
+        fetchSuggestions(query, searchTypeConfig, heroInput);
+      }, 220);
+    });
+
+    heroInput.addEventListener("keydown", (e) => {
+      const dropdown = document.getElementById("searchSuggestionsDropdown");
+      if (!dropdown) return;
+      const rows = dropdown.querySelectorAll(".suggestion-item");
+      if (!rows.length) return;
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        activeSuggestionIndex = Math.min(activeSuggestionIndex + 1, rows.length - 1);
+        rows.forEach((r, i) => r.classList.toggle("suggestion-item--active", i === activeSuggestionIndex));
+        if (rows[activeSuggestionIndex]) heroInput.value = rows[activeSuggestionIndex].querySelector(".suggestion-title").textContent;
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        activeSuggestionIndex = Math.max(activeSuggestionIndex - 1, -1);
+        rows.forEach((r, i) => r.classList.toggle("suggestion-item--active", i === activeSuggestionIndex));
+      } else if (e.key === "Enter" && activeSuggestionIndex >= 0) {
+        e.preventDefault();
+        rows[activeSuggestionIndex].click();
+      } else if (e.key === "Escape") {
+        closeSuggestions();
+      }
+    });
+
+    heroInput.addEventListener("blur", () => {
+      setTimeout(closeSuggestions, 150);
+    });
+  }
+
   // 1. Trending Movies Today (landscape + portrait)
   showSkeletons("trendingMoviesLandscape", 5, "landscape");
   showSkeletons("trendingMoviesPortrait", 10, "portrait");

@@ -132,6 +132,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const emptyState = document.getElementById("emptyState");
   const errorState = document.getElementById("errorState");
 
+  if (!input || !select || !form) return;
+
   const els = { resultsGrid, resultsInfo, emptyState, errorState };
 
   input.value = q;
