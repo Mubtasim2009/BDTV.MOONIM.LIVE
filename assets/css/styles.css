@@ -113,8 +113,8 @@ a {
   justify-content: center;
   align-items: center;
   gap: 5px;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-xs);
   background: var(--bg-elevated);
@@ -1775,5 +1775,64 @@ a {
   .poster-wrapper {
     flex-direction: column;
     align-items: center;
+  }
+}
+
+/* ─── Small-mobile optimisations (≤ 480px) ──────────────────── */
+
+@media (max-width: 480px) {
+  /* Navbar – tighten horizontal padding on tiny screens */
+  .top-nav {
+    padding-inline: 0.75rem;
+  }
+
+  /* Live TV nav button – slightly smaller to avoid overflow */
+  .live-btn-nav {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.75rem;
+  }
+
+  /* Hero search – stack input above button for readability */
+  .hero-search {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .hero-search input[type="search"],
+  .hero-search button {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  /* Watch Now – full-width, centred, easy to tap */
+  .hero-watch-btn {
+    width: 100%;
+    justify-content: center;
+    min-height: 44px;
+  }
+
+  /* Search page – stack all form controls vertically */
+  .search-bar-wrap {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .search-bar-wrap input,
+  .search-bar-wrap select,
+  .search-bar-wrap button[type="submit"] {
+    width: 100%;
+    min-width: unset;
+    min-height: 44px;
+  }
+
+  /* Live TV – ensure controls are tall enough to tap comfortably */
+  .playlist-select,
+  .refresh-btn {
+    min-height: 44px;
+    flex: 1;
+  }
+
+  .refresh-btn {
+    justify-content: center;
   }
 }
