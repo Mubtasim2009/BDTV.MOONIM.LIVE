@@ -1792,16 +1792,9 @@ a {
     font-size: 0.75rem;
   }
 
-  /* Hero search – stack input above button for readability */
+  /* Hero search – hidden on mobile (use the dedicated Search page instead) */
   .hero-search {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .hero-search input[type="search"],
-  .hero-search button {
-    width: 100%;
-    min-height: 44px;
+    display: none;
   }
 
   /* Watch Now – full-width, centred, easy to tap */
