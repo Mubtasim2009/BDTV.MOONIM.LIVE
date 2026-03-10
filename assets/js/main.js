@@ -419,9 +419,27 @@ function showSkeletons(containerId, count, type) {
       .catch(() => {});
   }
 
+  // Reverse-geocode lat/lon → city name using OWM Geocoding API (free tier)
+  function resolveCity(lat, lon) {
+    const geoUrl = `https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${OWM_KEY}`;
+    return fetch(geoUrl)
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data && data[0]) {
+          return { city: data[0].name, cc: data[0].country };
+        }
+        return { city: null, cc: null };
+      })
+      .catch(() => ({ city: null, cc: null }));
+  }
+
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
-      pos => applyWeather(pos.coords.latitude, pos.coords.longitude, null, null),
+      pos => {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+        resolveCity(lat, lon).then(({ city, cc }) => applyWeather(lat, lon, city, cc));
+      },
       geoFallback,
       { timeout: 5000, maximumAge: 600000 }
     );
