@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/css/styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
   <header class="top-nav">
@@ -21,15 +22,23 @@
     </button>
     <div class="top-right">
       <nav class="nav-links" id="navLinks">
-        <a href="index.html" class="nav-link active">Home</a>
-        <a href="search.html" class="nav-link">Search</a>
-        <a href="about.html" class="nav-link">About</a>
+        <a href="index.html" class="nav-link active"><i class="fa-solid fa-house"></i> Home</a>
+        <a href="search.html" class="nav-link"><i class="fa-solid fa-magnifying-glass"></i> Search</a>
+        <a href="genre.html" class="nav-link"><i class="fa-solid fa-film"></i> Genres</a>
+        <a href="watchlist.html" class="nav-link"><i class="fa-solid fa-bookmark"></i> My List</a>
+        <a href="about.html" class="nav-link"><i class="fa-solid fa-circle-info"></i> About</a>
       </nav>
-      <a href="live.html" class="live-btn-nav">&#x25CF; Live TV</a>
+      <a href="live.html" class="live-btn-nav"><i class="fa-solid fa-tower-broadcast"></i> Live TV</a>
     </div>
   </header>
 
   <main>
+    <!-- Continue Watching -->
+    <section class="content-section" id="continueWatchingSection" style="display:none;">
+      <header class="section-header"><h2><i class="fa-solid fa-play"></i> Continue Watching</h2></header>
+      <div id="continueWatchingRow" class="card-row"></div>
+    </section>
+
     <!-- Hero Carousel -->
     <section class="hero-carousel" id="heroCarousel" aria-label="Featured movies and series">
       <div class="hero-carousel-track" id="heroCarouselTrack"></div>
@@ -44,7 +53,7 @@
           </div>
           <form id="heroSearchForm" class="hero-search" action="search.html" method="get">
             <input id="heroSearchInput" type="search" name="q" placeholder="Search movies or TV shows…" aria-label="Search" autocomplete="off" />
-            <button type="submit">Search</button>
+            <button type="submit"><i class="fa-solid fa-magnifying-glass"></i> Search</button>
           </form>
         </div>
 
@@ -55,7 +64,7 @@
           <p class="hero-carousel-awards" id="heroCarouselAwards"></p>
           <p class="hero-carousel-plot" id="heroCarouselPlot"></p>
           <div class="hero-carousel-actions">
-            <a class="hero-watch-btn" id="heroWatchBtn" href="#">&#9654; Watch Now</a>
+            <a class="hero-watch-btn" id="heroWatchBtn" href="#"><i class="fa-solid fa-play"></i> Watch Now</a>
           </div>
         </div>
 
@@ -64,39 +73,39 @@
     </section>
 
     <section class="content-section">
-      <header class="section-header"><h2>Trending Movies</h2><span id="trendingMoviesStatus" class="section-status"></span></header>
+      <header class="section-header"><h2><i class="fa-solid fa-fire-flame-curved"></i> Trending Movies</h2><span id="trendingMoviesStatus" class="section-status"></span></header>
       <div id="trendingMoviesLandscape" class="landscape-row"></div>
       <div id="trendingMoviesPortrait" class="card-row"></div>
     </section>
 
     <section class="content-section">
-      <header class="section-header"><h2>Trending TV</h2><span id="trendingTvStatus" class="section-status"></span></header>
+      <header class="section-header"><h2><i class="fa-solid fa-fire-flame-curved"></i> Trending TV</h2><span id="trendingTvStatus" class="section-status"></span></header>
       <div id="trendingTvLandscape" class="landscape-row"></div>
       <div id="trendingTvPortrait" class="card-row"></div>
     </section>
 
     <section class="content-section">
-      <header class="section-header"><h2>Now Playing</h2><span id="nowPlayingMoviesStatus" class="section-status"></span></header>
+      <header class="section-header"><h2><i class="fa-solid fa-clapperboard"></i> Now Playing</h2><span id="nowPlayingMoviesStatus" class="section-status"></span></header>
       <div id="nowPlayingMovies" class="card-row"></div>
     </section>
 
     <section class="content-section">
-      <header class="section-header"><h2>Popular TV Shows</h2><span id="popularTvStatus" class="section-status"></span></header>
+      <header class="section-header"><h2><i class="fa-solid fa-tv"></i> Popular TV Shows</h2><span id="popularTvStatus" class="section-status"></span></header>
       <div id="popularTv" class="card-row"></div>
     </section>
 
     <section class="content-section">
-      <header class="section-header"><h2>Popular Movies</h2><span id="popularMoviesStatus" class="section-status"></span></header>
+      <header class="section-header"><h2><i class="fa-solid fa-film"></i> Popular Movies</h2><span id="popularMoviesStatus" class="section-status"></span></header>
       <div id="popularMovies" class="card-row"></div>
     </section>
 
     <section class="content-section">
-      <header class="section-header"><h2>Top Rated Movies</h2><span id="topRatedMoviesStatus" class="section-status"></span></header>
+      <header class="section-header"><h2><i class="fa-solid fa-star"></i> Top Rated Movies</h2><span id="topRatedMoviesStatus" class="section-status"></span></header>
       <div id="topRatedMovies" class="card-row"></div>
     </section>
 
     <section class="content-section">
-      <header class="section-header"><h2>Top Rated TV Shows</h2><span id="topRatedTvStatus" class="section-status"></span></header>
+      <header class="section-header"><h2><i class="fa-solid fa-star"></i> Top Rated TV Shows</h2><span id="topRatedTvStatus" class="section-status"></span></header>
       <div id="topRatedTv" class="card-row"></div>
     </section>
   </main>

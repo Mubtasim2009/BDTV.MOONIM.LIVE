@@ -4,6 +4,63 @@ const TMDB_BASE = "https://api.themoviedb.org/3";
 const TMDB_IMG_BASE = "https://image.tmdb.org/t/p/w300";
 const TMDB_IMG_BACKDROP = "https://image.tmdb.org/t/p/w780";
 
+// ─── Watchlist & History (localStorage) ─────────────────────────────────────
+
+const WL_KEY = 'bdtv_watchlist';
+const HIST_KEY = 'bdtv_history';
+
+function watchlistGet() {
+  try { return JSON.parse(localStorage.getItem(WL_KEY) || '[]'); } catch (_) { return []; }
+}
+
+function watchlistHas(id, type) {
+  return watchlistGet().some(x => String(x.id) === String(id) && x.type === type);
+}
+
+function watchlistAdd(entry) {
+  const list = watchlistGet();
+  if (!list.some(x => String(x.id) === String(entry.id) && x.type === entry.type)) {
+    list.unshift(entry);
+    localStorage.setItem(WL_KEY, JSON.stringify(list));
+  }
+}
+
+function watchlistRemove(id, type) {
+  const list = watchlistGet().filter(x => !(String(x.id) === String(id) && x.type === type));
+  localStorage.setItem(WL_KEY, JSON.stringify(list));
+}
+
+function historyGet() {
+  try { return JSON.parse(localStorage.getItem(HIST_KEY) || '[]'); } catch (_) { return []; }
+}
+
+function historyAdd(entry) {
+  let list = historyGet().filter(x => !(String(x.id) === String(entry.id) && x.type === entry.type));
+  list.unshift({ ...entry, watchedAt: Date.now() });
+  if (list.length > 20) list = list.slice(0, 20);
+  localStorage.setItem(HIST_KEY, JSON.stringify(list));
+}
+
+// ─── Toast Notifications ──────────────────────────────────────────────────────
+
+function showToast(message, isRemove) {
+  let container = document.getElementById('bdtvToastContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'bdtvToastContainer';
+    document.body.appendChild(container);
+  }
+  const toast = document.createElement('div');
+  toast.className = 'bdtv-toast' + (isRemove ? ' bdtv-toast--remove' : '');
+  toast.textContent = message;
+  container.appendChild(toast);
+  requestAnimationFrame(() => toast.classList.add('bdtv-toast--show'));
+  setTimeout(() => {
+    toast.classList.remove('bdtv-toast--show');
+    setTimeout(() => toast.remove(), 350);
+  }, 2500);
+}
+
 // OMDb config – set your free key from https://www.omdbapi.com/apikey.aspx
 // Leave empty to skip IMDb/Rotten Tomatoes ratings (TMDB score still shows)
 const OMDB_API_KEY = "";
@@ -87,9 +144,31 @@ function createMediaCard(item, type) {
   plotOverlay.appendChild(plotTitle);
   plotOverlay.appendChild(plotText);
 
+  // Watchlist toggle button
+  const wlBtn = document.createElement('button');
+  wlBtn.className = 'wl-btn' + (watchlistHas(item.id, type) ? ' wl-btn--active' : '');
+  wlBtn.setAttribute('aria-label', watchlistHas(item.id, type) ? 'Remove from My List' : 'Add to My List');
+  wlBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
+  wlBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (watchlistHas(item.id, type)) {
+      watchlistRemove(item.id, type);
+      wlBtn.classList.remove('wl-btn--active');
+      wlBtn.setAttribute('aria-label', 'Add to My List');
+      showToast('Removed from My List', true);
+    } else {
+      watchlistAdd({ id: item.id, type, title, posterPath: item.poster_path || null, year });
+      wlBtn.classList.add('wl-btn--active');
+      wlBtn.setAttribute('aria-label', 'Remove from My List');
+      showToast('<i class="fa-solid fa-check"></i> Added to My List');
+    }
+  });
+
   a.appendChild(img);
   a.appendChild(overlay);
   a.appendChild(plotOverlay);
+  a.appendChild(wlBtn);
 
   return a;
 }
@@ -211,3 +290,34 @@ function showSkeletons(containerId, count, type) {
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll(); // run once on load
 })();
+
+// ─── Back-to-Top button ───────────────────────────────────────────────────────
+
+(function () {
+  const btn = document.createElement('button');
+  btn.id = 'backToTop';
+  btn.className = 'back-to-top';
+  btn.setAttribute('aria-label', 'Back to top');
+  btn.innerHTML = '<i class="fa-solid fa-chevron-up"></i>';
+  document.body.appendChild(btn);
+
+  window.addEventListener('scroll', () => {
+    btn.classList.toggle('back-to-top--visible', window.scrollY > 400);
+  }, { passive: true });
+
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+})();
+
+// ─── Keyboard shortcuts ────────────────────────────────────────────────────────
+
+document.addEventListener('keydown', (e) => {
+  // Press '/' anywhere to focus the search input (skip if already typing)
+  const tag = document.activeElement ? document.activeElement.tagName : '';
+  if (e.key === '/' && tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'SELECT') {
+    e.preventDefault();
+    const input = document.getElementById('heroSearchInput') || document.getElementById('searchInput');
+    if (input) { input.focus(); input.select(); }
+  }
+});

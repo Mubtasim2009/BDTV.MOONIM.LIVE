@@ -252,6 +252,9 @@ function resetCarouselTimer() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Continue Watching (history)
+  loadContinueWatching();
+
   // Init hero carousel
   initHeroCarousel();
   // Hero search suggestions
@@ -411,4 +414,80 @@ async function loadPortraitSection(url, containerId, statusId, type) {
     console.error(err);
     statusEl.textContent = "Failed to load.";
   }
+}
+
+// Continue Watching section (from localStorage history)
+function loadContinueWatching() {
+  const section = document.getElementById("continueWatchingSection");
+  const row = document.getElementById("continueWatchingRow");
+  if (!section || !row) return;
+
+  const history = historyGet();
+  if (!history.length) {
+    section.style.display = "none";
+    return;
+  }
+
+  section.style.display = "";
+  row.innerHTML = "";
+
+  history.forEach((entry) => {
+    const linkTarget = entry.type === "tv" ? "player-tv.html" : "player-movie.html";
+    const a = document.createElement("a");
+    a.href = `${linkTarget}?id=${encodeURIComponent(entry.id)}`;
+    a.className = "media-card";
+
+    const img = document.createElement("img");
+    img.src = entry.posterPath ? `${TMDB_IMG_BASE}${entry.posterPath}` : "https://via.placeholder.com/300x450?text=No+Image";
+    img.alt = entry.title || "Untitled";
+    img.loading = "lazy";
+
+    const overlay = document.createElement("div");
+    overlay.className = "media-card-overlay";
+
+    const titleEl = document.createElement("div");
+    titleEl.className = "media-card-overlay-title";
+    titleEl.textContent = entry.title || "Untitled";
+
+    const meta = document.createElement("div");
+    meta.className = "media-meta";
+
+    if (entry.year) {
+      const yearSpan = document.createElement("span");
+      yearSpan.textContent = entry.year;
+      meta.appendChild(yearSpan);
+    }
+
+    const typePill = document.createElement("span");
+    typePill.className = "tile-type-pill";
+    typePill.textContent = entry.type === "tv" ? "TV" : "MOVIE";
+    meta.appendChild(typePill);
+
+    overlay.appendChild(titleEl);
+    overlay.appendChild(meta);
+
+    // Watchlist button
+    const wlBtn = document.createElement('button');
+    wlBtn.className = 'wl-btn' + (watchlistHas(entry.id, entry.type) ? ' wl-btn--active' : '');
+    wlBtn.setAttribute('aria-label', watchlistHas(entry.id, entry.type) ? 'Remove from My List' : 'Add to My List');
+    wlBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
+    wlBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (watchlistHas(entry.id, entry.type)) {
+        watchlistRemove(entry.id, entry.type);
+        wlBtn.classList.remove('wl-btn--active');
+        showToast('Removed from My List', true);
+      } else {
+        watchlistAdd({ id: entry.id, type: entry.type, title: entry.title, posterPath: entry.posterPath, year: entry.year });
+        wlBtn.classList.add('wl-btn--active');
+        showToast('<i class="fa-solid fa-check"></i> Added to My List');
+      }
+    });
+
+    a.appendChild(img);
+    a.appendChild(overlay);
+    a.appendChild(wlBtn);
+    row.appendChild(a);
+  });
 }

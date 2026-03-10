@@ -45,6 +45,39 @@ async function loadMovie() {
 
     document.getElementById("movieTitle").textContent = title;
 
+    // Track in watch history
+    historyAdd({
+      id: Number(id),
+      type: "movie",
+      title,
+      posterPath: data.poster_path || null,
+      year
+    });
+
+    // Watchlist button
+    const watchlistBtnContainer = document.getElementById('movieWatchlistBtnContainer');
+    if (watchlistBtnContainer) {
+      const wlBtn = document.createElement('button');
+      wlBtn.className = 'player-wl-btn' + (watchlistHas(Number(id), 'movie') ? ' player-wl-btn--active' : '');
+      wlBtn.innerHTML = watchlistHas(Number(id), 'movie')
+        ? '<i class="fa-solid fa-check"></i> In My List'
+        : '<i class="fa-solid fa-plus"></i> My List';
+      wlBtn.addEventListener('click', () => {
+        if (watchlistHas(Number(id), 'movie')) {
+          watchlistRemove(Number(id), 'movie');
+          wlBtn.classList.remove('player-wl-btn--active');
+          wlBtn.innerHTML = '<i class="fa-solid fa-plus"></i> My List';
+          showToast('Removed from My List', true);
+        } else {
+          watchlistAdd({ id: Number(id), type: 'movie', title, posterPath: data.poster_path || null, year });
+          wlBtn.classList.add('player-wl-btn--active');
+          wlBtn.innerHTML = '<i class="fa-solid fa-check"></i> In My List';
+          showToast('<i class="fa-solid fa-check"></i> Added to My List');
+        }
+      });
+      watchlistBtnContainer.appendChild(wlBtn);
+    }
+
     // Tagline
     const taglineEl = document.getElementById("movieTagline");
     if (data.tagline) taglineEl.textContent = `"${data.tagline}"`;
