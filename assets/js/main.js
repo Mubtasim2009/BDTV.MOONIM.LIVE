@@ -1,3 +1,35 @@
+// ─── Theme Toggle (Dark / Light Mode) ────────────────────────────────────────
+
+(function () {
+  const THEME_KEY = 'bdtv_theme';
+
+  function applyTheme(theme) {
+    if (theme === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
+  }
+
+  // Wire up toggle button(s) once DOM is ready
+  function initToggle() {
+    document.querySelectorAll('.theme-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const current = document.documentElement.getAttribute('data-theme');
+        const next = current === 'light' ? 'dark' : 'light';
+        applyTheme(next);
+        localStorage.setItem(THEME_KEY, next);
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initToggle);
+  } else {
+    initToggle();
+  }
+})();
+
 // Shared TMDB config
 const TMDB_API_KEY = "b14194d00ce48c36318eefa745bcdeec";
 const TMDB_BASE = "https://api.themoviedb.org/3";
