@@ -41,6 +41,11 @@ function historyAdd(entry) {
   localStorage.setItem(HIST_KEY, JSON.stringify(list));
 }
 
+function historyRemove(id, type) {
+  const list = historyGet().filter(x => !(String(x.id) === String(id) && x.type === type));
+  localStorage.setItem(HIST_KEY, JSON.stringify(list));
+}
+
 // ─── Toast Notifications ──────────────────────────────────────────────────────
 
 function showToast(message, isRemove) {

@@ -42,6 +42,8 @@ async function loadTvShow() {
       type: "tv",
       title: name,
       posterPath: data.poster_path || null,
+      backdropPath: data.backdrop_path || null,
+      overview: data.overview || "",
       year
     });
 
