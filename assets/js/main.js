@@ -357,23 +357,22 @@ function showSkeletons(containerId, count, type) {
   updateClock();
   setInterval(updateClock, 1000);
 
-  // ── WMO weather code → FA icon class ──────────────────────────────────────
-  function wmoIcon(code) {
-    if (code === 0)                     return 'fa-sun';
-    if (code <= 3)                      return 'fa-cloud-sun';
-    if (code <= 48)                     return 'fa-smog';
-    if (code <= 57)                     return 'fa-cloud-drizzle';
-    if (code <= 67)                     return 'fa-cloud-rain';
-    if (code <= 77)                     return 'fa-snowflake';
-    if (code <= 82)                     return 'fa-cloud-showers-heavy';
-    if (code <= 86)                     return 'fa-snowflake';
-    if (code <= 99)                     return 'fa-bolt';
-    return 'fa-cloud';
+  // ── OpenWeatherMap condition ID → FA icon class ───────────────────────────
+  function owmIcon(id) {
+    if (id >= 200 && id < 300) return 'fa-bolt';               // Thunderstorm
+    if (id >= 300 && id < 400) return 'fa-cloud-drizzle';      // Drizzle
+    if (id >= 500 && id < 600) return 'fa-cloud-rain';         // Rain
+    if (id >= 600 && id < 700) return 'fa-snowflake';          // Snow
+    if (id >= 700 && id < 800) return 'fa-smog';               // Atmosphere
+    if (id === 800)             return 'fa-sun';                // Clear
+    if (id === 801 || id === 802) return 'fa-cloud-sun';        // Few/scattered clouds
+    return 'fa-cloud';                                          // Broken/overcast
   }
 
-  // ── Fetch IP location then weather ─────────────────────────────────────────
+  // ── Fetch IP location then weather (OpenWeatherMap One Call 3.0) ───────────
   // ipapi.co is free and HTTPS-native (ip-api.com free tier is HTTP-only and
   // gets blocked as mixed-content on HTTPS pages like GitHub Pages).
+  const OWM_KEY = '9407335bebaf281d340fcab86365439f';
   fetch('https://ipapi.co/json/')
     .then(r => r.json())
     .then(geo => {
@@ -383,19 +382,19 @@ function showSkeletons(containerId, count, type) {
       const locEl = document.getElementById('navLocationVal');
       if (locEl) locEl.textContent = `${geo.city}, ${geo.country_code}`;
 
-      // Fetch weather from Open-Meteo (no key required)
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${geo.latitude}&longitude=${geo.longitude}&current_weather=true&temperature_unit=celsius`;
+      // Fetch current weather via OpenWeatherMap One Call API 3.0
+      const url = `https://api.openweathermap.org/data/3.0/onecall?lat=${geo.latitude}&lon=${geo.longitude}&exclude=minutely,hourly,daily,alerts&appid=${OWM_KEY}&units=metric`;
       return fetch(url);
     })
     .then(r => r && r.json())
     .then(wx => {
-      if (!wx || !wx.current_weather) return;
-      const { temperature, weathercode } = wx.current_weather;
+      if (!wx || !wx.current) return;
+      const temp = wx.current.temp;
+      const id   = wx.current.weather && wx.current.weather[0] && wx.current.weather[0].id;
       const iconEl = document.getElementById('navWeatherIcon');
       const valEl  = document.getElementById('navWeatherVal');
-      const icon   = wmoIcon(weathercode);
-      if (iconEl) { iconEl.className = `fa-solid ${icon}`; }
-      if (valEl)  { valEl.textContent = `${Math.round(temperature)}°C`; }
+      if (iconEl && id) { iconEl.className = `fa-solid ${owmIcon(id)}`; }
+      if (valEl)        { valEl.textContent = `${Math.round(temp)}°C`; }
     })
     .catch(() => {
       // Silently fail — widget shows placeholders
