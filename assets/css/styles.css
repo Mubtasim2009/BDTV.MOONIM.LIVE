@@ -2305,7 +2305,7 @@ a {
   justify-content: center;
 }
 
-/* ─── Navbar info bar (time · location · weather) ─────────────────────────── */
+/* ─── Navbar greeting bar ───────────────────────────────────────────────────── */
 
 .nav-info-bar {
   display: flex;
@@ -2319,7 +2319,6 @@ a {
   font-size: 0.78rem;
   color: var(--text-secondary);
   white-space: nowrap;
-  /* Fade in once data arrives */
   opacity: 0;
   animation: navInfoFadeIn 0.5s 0.3s var(--ease) forwards;
 }
@@ -2332,32 +2331,12 @@ a {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  font-variant-numeric: tabular-nums;
 }
 
 .nav-info-item i {
   font-size: 0.72rem;
   color: var(--accent-hover);
   flex-shrink: 0;
-}
-
-.nav-info-sep {
-  display: inline-block;
-  width: 1px;
-  height: 0.9em;
-  background: rgba(255, 255, 255, 0.18);
-  flex-shrink: 0;
-}
-
-/* On medium screens hide location + weather, keep only clock */
-@media (max-width: 1024px) {
-  .nav-info-location,
-  .nav-info-weather,
-  .nav-info-location + .nav-info-sep,
-  .nav-info-weather + .nav-info-sep,
-  .nav-info-time + .nav-info-sep {
-    display: none;
-  }
 }
 
 /* On small mobile hide the entire bar */

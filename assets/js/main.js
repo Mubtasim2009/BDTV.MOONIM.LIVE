@@ -310,112 +310,37 @@ function showSkeletons(containerId, count, type) {
   });
 })();
 
-// ─── Navbar info bar: time · location · weather ───────────────────────────────
+// ─── Navbar greeting bar ──────────────────────────────────────────────────────
 (function () {
   const nav = document.querySelector('.top-nav');
   if (!nav) return;
 
-  // Build the widget element
+  function getGreeting() {
+    const h = new Date().getHours();
+    if (h >= 5  && h < 12) return { text: 'Good Morning',   icon: 'fa-sun' };
+    if (h >= 12 && h < 17) return { text: 'Good Afternoon', icon: 'fa-cloud-sun' };
+    if (h >= 17 && h < 21) return { text: 'Good Evening',   icon: 'fa-moon' };
+    return                         { text: 'Good Night',     icon: 'fa-star' };
+  }
+
+  const { text, icon } = getGreeting();
+
   const bar = document.createElement('div');
   bar.id = 'navInfoBar';
   bar.className = 'nav-info-bar';
-  bar.setAttribute('aria-label', 'Time, location and weather');
-  bar.innerHTML = [
-    '<span class="nav-info-item nav-info-time" id="navClock">',
-      '<i class="fa-regular fa-clock"></i>',
-      '<span id="navClockVal">--:--:--</span>',
-    '</span>',
-    '<span class="nav-info-sep" aria-hidden="true"></span>',
-    '<span class="nav-info-item nav-info-location" id="navLocation">',
-      '<i class="fa-solid fa-location-dot"></i>',
-      '<span id="navLocationVal">…</span>',
-    '</span>',
-    '<span class="nav-info-sep" aria-hidden="true"></span>',
-    '<span class="nav-info-item nav-info-weather" id="navWeather">',
-      '<i class="fa-solid fa-cloud" id="navWeatherIcon"></i>',
-      '<span id="navWeatherVal">…</span>',
-    '</span>'
-  ].join('');
+  bar.setAttribute('aria-label', 'Greeting');
+  bar.innerHTML =
+    `<span class="nav-info-item nav-info-greeting">` +
+      `<i class="fa-solid ${icon}"></i>` +
+      `<span>${text}</span>` +
+    `</span>`;
 
-  // Insert after the brand logo (first child of top-nav)
   const brand = nav.querySelector('.top-brand');
   if (brand && brand.nextSibling) {
     nav.insertBefore(bar, brand.nextSibling);
   } else {
     nav.appendChild(bar);
   }
-
-  // ── Live clock ──────────────────────────────────────────────────────────────
-  function updateClock() {
-    const now = new Date();
-    const h = String(now.getHours()).padStart(2, '0');
-    const m = String(now.getMinutes()).padStart(2, '0');
-    const s = String(now.getSeconds()).padStart(2, '0');
-    const el = document.getElementById('navClockVal');
-    if (el) el.textContent = `${h}:${m}:${s}`;
-  }
-  updateClock();
-  setInterval(updateClock, 1000);
-
-  // ── OpenWeatherMap condition ID → FA icon class ───────────────────────────
-  function owmIcon(id) {
-    if (id >= 200 && id < 300) return 'fa-bolt';               // Thunderstorm
-    if (id >= 300 && id < 400) return 'fa-cloud-drizzle';      // Drizzle
-    if (id >= 500 && id < 600) return 'fa-cloud-rain';         // Rain
-    if (id >= 600 && id < 700) return 'fa-snowflake';          // Snow
-    if (id >= 700 && id < 800) return 'fa-smog';               // Atmosphere
-    if (id === 800)             return 'fa-sun';                // Clear
-    if (id === 801 || id === 802) return 'fa-cloud-sun';        // Few/scattered clouds
-    return 'fa-cloud';                                          // Broken/overcast
-  }
-
-  // ── Weather: fetch + display ────────────────────────────────────────────────
-  // Try One Call 3.0 first (requires subscription on OWM dashboard even for
-  // free tier); automatically fall back to the always-available 2.5/weather.
-  const OWM_KEY = '9407335bebaf281d340fcab86365439f';
-
-  function applyWeather(lat, lon, city, cc) {
-    if (city) {
-      const locEl = document.getElementById('navLocationVal');
-      if (locEl) locEl.textContent = cc ? `${city}, ${cc}` : city;
-    }
-    const url3  = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=minutely,hourly,daily,alerts&appid=${OWM_KEY}&units=metric`;
-    const url25 = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${OWM_KEY}&units=metric`;
-    fetch(url3)
-      .then(r => r.ok ? r.json() : null)
-      .then(wx => {
-        // One Call 3.0 succeeded
-        if (wx && wx.current) return wx.current;
-        // Not subscribed or unavailable — fall back to Current Weather 2.5
-        return fetch(url25)
-          .then(r => r.ok ? r.json() : null)
-          .then(wx2 => {
-            if (!wx2 || !wx2.main) return null;
-            return { temp: wx2.main.temp, weather: wx2.weather };
-          });
-      })
-      .then(current => {
-        if (!current) return;
-        const temp = current.temp;
-        const id   = current.weather && current.weather[0] && current.weather[0].id;
-        const iconEl = document.getElementById('navWeatherIcon');
-        const valEl  = document.getElementById('navWeatherVal');
-        if (iconEl && id)       { iconEl.className = `fa-solid ${owmIcon(id)}`; }
-        if (valEl && temp != null) { valEl.textContent = `${Math.round(temp)}°C`; }
-      })
-      .catch(() => {});
-  }
-
-  // Geo: IP-based lookup via ipapi.co — no browser permission prompt.
-  // ipapi.co is HTTPS-native (ip-api.com free tier is HTTP-only, blocked on
-  // GitHub Pages).
-  fetch('https://ipapi.co/json/')
-    .then(r => r.ok ? r.json() : null)
-    .then(geo => {
-      if (!geo || geo.error || geo.latitude == null) return;
-      applyWeather(geo.latitude, geo.longitude, geo.city, geo.country_code);
-    })
-    .catch(() => {});
 })();
 
 // ─── Keyboard shortcuts ────────────────────────────────────────────────────────
