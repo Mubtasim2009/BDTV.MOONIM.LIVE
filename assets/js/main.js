@@ -310,6 +310,96 @@ function showSkeletons(containerId, count, type) {
   });
 })();
 
+// ─── Navbar info bar: time · location · weather ───────────────────────────────
+(function () {
+  const nav = document.querySelector('.top-nav');
+  if (!nav) return;
+
+  // Build the widget element
+  const bar = document.createElement('div');
+  bar.id = 'navInfoBar';
+  bar.className = 'nav-info-bar';
+  bar.setAttribute('aria-label', 'Time, location and weather');
+  bar.innerHTML = [
+    '<span class="nav-info-item nav-info-time" id="navClock">',
+      '<i class="fa-regular fa-clock"></i>',
+      '<span id="navClockVal">--:--:--</span>',
+    '</span>',
+    '<span class="nav-info-sep" aria-hidden="true"></span>',
+    '<span class="nav-info-item nav-info-location" id="navLocation">',
+      '<i class="fa-solid fa-location-dot"></i>',
+      '<span id="navLocationVal">…</span>',
+    '</span>',
+    '<span class="nav-info-sep" aria-hidden="true"></span>',
+    '<span class="nav-info-item nav-info-weather" id="navWeather">',
+      '<i class="fa-solid fa-cloud" id="navWeatherIcon"></i>',
+      '<span id="navWeatherVal">…</span>',
+    '</span>'
+  ].join('');
+
+  // Insert after the brand logo (first child of top-nav)
+  const brand = nav.querySelector('.top-brand');
+  if (brand && brand.nextSibling) {
+    nav.insertBefore(bar, brand.nextSibling);
+  } else {
+    nav.appendChild(bar);
+  }
+
+  // ── Live clock ──────────────────────────────────────────────────────────────
+  function updateClock() {
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2, '0');
+    const m = String(now.getMinutes()).padStart(2, '0');
+    const s = String(now.getSeconds()).padStart(2, '0');
+    const el = document.getElementById('navClockVal');
+    if (el) el.textContent = `${h}:${m}:${s}`;
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // ── WMO weather code → FA icon class ──────────────────────────────────────
+  function wmoIcon(code) {
+    if (code === 0)                     return 'fa-sun';
+    if (code <= 3)                      return 'fa-cloud-sun';
+    if (code <= 48)                     return 'fa-smog';
+    if (code <= 57)                     return 'fa-cloud-drizzle';
+    if (code <= 67)                     return 'fa-cloud-rain';
+    if (code <= 77)                     return 'fa-snowflake';
+    if (code <= 82)                     return 'fa-cloud-showers-heavy';
+    if (code <= 86)                     return 'fa-snowflake';
+    if (code <= 99)                     return 'fa-bolt';
+    return 'fa-cloud';
+  }
+
+  // ── Fetch IP location then weather ─────────────────────────────────────────
+  fetch('https://ip-api.com/json/?fields=status,city,country,countryCode,lat,lon')
+    .then(r => r.json())
+    .then(geo => {
+      if (geo.status !== 'success') return;
+
+      // Update location display
+      const locEl = document.getElementById('navLocationVal');
+      if (locEl) locEl.textContent = `${geo.city}, ${geo.countryCode}`;
+
+      // Fetch weather from Open-Meteo (no key required)
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${geo.lat}&longitude=${geo.lon}&current_weather=true&temperature_unit=celsius`;
+      return fetch(url);
+    })
+    .then(r => r && r.json())
+    .then(wx => {
+      if (!wx || !wx.current_weather) return;
+      const { temperature, weathercode } = wx.current_weather;
+      const iconEl = document.getElementById('navWeatherIcon');
+      const valEl  = document.getElementById('navWeatherVal');
+      const icon   = wmoIcon(weathercode);
+      if (iconEl) { iconEl.className = `fa-solid ${icon}`; }
+      if (valEl)  { valEl.textContent = `${Math.round(temperature)}°C`; }
+    })
+    .catch(() => {
+      // Silently fail — widget shows placeholders
+    });
+})();
+
 // ─── Keyboard shortcuts ────────────────────────────────────────────────────────
 
 document.addEventListener('keydown', (e) => {
