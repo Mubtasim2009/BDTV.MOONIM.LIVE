@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>BDTV – Actor</title>
+  <title>BDTV – My List</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Your saved movies and TV shows on BDTV." />
   <link rel="icon" type="image/webp" href="https://raw.githubusercontent.com/Mubtasim2009/Aboutme/232a54166d3b45fb72b6b14f2675fc830088693f/assets/brand/ICON.webp" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -12,7 +13,7 @@
 </head>
 <body>
   <header class="top-nav">
-    <a class="top-brand" href="index.html">
+    <a href="index.html" class="top-brand">
       <img src="https://raw.githubusercontent.com/Mubtasim2009/BDTV.MOONIM.LIVE/refs/heads/main/assets/brand/LOGO.webp" alt="BDTV logo" />
     </a>
     <button id="navToggle" class="nav-toggle" aria-label="Toggle navigation">
@@ -23,35 +24,34 @@
         <a href="index.html" class="nav-link">Home</a>
         <a href="search.html" class="nav-link">Search</a>
         <a href="genre.html" class="nav-link">Genres</a>
-        <a href="watchlist.html" class="nav-link">My List</a>
+        <a href="watchlist.html" class="nav-link active">My List</a>
         <a href="about.html" class="nav-link">About</a>
       </nav>
       <a href="live.html" class="live-btn-nav">&#x25CF; Live TV</a>
     </div>
   </header>
 
-  <main class="actor-page">
-    <div class="actor-banner">
-      <img id="actorImg" src="" alt="Actor" />
-      <div class="actor-info">
-        <div class="actor-name" id="actorName">Loading&#x2026;</div>
-        <div class="actor-meta" id="actorMeta"></div>
-        <div class="actor-bio" id="actorBio"></div>
-      </div>
+  <main class="watchlist-page">
+    <h1>&#x1F4CB; My List</h1>
+    <p class="wl-subtitle">Movies and TV shows you've saved or recently watched.</p>
+
+    <div class="watchlist-tabs" role="tablist">
+      <button class="watchlist-tab watchlist-tab--active" id="tabWatchlist" role="tab" aria-selected="true">Saved</button>
+      <button class="watchlist-tab" id="tabHistory" role="tab" aria-selected="false">Recently Watched</button>
     </div>
 
-    <section class="content-section" style="padding-inline:0;">
-      <header class="section-header">
-        <h2>Known For</h2>
-        <span id="knownForStatus" class="section-status">Loading&#x2026;</span>
-      </header>
-      <div id="knownForGrid" class="search-grid"></div>
-    </section>
+    <div id="watchlistPanel">
+      <div id="watchlistGrid" class="watchlist-grid"></div>
+    </div>
+
+    <div id="historyPanel" style="display:none;">
+      <div id="historyGrid" class="watchlist-grid"></div>
+    </div>
   </main>
 
   <footer class="site-footer">BDTV VOD &#xB7; Powered by TMDB</footer>
 
   <script src="assets/js/main.js"></script>
-  <script src="assets/js/actor.js"></script>
+  <script src="assets/js/watchlist-page.js"></script>
 </body>
 </html>

@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>BDTV – Actor</title>
+  <title>BDTV – Browse by Genre</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Browse movies and TV shows by genre on BDTV." />
   <link rel="icon" type="image/webp" href="https://raw.githubusercontent.com/Mubtasim2009/Aboutme/232a54166d3b45fb72b6b14f2675fc830088693f/assets/brand/ICON.webp" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -12,7 +13,7 @@
 </head>
 <body>
   <header class="top-nav">
-    <a class="top-brand" href="index.html">
+    <a href="index.html" class="top-brand">
       <img src="https://raw.githubusercontent.com/Mubtasim2009/BDTV.MOONIM.LIVE/refs/heads/main/assets/brand/LOGO.webp" alt="BDTV logo" />
     </a>
     <button id="navToggle" class="nav-toggle" aria-label="Toggle navigation">
@@ -22,7 +23,7 @@
       <nav class="nav-links" id="navLinks">
         <a href="index.html" class="nav-link">Home</a>
         <a href="search.html" class="nav-link">Search</a>
-        <a href="genre.html" class="nav-link">Genres</a>
+        <a href="genre.html" class="nav-link active">Genres</a>
         <a href="watchlist.html" class="nav-link">My List</a>
         <a href="about.html" class="nav-link">About</a>
       </nav>
@@ -30,28 +31,36 @@
     </div>
   </header>
 
-  <main class="actor-page">
-    <div class="actor-banner">
-      <img id="actorImg" src="" alt="Actor" />
-      <div class="actor-info">
-        <div class="actor-name" id="actorName">Loading&#x2026;</div>
-        <div class="actor-meta" id="actorMeta"></div>
-        <div class="actor-bio" id="actorBio"></div>
-      </div>
+  <main class="genre-page">
+    <h1>&#127916; Browse by Genre</h1>
+    <p class="genre-subtitle">Pick a genre to discover movies and TV shows.</p>
+
+    <div class="genre-type-tabs" id="genreTypeTabs">
+      <button class="genre-type-btn genre-type-btn--active" data-type="movie">Movies</button>
+      <button class="genre-type-btn" data-type="tv">TV Shows</button>
     </div>
 
-    <section class="content-section" style="padding-inline:0;">
-      <header class="section-header">
-        <h2>Known For</h2>
-        <span id="knownForStatus" class="section-status">Loading&#x2026;</span>
-      </header>
-      <div id="knownForGrid" class="search-grid"></div>
-    </section>
+    <!-- Genre tiles -->
+    <div id="genreTilesSection">
+      <div id="genreTiles" class="genre-tiles"></div>
+    </div>
+
+    <!-- Results for a selected genre -->
+    <div id="genreResultsSection" style="display:none;">
+      <div class="genre-results-header">
+        <button class="genre-back-btn" id="genreBackBtn">&#8592; All Genres</button>
+        <h2 id="genreResultsTitle"></h2>
+      </div>
+      <div id="genreResultsGrid" class="search-grid"></div>
+      <div id="genreLoadMoreWrap" style="text-align:center;margin-top:1.5rem;display:none;">
+        <button id="genreLoadMore" class="hero-watch-btn" style="font-size:0.875rem;padding:0.55rem 1.5rem;">Load More</button>
+      </div>
+    </div>
   </main>
 
   <footer class="site-footer">BDTV VOD &#xB7; Powered by TMDB</footer>
 
   <script src="assets/js/main.js"></script>
-  <script src="assets/js/actor.js"></script>
+  <script src="assets/js/genre.js"></script>
 </body>
 </html>
