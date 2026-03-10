@@ -372,17 +372,19 @@ function showSkeletons(containerId, count, type) {
   }
 
   // ── Fetch IP location then weather ─────────────────────────────────────────
-  fetch('https://ip-api.com/json/?fields=status,city,country,countryCode,lat,lon')
+  // ipapi.co is free and HTTPS-native (ip-api.com free tier is HTTP-only and
+  // gets blocked as mixed-content on HTTPS pages like GitHub Pages).
+  fetch('https://ipapi.co/json/')
     .then(r => r.json())
     .then(geo => {
-      if (geo.status !== 'success') return;
+      if (geo.error) return;
 
       // Update location display
       const locEl = document.getElementById('navLocationVal');
-      if (locEl) locEl.textContent = `${geo.city}, ${geo.countryCode}`;
+      if (locEl) locEl.textContent = `${geo.city}, ${geo.country_code}`;
 
       // Fetch weather from Open-Meteo (no key required)
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${geo.lat}&longitude=${geo.lon}&current_weather=true&temperature_unit=celsius`;
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${geo.latitude}&longitude=${geo.longitude}&current_weather=true&temperature_unit=celsius`;
       return fetch(url);
     })
     .then(r => r && r.json())
