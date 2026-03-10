@@ -369,36 +369,65 @@ function showSkeletons(containerId, count, type) {
     return 'fa-cloud';                                          // Broken/overcast
   }
 
-  // ── Fetch IP location then weather (OpenWeatherMap One Call 3.0) ───────────
-  // ipapi.co is free and HTTPS-native (ip-api.com free tier is HTTP-only and
-  // gets blocked as mixed-content on HTTPS pages like GitHub Pages).
+  // ── Weather: fetch + display ────────────────────────────────────────────────
+  // Try One Call 3.0 first (requires subscription on OWM dashboard even for
+  // free tier); automatically fall back to the always-available 2.5/weather.
   const OWM_KEY = '9407335bebaf281d340fcab86365439f';
-  fetch('https://ipapi.co/json/')
-    .then(r => r.json())
-    .then(geo => {
-      if (geo.error) return;
 
-      // Update location display
+  function applyWeather(lat, lon, city, cc) {
+    if (city) {
       const locEl = document.getElementById('navLocationVal');
-      if (locEl) locEl.textContent = `${geo.city}, ${geo.country_code}`;
+      if (locEl) locEl.textContent = cc ? `${city}, ${cc}` : city;
+    }
+    const url3  = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=minutely,hourly,daily,alerts&appid=${OWM_KEY}&units=metric`;
+    const url25 = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${OWM_KEY}&units=metric`;
+    fetch(url3)
+      .then(r => r.ok ? r.json() : null)
+      .then(wx => {
+        // One Call 3.0 succeeded
+        if (wx && wx.current) return wx.current;
+        // Not subscribed or unavailable — fall back to Current Weather 2.5
+        return fetch(url25)
+          .then(r => r.ok ? r.json() : null)
+          .then(wx2 => {
+            if (!wx2 || !wx2.main) return null;
+            return { temp: wx2.main.temp, weather: wx2.weather };
+          });
+      })
+      .then(current => {
+        if (!current) return;
+        const temp = current.temp;
+        const id   = current.weather && current.weather[0] && current.weather[0].id;
+        const iconEl = document.getElementById('navWeatherIcon');
+        const valEl  = document.getElementById('navWeatherVal');
+        if (iconEl && id)       { iconEl.className = `fa-solid ${owmIcon(id)}`; }
+        if (valEl && temp != null) { valEl.textContent = `${Math.round(temp)}°C`; }
+      })
+      .catch(() => {});
+  }
 
-      // Fetch current weather via OpenWeatherMap One Call API 3.0
-      const url = `https://api.openweathermap.org/data/3.0/onecall?lat=${geo.latitude}&lon=${geo.longitude}&exclude=minutely,hourly,daily,alerts&appid=${OWM_KEY}&units=metric`;
-      return fetch(url);
-    })
-    .then(r => r && r.json())
-    .then(wx => {
-      if (!wx || !wx.current) return;
-      const temp = wx.current.temp;
-      const id   = wx.current.weather && wx.current.weather[0] && wx.current.weather[0].id;
-      const iconEl = document.getElementById('navWeatherIcon');
-      const valEl  = document.getElementById('navWeatherVal');
-      if (iconEl && id) { iconEl.className = `fa-solid ${owmIcon(id)}`; }
-      if (valEl)        { valEl.textContent = `${Math.round(temp)}°C`; }
-    })
-    .catch(() => {
-      // Silently fail — widget shows placeholders
-    });
+  // Geo: browser geolocation (no rate limits) with ipapi.co as fallback
+  // ipapi.co is HTTPS-native (ip-api.com free tier is HTTP-only, blocked on
+  // GitHub Pages).
+  function geoFallback() {
+    fetch('https://ipapi.co/json/')
+      .then(r => r.ok ? r.json() : null)
+      .then(geo => {
+        if (!geo || geo.error || geo.latitude == null) return;
+        applyWeather(geo.latitude, geo.longitude, geo.city, geo.country_code);
+      })
+      .catch(() => {});
+  }
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      pos => applyWeather(pos.coords.latitude, pos.coords.longitude, null, null),
+      geoFallback,
+      { timeout: 5000, maximumAge: 600000 }
+    );
+  } else {
+    geoFallback();
+  }
 })();
 
 // ─── Keyboard shortcuts ────────────────────────────────────────────────────────
