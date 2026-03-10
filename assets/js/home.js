@@ -435,22 +435,24 @@ function loadContinueWatching() {
     const linkTarget = entry.type === "tv" ? "player-tv.html" : "player-movie.html";
     const a = document.createElement("a");
     a.href = `${linkTarget}?id=${encodeURIComponent(entry.id)}`;
-    a.className = "media-card";
+    a.className = "landscape-tile";
 
     const img = document.createElement("img");
-    img.src = entry.posterPath ? `${TMDB_IMG_BASE}${entry.posterPath}` : "https://via.placeholder.com/300x450?text=No+Image";
+    img.src = entry.backdropPath
+      ? `${TMDB_IMG_BACKDROP}${entry.backdropPath}`
+      : (entry.posterPath ? `${TMDB_IMG_BASE}${entry.posterPath}` : "https://via.placeholder.com/780x440?text=No+Image");
     img.alt = entry.title || "Untitled";
     img.loading = "lazy";
 
-    const overlay = document.createElement("div");
-    overlay.className = "media-card-overlay";
+    const body = document.createElement("div");
+    body.className = "landscape-body";
 
     const titleEl = document.createElement("div");
-    titleEl.className = "media-card-overlay-title";
+    titleEl.className = "landscape-title";
     titleEl.textContent = entry.title || "Untitled";
 
     const meta = document.createElement("div");
-    meta.className = "media-meta";
+    meta.className = "landscape-meta";
 
     if (entry.year) {
       const yearSpan = document.createElement("span");
@@ -463,8 +465,24 @@ function loadContinueWatching() {
     typePill.textContent = entry.type === "tv" ? "TV" : "MOVIE";
     meta.appendChild(typePill);
 
-    overlay.appendChild(titleEl);
-    overlay.appendChild(meta);
+    body.appendChild(titleEl);
+    body.appendChild(meta);
+
+    // Plot overlay: shown on hover (blurs image, displays overview)
+    const plotOverlay = document.createElement("div");
+    plotOverlay.className = "landscape-tile-plot";
+
+    const plotTitle = document.createElement("div");
+    plotTitle.className = "landscape-tile-plot-title";
+    plotTitle.textContent = entry.title || "Untitled";
+    plotOverlay.appendChild(plotTitle);
+
+    if (entry.overview) {
+      const plotText = document.createElement("p");
+      plotText.className = "landscape-tile-plot-text";
+      plotText.textContent = entry.overview;
+      plotOverlay.appendChild(plotText);
+    }
 
     // Watchlist button
     const wlBtn = document.createElement('button');
@@ -485,9 +503,24 @@ function loadContinueWatching() {
       }
     });
 
+    // Remove from Continue Watching button
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'remove-btn';
+    removeBtn.setAttribute('aria-label', 'Remove from Continue Watching');
+    removeBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+    removeBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      historyRemove(entry.id, entry.type);
+      showToast('Removed from Continue Watching', true);
+      loadContinueWatching();
+    });
+
     a.appendChild(img);
-    a.appendChild(overlay);
+    a.appendChild(body);
+    a.appendChild(plotOverlay);
     a.appendChild(wlBtn);
+    a.appendChild(removeBtn);
     row.appendChild(a);
   });
 }

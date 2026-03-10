@@ -1,6 +1,6 @@
 // Watchlist page controller
 
-function renderGrid(containerId, items, emptyIcon, emptyMsg) {
+function renderGrid(containerId, items, emptyIcon, emptyMsg, onRemove) {
   const container = document.getElementById(containerId);
   if (!container) return;
   container.innerHTML = '';
@@ -52,23 +52,39 @@ function renderGrid(containerId, items, emptyIcon, emptyMsg) {
     overlay.appendChild(titleEl);
     overlay.appendChild(meta);
 
-    // Watchlist remove button (always visible on this page)
-    const wlBtn = document.createElement('button');
-    wlBtn.className = 'wl-btn wl-btn--active';
-    wlBtn.setAttribute('aria-label', 'Remove from My List');
-    wlBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
-    wlBtn.addEventListener('click', (e) => {
+    // Plot overlay: shown on hover
+    const plotOverlay = document.createElement('div');
+    plotOverlay.className = 'media-card-plot';
+
+    const plotTitle = document.createElement('div');
+    plotTitle.className = 'media-card-plot-title';
+    plotTitle.textContent = entry.title || 'Untitled';
+    plotOverlay.appendChild(plotTitle);
+
+    if (entry.overview) {
+      const plotText = document.createElement('p');
+      plotText.className = 'media-card-plot-text';
+      plotText.textContent = entry.overview;
+      plotOverlay.appendChild(plotText);
+    }
+
+    // Remove button (always visible on this page)
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'remove-btn';
+    removeBtn.setAttribute('aria-label', 'Remove');
+    removeBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+    removeBtn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      watchlistRemove(entry.id, entry.type);
-      showToast('Removed from My List', true);
-      // Re-render
-      renderWatchlist();
+      if (onRemove) {
+        onRemove(entry);
+      }
     });
 
     a.appendChild(img);
     a.appendChild(overlay);
-    a.appendChild(wlBtn);
+    a.appendChild(plotOverlay);
+    a.appendChild(removeBtn);
     container.appendChild(a);
   });
 }
@@ -78,7 +94,12 @@ function renderWatchlist() {
     'watchlistGrid',
     watchlistGet(),
     '<i class="fa-solid fa-bookmark" style="font-size:2.5rem;color:var(--accent);"></i>',
-    'Nothing saved yet.<br>Hit the <strong><i class="fa-solid fa-check"></i></strong> button on any movie or TV card to save it here.'
+    'Nothing saved yet.<br>Hit the <strong><i class="fa-solid fa-check"></i></strong> button on any movie or TV card to save it here.',
+    (entry) => {
+      watchlistRemove(entry.id, entry.type);
+      showToast('Removed from My List', true);
+      renderWatchlist();
+    }
   );
 }
 
@@ -87,7 +108,12 @@ function renderHistory() {
     'historyGrid',
     historyGet(),
     '<i class="fa-solid fa-clock-rotate-left" style="font-size:2.5rem;color:var(--accent);"></i>',
-    'You haven\'t watched anything yet.<br>Movies and TV shows you play will appear here.'
+    'You haven\'t watched anything yet.<br>Movies and TV shows you play will appear here.',
+    (entry) => {
+      historyRemove(entry.id, entry.type);
+      showToast('Removed from history', true);
+      renderHistory();
+    }
   );
 }
 
