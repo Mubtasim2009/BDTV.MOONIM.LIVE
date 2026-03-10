@@ -3,6 +3,7 @@ const TMDB_API_KEY = "b14194d00ce48c36318eefa745bcdeec";
 const TMDB_BASE = "https://api.themoviedb.org/3";
 const TMDB_IMG_BASE = "https://image.tmdb.org/t/p/w300";
 const TMDB_IMG_BACKDROP = "https://image.tmdb.org/t/p/w780";
+const TMDB_IMG_BACKDROP_HQ = "https://image.tmdb.org/t/p/w1280";
 
 // ─── Watchlist & History (localStorage) ─────────────────────────────────────
 
@@ -84,6 +85,57 @@ function buildImageUrl(path) {
 function buildBackdropUrl(path) {
   if (!path) return "";
   return `${TMDB_IMG_BACKDROP}${path}`;
+}
+
+/**
+ * Samples the dominant color from a backdrop image using a hidden <canvas>
+ * and applies it as a CSS custom property (--theme-r, --theme-g, --theme-b)
+ * on the document root, which the player stylesheet uses to tint UI elements.
+ * Falls back gracefully on CORS errors.
+ */
+function applyThemeColor(imageUrl, triggerEl) {
+  const img = new Image();
+  img.crossOrigin = "anonymous";
+  img.onload = function () {
+    try {
+      const SIZE = 80; // sample at small size for speed
+      const canvas = document.createElement("canvas");
+      canvas.width = SIZE;
+      canvas.height = Math.round(SIZE * (img.naturalHeight / img.naturalWidth));
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+
+      let r = 0, g = 0, b = 0, count = 0;
+      // Sample every 4th pixel and skip very dark / near-white ones
+      for (let i = 0; i < data.length; i += 16) {
+        const pr = data[i], pg = data[i + 1], pb = data[i + 2];
+        const brightness = (pr + pg + pb) / 3;
+        if (brightness < 20 || brightness > 235) continue;
+        r += pr; g += pg; b += pb; count++;
+      }
+      if (!count) return;
+      r = Math.round(r / count);
+      g = Math.round(g / count);
+      b = Math.round(b / count);
+
+      // Boost saturation so the tint reads clearly against the dark UI
+      const max = Math.max(r, g, b);
+      const min = Math.min(r, g, b);
+      if (max - min > 10) {
+        const boost = 1.35;
+        const mid = (max + min) / 2;
+        r = Math.min(255, Math.round(mid + (r - mid) * boost));
+        g = Math.min(255, Math.round(mid + (g - mid) * boost));
+        b = Math.min(255, Math.round(mid + (b - mid) * boost));
+      }
+
+      document.documentElement.style.setProperty("--theme-r", r);
+      document.documentElement.style.setProperty("--theme-g", g);
+      document.documentElement.style.setProperty("--theme-b", b);
+    } catch (_) { /* CORS or canvas read error – skip silently */ }
+  };
+  img.src = imageUrl;
 }
 
 // Portrait card (posters) — info shown as overlay; plot revealed on hover

@@ -88,10 +88,12 @@ async function loadTvShow() {
       ratingEl.style.display = "";
     }
 
-    // Backdrop
+    // Backdrop – use w1280 for crisp full-width display
     const backdropEl = document.getElementById("playerBackdrop");
     if (data.backdrop_path) {
-      backdropEl.style.backgroundImage = `url(${buildBackdropUrl(data.backdrop_path)})`;
+      const backdropUrl = `${TMDB_IMG_BACKDROP_HQ}${data.backdrop_path}`;
+      backdropEl.style.backgroundImage = `url(${backdropUrl})`;
+      applyThemeColor(backdropUrl, backdropEl);
     }
 
     // Logo overlay
