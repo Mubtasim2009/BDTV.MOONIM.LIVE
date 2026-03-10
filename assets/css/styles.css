@@ -2210,3 +2210,97 @@ a {
     padding-inline: 5vw;
   }
 }
+
+/* ─── Font Awesome icon integration ─────────────────────────────────────────── */
+
+/* Nav links: align icon + text side-by-side */
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.nav-link i {
+  font-size: 0.8em;
+  flex-shrink: 0;
+  width: 1em;
+  text-align: center;
+}
+
+/* Live TV button icon */
+.live-btn-nav i {
+  font-size: 0.82em;
+}
+
+/* Hero watch btn icon */
+.hero-watch-btn i {
+  font-size: 0.85em;
+}
+
+/* Search / form button icons */
+.hero-search button i,
+.search-bar-wrap button i {
+  font-size: 0.85em;
+}
+
+/* Feature cards on About page: make FA icons match emoji visual weight */
+.feature-icon i {
+  font-size: 1.75rem;
+  color: var(--accent-hover);
+}
+
+/* Section heading icons */
+.section-header h2 i,
+.live-title i {
+  font-size: 0.9em;
+  color: var(--accent-hover);
+  margin-right: 0.15rem;
+}
+
+/* Genre page heading */
+.genre-page h1 i,
+.watchlist-page h1 i {
+  color: var(--accent-hover);
+  margin-right: 0.2rem;
+}
+
+/* Genre type / back buttons */
+.genre-type-btn i,
+.genre-back-btn i {
+  font-size: 0.85em;
+}
+
+/* Watchlist tab icons */
+.watchlist-tab i {
+  font-size: 0.85em;
+}
+
+/* Refresh button icon */
+.refresh-btn i {
+  font-size: 0.9em;
+}
+
+/* Player watchlist button icon */
+.player-wl-btn i {
+  font-size: 0.85em;
+}
+
+/* Wl-btn (card corner check icon) */
+.wl-btn i {
+  pointer-events: none;
+  font-size: 0.8rem;
+  line-height: 1;
+}
+
+/* Back to top button icon */
+.back-to-top i {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+/* About page: keep feature icon centered */
+.feature-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

@@ -50,18 +50,20 @@ async function loadTvShow() {
     if (watchlistBtnContainer) {
       const wlBtn = document.createElement('button');
       wlBtn.className = 'player-wl-btn' + (watchlistHas(Number(tvId), 'tv') ? ' player-wl-btn--active' : '');
-      wlBtn.innerHTML = watchlistHas(Number(tvId), 'tv') ? '\u2714 In My List' : '+ My List';
+      wlBtn.innerHTML = watchlistHas(Number(tvId), 'tv')
+        ? '<i class="fa-solid fa-check"></i> In My List'
+        : '<i class="fa-solid fa-plus"></i> My List';
       wlBtn.addEventListener('click', () => {
         if (watchlistHas(Number(tvId), 'tv')) {
           watchlistRemove(Number(tvId), 'tv');
           wlBtn.classList.remove('player-wl-btn--active');
-          wlBtn.innerHTML = '+ My List';
+          wlBtn.innerHTML = '<i class="fa-solid fa-plus"></i> My List';
           showToast('Removed from My List', true);
         } else {
           watchlistAdd({ id: Number(tvId), type: 'tv', title: name, posterPath: data.poster_path || null, year });
           wlBtn.classList.add('player-wl-btn--active');
-          wlBtn.innerHTML = '\u2714 In My List';
-          showToast('\u2714 Added to My List');
+          wlBtn.innerHTML = '<i class="fa-solid fa-check"></i> In My List';
+          showToast('<i class="fa-solid fa-check"></i> Added to My List');
         }
       });
       watchlistBtnContainer.appendChild(wlBtn);

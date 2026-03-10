@@ -59,18 +59,20 @@ async function loadMovie() {
     if (watchlistBtnContainer) {
       const wlBtn = document.createElement('button');
       wlBtn.className = 'player-wl-btn' + (watchlistHas(Number(id), 'movie') ? ' player-wl-btn--active' : '');
-      wlBtn.innerHTML = watchlistHas(Number(id), 'movie') ? '\u2714 In My List' : '+ My List';
+      wlBtn.innerHTML = watchlistHas(Number(id), 'movie')
+        ? '<i class="fa-solid fa-check"></i> In My List'
+        : '<i class="fa-solid fa-plus"></i> My List';
       wlBtn.addEventListener('click', () => {
         if (watchlistHas(Number(id), 'movie')) {
           watchlistRemove(Number(id), 'movie');
           wlBtn.classList.remove('player-wl-btn--active');
-          wlBtn.innerHTML = '+ My List';
+          wlBtn.innerHTML = '<i class="fa-solid fa-plus"></i> My List';
           showToast('Removed from My List', true);
         } else {
           watchlistAdd({ id: Number(id), type: 'movie', title, posterPath: data.poster_path || null, year });
           wlBtn.classList.add('player-wl-btn--active');
-          wlBtn.innerHTML = '\u2714 In My List';
-          showToast('\u2714 Added to My List');
+          wlBtn.innerHTML = '<i class="fa-solid fa-check"></i> In My List';
+          showToast('<i class="fa-solid fa-check"></i> Added to My List');
         }
       });
       watchlistBtnContainer.appendChild(wlBtn);

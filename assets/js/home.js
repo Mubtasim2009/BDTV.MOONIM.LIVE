@@ -470,7 +470,7 @@ function loadContinueWatching() {
     const wlBtn = document.createElement('button');
     wlBtn.className = 'wl-btn' + (watchlistHas(entry.id, entry.type) ? ' wl-btn--active' : '');
     wlBtn.setAttribute('aria-label', watchlistHas(entry.id, entry.type) ? 'Remove from My List' : 'Add to My List');
-    wlBtn.innerHTML = '&#10003;';
+    wlBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
     wlBtn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -481,7 +481,7 @@ function loadContinueWatching() {
       } else {
         watchlistAdd({ id: entry.id, type: entry.type, title: entry.title, posterPath: entry.posterPath, year: entry.year });
         wlBtn.classList.add('wl-btn--active');
-        showToast('\u2714 Added to My List');
+        showToast('<i class="fa-solid fa-check"></i> Added to My List');
       }
     });
 

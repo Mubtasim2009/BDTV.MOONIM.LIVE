@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/css/styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest/dist/hls.min.js"></script>
 </head>
 <body>
@@ -22,19 +23,19 @@
     </button>
     <div class="top-right">
       <nav class="nav-links" id="navLinks">
-        <a href="index.html" class="nav-link">Home</a>
-        <a href="search.html" class="nav-link">Search</a>
-        <a href="genre.html" class="nav-link">Genres</a>
-        <a href="watchlist.html" class="nav-link">My List</a>
-        <a href="about.html" class="nav-link">About</a>
+        <a href="index.html" class="nav-link"><i class="fa-solid fa-house"></i> Home</a>
+        <a href="search.html" class="nav-link"><i class="fa-solid fa-magnifying-glass"></i> Search</a>
+        <a href="genre.html" class="nav-link"><i class="fa-solid fa-film"></i> Genres</a>
+        <a href="watchlist.html" class="nav-link"><i class="fa-solid fa-bookmark"></i> My List</a>
+        <a href="about.html" class="nav-link"><i class="fa-solid fa-circle-info"></i> About</a>
       </nav>
-      <a href="live.html" class="live-btn-nav">&#x25CF; Live TV</a>
+      <a href="live.html" class="live-btn-nav"><i class="fa-solid fa-tower-broadcast"></i> Live TV</a>
     </div>
   </header>
 
   <div class="live-shell">
     <header class="live-header">
-      <div class="live-title">Live TV</div>
+      <div class="live-title"><i class="fa-solid fa-tower-broadcast"></i> Live TV</div>
       <div class="live-sub">Browse BDIX playlists and watch live channels instantly.</div>
     </header>
 
@@ -53,7 +54,7 @@
             <select id="playlistSelect" class="playlist-select">
               <option value="falcon">Falcon Cast</option>
             </select>
-            <button id="refreshPlaylistBtn" class="refresh-btn" type="button">⟳ Refresh</button>
+            <button id="refreshPlaylistBtn" class="refresh-btn" type="button"><i class="fa-solid fa-rotate"></i> Refresh</button>
           </div>
         </div>
 

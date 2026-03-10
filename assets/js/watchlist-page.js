@@ -56,7 +56,7 @@ function renderGrid(containerId, items, emptyIcon, emptyMsg) {
     const wlBtn = document.createElement('button');
     wlBtn.className = 'wl-btn wl-btn--active';
     wlBtn.setAttribute('aria-label', 'Remove from My List');
-    wlBtn.innerHTML = '&#10003;';
+    wlBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
     wlBtn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -77,8 +77,8 @@ function renderWatchlist() {
   renderGrid(
     'watchlistGrid',
     watchlistGet(),
-    '🔖',
-    'Nothing saved yet.<br>Hit the <strong>&#10003;</strong> button on any movie or TV card to save it here.'
+    '<i class="fa-solid fa-bookmark" style="font-size:2.5rem;color:var(--accent);"></i>',
+    'Nothing saved yet.<br>Hit the <strong><i class="fa-solid fa-check"></i></strong> button on any movie or TV card to save it here.'
   );
 }
 
@@ -86,7 +86,7 @@ function renderHistory() {
   renderGrid(
     'historyGrid',
     historyGet(),
-    '🕐',
+    '<i class="fa-solid fa-clock-rotate-left" style="font-size:2.5rem;color:var(--accent);"></i>',
     'You haven\'t watched anything yet.<br>Movies and TV shows you play will appear here.'
   );
 }

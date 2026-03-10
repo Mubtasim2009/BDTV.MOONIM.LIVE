@@ -148,7 +148,7 @@ function createMediaCard(item, type) {
   const wlBtn = document.createElement('button');
   wlBtn.className = 'wl-btn' + (watchlistHas(item.id, type) ? ' wl-btn--active' : '');
   wlBtn.setAttribute('aria-label', watchlistHas(item.id, type) ? 'Remove from My List' : 'Add to My List');
-  wlBtn.innerHTML = '&#10003;';
+  wlBtn.innerHTML = '<i class="fa-solid fa-check"></i>';
   wlBtn.addEventListener('click', (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -161,7 +161,7 @@ function createMediaCard(item, type) {
       watchlistAdd({ id: item.id, type, title, posterPath: item.poster_path || null, year });
       wlBtn.classList.add('wl-btn--active');
       wlBtn.setAttribute('aria-label', 'Remove from My List');
-      showToast('\u2714 Added to My List');
+      showToast('<i class="fa-solid fa-check"></i> Added to My List');
     }
   });
 
@@ -298,7 +298,7 @@ function showSkeletons(containerId, count, type) {
   btn.id = 'backToTop';
   btn.className = 'back-to-top';
   btn.setAttribute('aria-label', 'Back to top');
-  btn.innerHTML = '&#8679;';
+  btn.innerHTML = '<i class="fa-solid fa-chevron-up"></i>';
   document.body.appendChild(btn);
 
   window.addEventListener('scroll', () => {
