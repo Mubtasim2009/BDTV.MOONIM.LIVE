@@ -406,46 +406,16 @@ function showSkeletons(containerId, count, type) {
       .catch(() => {});
   }
 
-  // Geo: browser geolocation (no rate limits) with ipapi.co as fallback
+  // Geo: IP-based lookup via ipapi.co — no browser permission prompt.
   // ipapi.co is HTTPS-native (ip-api.com free tier is HTTP-only, blocked on
   // GitHub Pages).
-  function geoFallback() {
-    fetch('https://ipapi.co/json/')
-      .then(r => r.ok ? r.json() : null)
-      .then(geo => {
-        if (!geo || geo.error || geo.latitude == null) return;
-        applyWeather(geo.latitude, geo.longitude, geo.city, geo.country_code);
-      })
-      .catch(() => {});
-  }
-
-  // Reverse-geocode lat/lon → city name using OWM Geocoding API (free tier)
-  function resolveCity(lat, lon) {
-    const geoUrl = `https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${OWM_KEY}`;
-    return fetch(geoUrl)
-      .then(r => r.ok ? r.json() : null)
-      .then(data => {
-        if (data && data[0]) {
-          return { city: data[0].name, cc: data[0].country };
-        }
-        return { city: null, cc: null };
-      })
-      .catch(() => ({ city: null, cc: null }));
-  }
-
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      pos => {
-        const lat = pos.coords.latitude;
-        const lon = pos.coords.longitude;
-        resolveCity(lat, lon).then(({ city, cc }) => applyWeather(lat, lon, city, cc));
-      },
-      geoFallback,
-      { timeout: 5000, maximumAge: 600000 }
-    );
-  } else {
-    geoFallback();
-  }
+  fetch('https://ipapi.co/json/')
+    .then(r => r.ok ? r.json() : null)
+    .then(geo => {
+      if (!geo || geo.error || geo.latitude == null) return;
+      applyWeather(geo.latitude, geo.longitude, geo.city, geo.country_code);
+    })
+    .catch(() => {});
 })();
 
 // ─── Keyboard shortcuts ────────────────────────────────────────────────────────
