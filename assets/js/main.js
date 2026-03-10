@@ -310,39 +310,6 @@ function showSkeletons(containerId, count, type) {
   });
 })();
 
-// ─── Navbar greeting bar ──────────────────────────────────────────────────────
-(function () {
-  const nav = document.querySelector('.top-nav');
-  if (!nav) return;
-
-  function getGreeting() {
-    const h = new Date().getHours();
-    if (h >= 5  && h < 12) return { text: 'Good Morning',   icon: 'fa-sun' };
-    if (h >= 12 && h < 17) return { text: 'Good Afternoon', icon: 'fa-cloud-sun' };
-    if (h >= 17 && h < 21) return { text: 'Good Evening',   icon: 'fa-moon' };
-    return                         { text: 'Good Night',     icon: 'fa-star' };
-  }
-
-  const { text, icon } = getGreeting();
-
-  const bar = document.createElement('div');
-  bar.id = 'navInfoBar';
-  bar.className = 'nav-info-bar';
-  bar.setAttribute('aria-label', 'Greeting');
-  bar.innerHTML =
-    `<span class="nav-info-item nav-info-greeting">` +
-      `<i class="fa-solid ${icon}"></i>` +
-      `<span>${text}</span>` +
-    `</span>`;
-
-  const brand = nav.querySelector('.top-brand');
-  if (brand && brand.nextSibling) {
-    nav.insertBefore(bar, brand.nextSibling);
-  } else {
-    nav.appendChild(bar);
-  }
-})();
-
 // ─── Keyboard shortcuts ────────────────────────────────────────────────────────
 
 document.addEventListener('keydown', (e) => {

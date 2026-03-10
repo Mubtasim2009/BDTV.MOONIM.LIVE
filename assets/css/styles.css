@@ -2305,43 +2305,4 @@ a {
   justify-content: center;
 }
 
-/* ─── Navbar greeting bar ───────────────────────────────────────────────────── */
 
-.nav-info-bar {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  flex-shrink: 0;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 999px;
-  padding: 0.28rem 0.8rem;
-  font-size: 0.78rem;
-  color: var(--text-secondary);
-  white-space: nowrap;
-  opacity: 0;
-  animation: navInfoFadeIn 0.5s 0.3s var(--ease) forwards;
-}
-
-@keyframes navInfoFadeIn {
-  to { opacity: 1; }
-}
-
-.nav-info-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-}
-
-.nav-info-item i {
-  font-size: 0.72rem;
-  color: var(--accent-hover);
-  flex-shrink: 0;
-}
-
-/* On small mobile hide the entire bar */
-@media (max-width: 640px) {
-  .nav-info-bar {
-    display: none;
-  }
-}
