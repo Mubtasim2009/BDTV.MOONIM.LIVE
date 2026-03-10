@@ -54,8 +54,7 @@ async function loadMovie() {
       year
     });
 
-    // Watchlist button in the actions area
-    const actionsArea = document.querySelector('.hero-carousel-actions') || null;
+    // Watchlist button
     const watchlistBtnContainer = document.getElementById('movieWatchlistBtnContainer');
     if (watchlistBtnContainer) {
       const wlBtn = document.createElement('button');
