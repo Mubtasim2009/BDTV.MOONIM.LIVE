@@ -49,45 +49,6 @@
   --backdrop-gradient: linear-gradient(to bottom, rgba(13,15,20,0.08) 0%, rgba(13,15,20,0.55) 60%, var(--bg-base) 100%);
 }
 
-/* ─── Light Mode ─────────────────────────────────────────────────────────── */
-
-[data-theme="light"] {
-  color-scheme: light;
-
-  /* Backgrounds */
-  --bg-base:        #f4f5f8;
-  --bg-surface:     #ffffff;
-  --bg-elevated:    #eaecf2;
-  --bg-overlay:          rgba(244, 245, 248, 0.55);
-  --bg-overlay-scrolled: rgba(244, 245, 248, 0.90);
-
-  /* Accent – same violet/indigo */
-  --accent:         #6355e8;
-  --accent-hover:   #7c6af7;
-  --accent-rgb:     99, 85, 232;
-  --accent-soft:    rgba(99, 85, 232, 0.12);
-  --accent-glow:    0 0 28px rgba(99, 85, 232, 0.25);
-
-  /* Live TV badge */
-  --live-color:     #d97706;
-  --live-soft:      rgba(217, 119, 6, 0.12);
-
-  /* Text */
-  --text-primary:   #111318;
-  --text-secondary: #4b5168;
-  --text-muted:     #8b90a7;
-
-  /* Borders */
-  --border:         rgba(0, 0, 0, 0.08);
-  --border-strong:  rgba(0, 0, 0, 0.16);
-
-  /* Shadows */
-  --shadow-card:  0 4px 24px rgba(0,0,0,0.10);
-  --shadow-nav:   0 8px 40px rgba(0,0,0,0.12);
-
-  /* Player backdrop gradient */
-  --backdrop-gradient: linear-gradient(to bottom, rgba(244,245,248,0.08) 0%, rgba(244,245,248,0.55) 60%, var(--bg-base) 100%);
-}
 
 *,*::before,*::after {
   box-sizing: border-box;
@@ -141,19 +102,6 @@ body::after {
   animation: bg-bloom-2 17s ease-in-out infinite alternate-reverse;
 }
 
-/* Light-mode tones down opacity so the white bg is never overwhelming */
-[data-theme="light"] body::before {
-  background:
-    radial-gradient(ellipse 100% 65% at 12%  5%,  rgba(var(--accent-rgb), 0.10) 0%, transparent 55%),
-    radial-gradient(ellipse  70% 50% at 90% 20%,  rgba(217, 119, 6,  0.06)       0%, transparent 50%),
-    radial-gradient(ellipse  90% 70% at 50% 96%,  rgba(var(--accent-rgb), 0.08) 0%, transparent 60%);
-}
-
-[data-theme="light"] body::after {
-  background:
-    radial-gradient(ellipse 55% 40% at 78% 88%,  rgba(var(--accent-rgb), 0.07) 0%, transparent 55%),
-    radial-gradient(ellipse 45% 35% at 22% 65%,  rgba(217, 119, 6,  0.05)       0%, transparent 50%);
-}
 
 @keyframes bg-bloom-1 {
   0%   { opacity: 1;    transform: scale(1)    translate(0, 0);      }
@@ -265,36 +213,6 @@ a {
   color: var(--accent);
 }
 
-/* Theme toggle button */
-
-.theme-toggle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 38px;
-  height: 38px;
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-xs);
-  background: var(--bg-elevated);
-  color: var(--text-primary);
-  cursor: pointer;
-  padding: 0;
-  flex-shrink: 0;
-  font-size: 1rem;
-  transition: background 0.18s var(--ease), color 0.18s var(--ease), border-color 0.18s var(--ease);
-}
-
-.theme-toggle:hover {
-  background: var(--accent-soft);
-  border-color: var(--accent);
-  color: var(--accent);
-}
-
-/* Show sun icon in dark mode, moon in light mode */
-.theme-toggle .icon-moon { display: inline; }
-.theme-toggle .icon-sun  { display: none; }
-[data-theme="light"] .theme-toggle .icon-moon { display: none; }
-[data-theme="light"] .theme-toggle .icon-sun  { display: inline; }
 
 .nav-links {
   position: absolute;
