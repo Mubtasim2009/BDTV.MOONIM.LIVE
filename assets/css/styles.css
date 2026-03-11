@@ -11,6 +11,7 @@
   /* Accent – warm violet/indigo */
   --accent:         #7c6af7;
   --accent-hover:   #9b8cfa;
+  --accent-rgb:     124, 106, 247;
   --accent-soft:    rgba(124, 106, 247, 0.18);
   --accent-glow:    0 0 28px rgba(124, 106, 247, 0.35);
 
@@ -63,6 +64,7 @@
   /* Accent – same violet/indigo */
   --accent:         #6355e8;
   --accent-hover:   #7c6af7;
+  --accent-rgb:     99, 85, 232;
   --accent-soft:    rgba(99, 85, 232, 0.12);
   --accent-glow:    0 0 28px rgba(99, 85, 232, 0.25);
 
@@ -772,7 +774,7 @@ a {
 
 .landscape-tile:hover {
   transform: translateY(-4px);
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.6);
+  animation: tile-boom-landscape 0.45s var(--ease) forwards;
 }
 
 .landscape-tile:hover img {
@@ -873,7 +875,7 @@ a {
 
 .media-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.65);
+  animation: tile-boom 0.45s var(--ease) forwards;
 }
 
 .media-card:hover img {
@@ -966,6 +968,52 @@ a {
 @keyframes shimmer {
   from { background-position: 200% 0; }
   to   { background-position: -200% 0; }
+}
+
+/* ─── Booming glow burst animation for portrait cards ─────────────────── */
+
+@keyframes tile-boom {
+  0% {
+    box-shadow:
+      0 0 0   0px rgba(var(--accent-rgb), 0),
+      0 0  0px 0px rgba(var(--accent-rgb), 0),
+      0 4px 12px rgba(0, 0, 0, 0.45);
+  }
+  38% {
+    box-shadow:
+      0 0 0   5px rgba(var(--accent-rgb), 0.70),
+      0 0 30px 8px rgba(var(--accent-rgb), 0.45),
+      0 14px 36px rgba(0, 0, 0, 0.65);
+  }
+  100% {
+    box-shadow:
+      0 0 0   2px rgba(var(--accent-rgb), 0.35),
+      0 0 18px 4px rgba(var(--accent-rgb), 0.18),
+      0 14px 36px rgba(0, 0, 0, 0.65);
+  }
+}
+
+/* ─── Booming glow burst animation for landscape tiles ─────────────────── */
+
+@keyframes tile-boom-landscape {
+  0% {
+    box-shadow:
+      0 0 0   0px rgba(var(--accent-rgb), 0),
+      0 0  0px 0px rgba(var(--accent-rgb), 0),
+      0 4px 12px rgba(0, 0, 0, 0.45);
+  }
+  38% {
+    box-shadow:
+      0 0 0   5px rgba(var(--accent-rgb), 0.70),
+      0 0 30px 8px rgba(var(--accent-rgb), 0.45),
+      0 10px 28px rgba(0, 0, 0, 0.60);
+  }
+  100% {
+    box-shadow:
+      0 0 0   2px rgba(var(--accent-rgb), 0.35),
+      0 0 18px 4px rgba(var(--accent-rgb), 0.18),
+      0 10px 28px rgba(0, 0, 0, 0.60);
+  }
 }
 
 /* Player layout (movie/tv) */
