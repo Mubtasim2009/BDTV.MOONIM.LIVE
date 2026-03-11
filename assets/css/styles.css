@@ -2062,26 +2062,30 @@ a {
   /* Reduce inter-tile gap */
   .card-row,
   .landscape-row {
-    gap: 0.5rem;
+    gap: 0.4rem;
   }
 
-  /* Landscape backdrop tiles – narrower so 2 fit comfortably */
+  /* Landscape backdrop tiles – force narrower width so 2+ fit per row */
   .landscape-tile {
-    min-width: 160px;
+    flex: 0 0 130px;
+    width: 130px;
   }
 
-  /* Portrait poster cards – narrower so 3 fit on a standard phone */
+  /* Portrait poster cards – force narrower width so 3+ fit per row */
   .media-card {
-    min-width: 110px;
+    flex: 0 0 90px;
+    width: 90px;
   }
 
   /* Match skeleton placeholders to the real tile sizes */
   .skeleton-landscape {
-    min-width: 160px;
+    flex: 0 0 130px;
+    width: 130px;
   }
 
   .skeleton-portrait {
-    min-width: 110px;
+    flex: 0 0 90px;
+    width: 90px;
   }
 }
 
