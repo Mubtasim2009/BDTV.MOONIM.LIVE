@@ -107,6 +107,35 @@ body {
   transition: background-color 0.3s var(--ease), color 0.3s var(--ease);
 }
 
+/* ─── Page background ambient glow ──────────────────────────────────────── */
+/* Subtle aurora-style blobs that drift slowly behind all content */
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 90% 55% at 15%  8%,  rgba(var(--accent-rgb), 0.11) 0%, transparent 55%),
+    radial-gradient(ellipse 65% 45% at 88% 22%,  rgba(245, 158, 11, 0.06)       0%, transparent 50%),
+    radial-gradient(ellipse 80% 65% at 50% 92%,  rgba(var(--accent-rgb), 0.08) 0%, transparent 60%);
+  animation: bg-ambient 20s ease-in-out infinite alternate;
+}
+
+[data-theme="light"] body::before {
+  background:
+    radial-gradient(ellipse 90% 55% at 15%  8%,  rgba(var(--accent-rgb), 0.06) 0%, transparent 55%),
+    radial-gradient(ellipse 65% 45% at 88% 22%,  rgba(217, 119, 6,  0.03)       0%, transparent 50%),
+    radial-gradient(ellipse 80% 65% at 50% 92%,  rgba(var(--accent-rgb), 0.04) 0%, transparent 60%);
+}
+
+@keyframes bg-ambient {
+  0%   { opacity: 1;    transform: scale(1)    translateY(0);    }
+  50%  { opacity: 0.80; transform: scale(1.04) translateY(-12px); }
+  100% { opacity: 0.92; transform: scale(1.08) translateY(6px);  }
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -124,7 +153,7 @@ a {
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  padding: 0.65rem 1rem;
+  padding: 0.65rem max(1rem, env(safe-area-inset-right)) 0.65rem max(1rem, env(safe-area-inset-left));
   background: transparent;
   border-bottom: 1px solid transparent;
   box-shadow: none;
@@ -141,13 +170,18 @@ a {
 
 .top-brand img {
   height: 32px;
+  width: auto;
+  max-width: min(100px, 26vw);
   display: block;
+  object-fit: contain;
+  object-position: left center;
 }
 
 .top-right {
   display: flex;
   align-items: center;
   gap: 0.6rem;
+  flex-shrink: 0;
 }
 
 /* Mobile nav toggle */
@@ -529,11 +563,11 @@ a {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  background: rgba(124, 106, 247, 0.35);
+  background: rgba(var(--accent-rgb), 0.35);
   backdrop-filter: blur(12px) saturate(160%);
   -webkit-backdrop-filter: blur(12px) saturate(160%);
   color: #fff;
-  border: 1px solid rgba(124, 106, 247, 0.55);
+  border: 1px solid rgba(var(--accent-rgb), 0.55);
   border-radius: 999px;
   padding: 0.65rem 1.6rem;
   font-size: 0.95rem;
@@ -542,14 +576,14 @@ a {
   cursor: pointer;
   text-decoration: none;
   letter-spacing: 0.02em;
-  box-shadow: 0 4px 20px rgba(124,106,247,0.35);
+  box-shadow: 0 4px 20px rgba(var(--accent-rgb), 0.35);
   transition: background 0.18s var(--ease), box-shadow 0.22s var(--ease), transform 0.18s var(--ease), border-color 0.18s var(--ease);
 }
 
 .hero-watch-btn:hover {
-  background: rgba(124, 106, 247, 0.55);
-  border-color: rgba(124, 106, 247, 0.8);
-  box-shadow: 0 6px 28px rgba(124,106,247,0.5);
+  background: rgba(var(--accent-rgb), 0.55);
+  border-color: rgba(var(--accent-rgb), 0.8);
+  box-shadow: 0 6px 28px rgba(var(--accent-rgb), 0.5);
   transform: translateY(-2px);
 }
 
@@ -614,8 +648,8 @@ a {
 
 .hero-search button {
   border-radius: 999px;
-  border: 1px solid rgba(124, 106, 247, 0.55);
-  background: rgba(124, 106, 247, 0.35);
+  border: 1px solid rgba(var(--accent-rgb), 0.55);
+  background: rgba(var(--accent-rgb), 0.35);
   backdrop-filter: blur(12px) saturate(160%);
   -webkit-backdrop-filter: blur(12px) saturate(160%);
   color: #fff;
@@ -625,20 +659,20 @@ a {
   font-family: inherit;
   cursor: pointer;
   letter-spacing: 0.02em;
-  box-shadow: 0 2px 14px rgba(124, 106, 247, 0.3);
+  box-shadow: 0 2px 14px rgba(var(--accent-rgb), 0.3);
   transition: background 0.18s var(--ease), box-shadow 0.22s var(--ease), transform 0.18s var(--ease), border-color 0.18s var(--ease);
 }
 
 .hero-search button:hover {
-  background: rgba(124, 106, 247, 0.55);
-  border-color: rgba(124, 106, 247, 0.8);
-  box-shadow: 0 4px 22px rgba(124, 106, 247, 0.45);
+  background: rgba(var(--accent-rgb), 0.55);
+  border-color: rgba(var(--accent-rgb), 0.8);
+  box-shadow: 0 4px 22px rgba(var(--accent-rgb), 0.45);
   transform: translateY(-1px);
 }
 
 .hero-search button:active {
   transform: translateY(0);
-  box-shadow: 0 2px 10px rgba(124, 106, 247, 0.35);
+  box-shadow: 0 2px 10px rgba(var(--accent-rgb), 0.35);
 }
 
 /* Responsive adjustments */
@@ -1940,8 +1974,8 @@ a {
   /* Navbar – tighten left padding but keep right padding generous so the
      burger button is never clipped at the viewport edge */
   .top-nav {
-    padding-left: 0.75rem;
-    padding-right: 1rem;
+    padding-left: max(0.75rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
   }
 
   /* Reduce gap between nav items so right-side controls fit on narrow phones */
@@ -2003,6 +2037,13 @@ a {
 
   .live-btn-nav {
     padding: 0.35rem 0.55rem;
+  }
+
+  /* Search is reachable via the hamburger nav-links, so the dedicated
+     mobile-search icon can be hidden on the narrowest phones to give the
+     hamburger button enough room to stay fully visible */
+  .nav-search-mobile {
+    display: none;
   }
 }
 /* ─── Toast Notifications ────────────────────────────────────────────────── */
