@@ -2014,9 +2014,13 @@ a {
     gap: 0.35rem;
   }
 
-  /* Live TV nav button – slightly smaller to avoid overflow */
+  /* Live TV nav button – hide text label, keep icon only to save space */
+  .live-btn-nav .live-btn-text {
+    display: none;
+  }
+
   .live-btn-nav {
-    padding: 0.35rem 0.65rem;
+    padding: 0.35rem 0.55rem;
     font-size: 0.75rem;
   }
 
@@ -2089,23 +2093,12 @@ a {
   }
 }
 
-/* ─── Very small phones (≤ 360px) – hide Live TV label, keep icon only ─── */
+/* ─── Very small phones (≤ 360px) ─────────────────────────────── */
 
 @media (max-width: 360px) {
-  /* Hide only the text label; the icon and aria-label remain accessible */
-  .live-btn-nav .live-btn-text {
-    display: none;
-  }
-
+  /* Slightly tighter icon-only padding for the narrowest phones */
   .live-btn-nav {
-    padding: 0.35rem 0.55rem;
-  }
-
-  /* Search is reachable via the hamburger nav-links, so the dedicated
-     mobile-search icon can be hidden on the narrowest phones to give the
-     hamburger button enough room to stay fully visible */
-  .nav-search-mobile {
-    display: none;
+    padding: 0.35rem 0.5rem;
   }
 }
 /* ─── Toast Notifications ────────────────────────────────────────────────── */
