@@ -1889,9 +1889,16 @@ a {
 /* ─── Small-mobile optimisations (≤ 480px) ──────────────────── */
 
 @media (max-width: 480px) {
-  /* Navbar – tighten horizontal padding on tiny screens */
+  /* Navbar – tighten left padding but keep right padding generous so the
+     burger button is never clipped at the viewport edge */
   .top-nav {
-    padding-inline: 0.75rem;
+    padding-left: 0.75rem;
+    padding-right: 1rem;
+  }
+
+  /* Reduce gap between nav items so right-side controls fit on narrow phones */
+  .top-right {
+    gap: 0.35rem;
   }
 
   /* Live TV nav button – slightly smaller to avoid overflow */
@@ -1935,6 +1942,19 @@ a {
 
   .refresh-btn {
     justify-content: center;
+  }
+}
+
+/* ─── Very small phones (≤ 360px) – hide Live TV label, keep icon only ─── */
+
+@media (max-width: 360px) {
+  /* Hide only the text label; the icon and aria-label remain accessible */
+  .live-btn-nav .live-btn-text {
+    display: none;
+  }
+
+  .live-btn-nav {
+    padding: 0.35rem 0.55rem;
   }
 }
 /* ─── Toast Notifications ────────────────────────────────────────────────── */
