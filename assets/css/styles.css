@@ -107,8 +107,9 @@ body {
   transition: background-color 0.3s var(--ease), color 0.3s var(--ease);
 }
 
-/* ─── Page background ambient glow ──────────────────────────────────────── */
-/* Subtle aurora-style blobs that drift slowly behind all content */
+/* ─── Page background bloom / aurora ────────────────────────────────────── */
+/* Two stacked pseudo-elements produce a vivid "blooming" glow behind all    */
+/* content.  body::before = large slow blobs; body::after = bright hotspots. */
 
 body::before {
   content: '';
@@ -116,24 +117,54 @@ body::before {
   inset: 0;
   z-index: -1;
   pointer-events: none;
+  /* Three large soft orbs – violet, amber, violet */
   background:
-    radial-gradient(ellipse 90% 55% at 15%  8%,  rgba(var(--accent-rgb), 0.11) 0%, transparent 55%),
-    radial-gradient(ellipse 65% 45% at 88% 22%,  rgba(245, 158, 11, 0.06)       0%, transparent 50%),
-    radial-gradient(ellipse 80% 65% at 50% 92%,  rgba(var(--accent-rgb), 0.08) 0%, transparent 60%);
-  animation: bg-ambient 20s ease-in-out infinite alternate;
+    radial-gradient(ellipse 100% 65% at 12%  5%,  rgba(var(--accent-rgb), 0.28) 0%, transparent 55%),
+    radial-gradient(ellipse  70% 50% at 90% 20%,  rgba(245, 158, 11, 0.18)       0%, transparent 50%),
+    radial-gradient(ellipse  90% 70% at 50% 96%,  rgba(var(--accent-rgb), 0.22) 0%, transparent 60%);
+  /* blur turns the sharp gradient edges into a genuine bloom/halo */
+  filter: blur(55px);
+  animation: bg-bloom-1 22s ease-in-out infinite alternate;
 }
 
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  /* Two smaller, brighter hotspots offset from the first layer */
+  background:
+    radial-gradient(ellipse 55% 40% at 78% 88%,  rgba(var(--accent-rgb), 0.20) 0%, transparent 55%),
+    radial-gradient(ellipse 45% 35% at 22% 65%,  rgba(245, 158, 11, 0.14)       0%, transparent 50%);
+  filter: blur(45px);
+  animation: bg-bloom-2 17s ease-in-out infinite alternate-reverse;
+}
+
+/* Light-mode tones down opacity so the white bg is never overwhelming */
 [data-theme="light"] body::before {
   background:
-    radial-gradient(ellipse 90% 55% at 15%  8%,  rgba(var(--accent-rgb), 0.06) 0%, transparent 55%),
-    radial-gradient(ellipse 65% 45% at 88% 22%,  rgba(217, 119, 6,  0.03)       0%, transparent 50%),
-    radial-gradient(ellipse 80% 65% at 50% 92%,  rgba(var(--accent-rgb), 0.04) 0%, transparent 60%);
+    radial-gradient(ellipse 100% 65% at 12%  5%,  rgba(var(--accent-rgb), 0.10) 0%, transparent 55%),
+    radial-gradient(ellipse  70% 50% at 90% 20%,  rgba(217, 119, 6,  0.06)       0%, transparent 50%),
+    radial-gradient(ellipse  90% 70% at 50% 96%,  rgba(var(--accent-rgb), 0.08) 0%, transparent 60%);
 }
 
-@keyframes bg-ambient {
-  0%   { opacity: 1;    transform: scale(1)    translateY(0);    }
-  50%  { opacity: 0.80; transform: scale(1.04) translateY(-12px); }
-  100% { opacity: 0.92; transform: scale(1.08) translateY(6px);  }
+[data-theme="light"] body::after {
+  background:
+    radial-gradient(ellipse 55% 40% at 78% 88%,  rgba(var(--accent-rgb), 0.07) 0%, transparent 55%),
+    radial-gradient(ellipse 45% 35% at 22% 65%,  rgba(217, 119, 6,  0.05)       0%, transparent 50%);
+}
+
+@keyframes bg-bloom-1 {
+  0%   { opacity: 1;    transform: scale(1)    translate(0, 0);      }
+  40%  { opacity: 0.80; transform: scale(1.06) translate(-18px, 14px); }
+  100% { opacity: 0.92; transform: scale(1.10) translate(12px, -8px);  }
+}
+
+@keyframes bg-bloom-2 {
+  0%   { opacity: 0.85; transform: scale(1)    translate(0, 0);      }
+  50%  { opacity: 1;    transform: scale(1.07) translate(14px, 18px); }
+  100% { opacity: 0.90; transform: scale(1.04) translate(-10px, 6px); }
 }
 
 a {
@@ -2024,6 +2055,33 @@ a {
 
   .refresh-btn {
     justify-content: center;
+  }
+
+  /* ── Tiles – show more per row on small phones ────────────────── */
+
+  /* Reduce inter-tile gap */
+  .card-row,
+  .landscape-row {
+    gap: 0.5rem;
+  }
+
+  /* Landscape backdrop tiles – narrower so 2 fit comfortably */
+  .landscape-tile {
+    min-width: 160px;
+  }
+
+  /* Portrait poster cards – narrower so 3 fit on a standard phone */
+  .media-card {
+    min-width: 110px;
+  }
+
+  /* Match skeleton placeholders to the real tile sizes */
+  .skeleton-landscape {
+    min-width: 160px;
+  }
+
+  .skeleton-portrait {
+    min-width: 110px;
   }
 }
 
