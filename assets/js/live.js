@@ -1,4 +1,8 @@
 const PLAYLISTS = {
+  fast1: {
+    name: "Fast 1",
+    url: "https://is.gd/H5l9iz.m3u",
+  },
   falcon: {
     name: "Falcon Cast",
     url: "https://raw.githubusercontent.com/FunctionError/PiratesTv/refs/heads/main/combined_playlist.m3u",
