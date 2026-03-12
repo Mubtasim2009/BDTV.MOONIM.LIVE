@@ -3,6 +3,18 @@ const PLAYLISTS = {
     name: "Fast 1",
     url: "https://is.gd/H5l9iz.m3u",
   },
+  fast2gb: {
+    name: "Fast 2 GB",
+    url: "https://is.gd/qs5Iz7.m3u",
+  },
+  usa: {
+    name: "USA",
+    url: "https://is.gd/lLRDLX.m3u",
+  },
+  usa2: {
+    name: "USA 2",
+    url: "https://is.gd/XcZpct.m3u",
+  },
   falcon: {
     name: "Falcon Cast",
     url: "https://raw.githubusercontent.com/FunctionError/PiratesTv/refs/heads/main/combined_playlist.m3u",
