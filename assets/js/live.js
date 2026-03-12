@@ -1,4 +1,20 @@
 const PLAYLISTS = {
+  fast1: {
+    name: "Fast 1",
+    url: "https://is.gd/H5l9iz.m3u",
+  },
+  fast2gb: {
+    name: "Fast 2 GB",
+    url: "https://is.gd/qs5Iz7.m3u",
+  },
+  usa: {
+    name: "USA",
+    url: "https://is.gd/lLRDLX.m3u",
+  },
+  usa2: {
+    name: "USA 2",
+    url: "https://is.gd/XcZpct.m3u",
+  },
   falcon: {
     name: "Falcon Cast",
     url: "https://raw.githubusercontent.com/FunctionError/PiratesTv/refs/heads/main/combined_playlist.m3u",
@@ -38,6 +54,11 @@ function parseM3U(text) {
 
 let hlsInstance = null;
 
+let globalSearchMode = false;
+let globalChannels = [];   // flat list of all channels with .server property set
+let globalPlaylistsLoaded = false;
+let globalPlaylistsLoading = false;
+
 function playChannel(url, videoEl) {
   if (hlsInstance) {
     hlsInstance.destroy();
@@ -64,6 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const listEl = document.getElementById("channelList");
   const video = document.getElementById("liveVideo");
   const searchEl = document.getElementById("channelSearchInput");
+  const globalSearchBtn = document.getElementById("globalSearchBtn");
 
   let currentChannels = [];
 
@@ -71,16 +93,38 @@ document.addEventListener("DOMContentLoaded", () => {
     const q = (filterText || "").trim().toLowerCase();
     listEl.innerHTML = "";
 
-    const filtered = q
-      ? currentChannels.filter((ch) => {
-          return (
-            ch.name.toLowerCase().includes(q) ||
-            (ch.group || "").toLowerCase().includes(q)
-          );
-        })
-      : currentChannels.slice();
+    let pool;
+    let showServer = false;
 
-    if (!filtered.length) {
+    if (globalSearchMode) {
+      showServer = true;
+      if (!q) {
+        const hint = document.createElement("div");
+        hint.className = "live-status";
+        hint.style.margin = "0.5rem 0.5rem";
+        hint.textContent = globalPlaylistsLoading
+          ? "Loading all playlists…"
+          : "Type to search across all playlists.";
+        listEl.appendChild(hint);
+        return;
+      }
+      pool = globalChannels.filter((ch) =>
+        ch.name.toLowerCase().includes(q) ||
+        (ch.group || "").toLowerCase().includes(q) ||
+        (ch.server || "").toLowerCase().includes(q)
+      );
+    } else {
+      pool = q
+        ? currentChannels.filter((ch) => {
+            return (
+              ch.name.toLowerCase().includes(q) ||
+              (ch.group || "").toLowerCase().includes(q)
+            );
+          })
+        : currentChannels.slice();
+    }
+
+    if (!pool.length) {
       const empty = document.createElement("div");
       empty.className = "live-status";
       empty.style.margin = "0.25rem 0.35rem";
@@ -89,7 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    filtered.forEach((ch, idx) => {
+    pool.forEach((ch, idx) => {
       const item = document.createElement("div");
       item.className = "channel-item";
       item.dataset.url = ch.url;
@@ -125,6 +169,13 @@ document.addEventListener("DOMContentLoaded", () => {
       badge.textContent = ch.url.toLowerCase().includes("hd") ? "HD" : "SD";
       metaEl.appendChild(badge);
 
+      if (showServer) {
+        const serverBadge = document.createElement("span");
+        serverBadge.className = "channel-server-tag";
+        serverBadge.textContent = ch.server;
+        metaEl.appendChild(serverBadge);
+      }
+
       main.appendChild(nameEl);
       main.appendChild(metaEl);
 
@@ -147,14 +198,46 @@ document.addEventListener("DOMContentLoaded", () => {
       listEl.appendChild(item);
     });
 
-    // Auto-select first visible channel if none active
-    const active = listEl.querySelector(".channel-item.active");
-    if (!active) {
-      const first = listEl.querySelector(".channel-item");
-      if (first) {
-        first.classList.add("active");
-        playChannel(first.dataset.url, video);
+    // Auto-select first visible channel if none active (only in single-playlist mode)
+    if (!globalSearchMode) {
+      const active = listEl.querySelector(".channel-item.active");
+      if (!active) {
+        const first = listEl.querySelector(".channel-item");
+        if (first) {
+          first.classList.add("active");
+          playChannel(first.dataset.url, video);
+        }
       }
+    }
+  }
+
+  async function loadAllPlaylistsForGlobalSearch() {
+    if (globalPlaylistsLoaded || globalPlaylistsLoading) return;
+    globalPlaylistsLoading = true;
+    renderChannelList(searchEl ? searchEl.value : "");
+
+    const results = await Promise.allSettled(
+      Object.entries(PLAYLISTS).map(async ([key, cfg]) => {
+        const res = await fetch(cfg.url);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const text = await res.text();
+        const channels = parseM3U(text).map((ch) => ({ ...ch, server: cfg.name }));
+        return channels;
+      })
+    );
+
+    globalChannels = [];
+    for (const result of results) {
+      if (result.status === "fulfilled") {
+        globalChannels.push(...result.value);
+      }
+    }
+
+    globalPlaylistsLoaded = true;
+    globalPlaylistsLoading = false;
+
+    if (globalSearchMode) {
+      renderChannelList(searchEl ? searchEl.value : "");
     }
   }
 
@@ -182,7 +265,9 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       statusEl.textContent = `${currentChannels.length} channels`;
-      renderChannelList("");
+      if (!globalSearchMode) {
+        renderChannelList("");
+      }
     } catch (err) {
       console.error(err);
       statusEl.textContent = "Failed to load playlist.";
@@ -192,11 +277,37 @@ document.addEventListener("DOMContentLoaded", () => {
   select.addEventListener("change", () => loadPlaylist(select.value));
 
   if (refresh) {
-    refresh.addEventListener("click", () => loadPlaylist(select.value));
+    refresh.addEventListener("click", () => {
+      if (globalSearchMode) {
+        // In global mode, refresh invalidates the cache and reloads all playlists
+        globalPlaylistsLoaded = false;
+        globalPlaylistsLoading = false;
+        globalChannels = [];
+        loadAllPlaylistsForGlobalSearch();
+      } else {
+        loadPlaylist(select.value);
+      }
+    });
   }
 
   if (searchEl) {
     searchEl.addEventListener("input", () => renderChannelList(searchEl.value));
+  }
+
+  if (globalSearchBtn) {
+    globalSearchBtn.addEventListener("click", () => {
+      globalSearchMode = !globalSearchMode;
+      globalSearchBtn.classList.toggle("active", globalSearchMode);
+
+      if (globalSearchMode) {
+        if (searchEl) searchEl.placeholder = "Search all playlists…";
+        renderChannelList(searchEl ? searchEl.value : "");
+        loadAllPlaylistsForGlobalSearch();
+      } else {
+        if (searchEl) searchEl.placeholder = "Search channels…";
+        renderChannelList(searchEl ? searchEl.value : "");
+      }
+    });
   }
 
   loadPlaylist(select.value);
