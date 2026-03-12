@@ -1406,12 +1406,45 @@ a {
   border-color: var(--accent);
 }
 
+.global-search-btn {
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-family: inherit;
+  padding: 0.35rem 0.8rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: background 0.18s var(--ease), color 0.18s var(--ease), border-color 0.18s var(--ease);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.global-search-btn:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.global-search-btn.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 .channel-search-row {
   margin: 0.2rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 .channel-search-input {
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   border-radius: 999px;
   border: 1px solid var(--border-strong);
   background: var(--bg-elevated);
@@ -1508,6 +1541,15 @@ a {
   padding: 0.1rem 0.4rem;
   border: 1px solid var(--border-strong);
   color: var(--text-secondary);
+}
+
+.channel-server-tag {
+  font-size: 0.68rem;
+  border-radius: 999px;
+  padding: 0.1rem 0.4rem;
+  border: 1px solid rgba(124, 106, 247, 0.4);
+  color: var(--accent);
+  background: var(--accent-soft);
 }
 
 .channel-index {
