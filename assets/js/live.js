@@ -1,19 +1,19 @@
 const PLAYLISTS = {
   fast1: {
     name: "Fast 1",
-    url: "https://is.gd/H5l9iz.m3u",
+    url: "https://raw.githubusercontent.com/abusaeeidx/Mrgify-BDIX-IPTV/main/playlist.m3u",
   },
   fast2gb: {
     name: "Fast 2 GB",
-    url: "https://is.gd/qs5Iz7.m3u",
+    url: "https://raw.githubusercontent.com/abusaeeidx/iptv-playlist/main/playlist.m3u",
   },
   usa: {
     name: "USA",
-    url: "https://is.gd/lLRDLX.m3u",
+    url: "https://raw.githubusercontent.com/Free-TV/IPTV/master/playlists/playlist_usa.m3u8",
   },
   usa2: {
     name: "USA 2",
-    url: "https://is.gd/XcZpct.m3u",
+    url: "https://raw.githubusercontent.com/Free-TV/IPTV/master/playlist.m3u8",
   },
   falcon: {
     name: "Falcon Cast",
