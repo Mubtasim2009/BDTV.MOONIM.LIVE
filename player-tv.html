@@ -48,6 +48,18 @@
       </div>
       <div id="tvWatchlistBtnContainer" style="margin-bottom:0.75rem;"></div>
 
+      <div class="source-switcher" id="tvSourceSwitcher">
+        <span class="source-switcher-label"><i class="fa-solid fa-circle-play"></i> Source</span>
+      </div>
+
+      <div class="episode-controls" id="tvEpisodeControls" style="display:none;">
+        <label for="tvSeason">S</label>
+        <input type="number" id="tvSeason" min="1" value="1" />
+        <label for="tvEpisode">E</label>
+        <input type="number" id="tvEpisode" min="1" value="1" />
+        <button id="tvGoEpisode"><i class="fa-solid fa-play"></i> Go</button>
+      </div>
+
       <div class="vidking-wrapper">
         <iframe id="tvFrame" allowfullscreen referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-fullscreen"></iframe>
       </div>

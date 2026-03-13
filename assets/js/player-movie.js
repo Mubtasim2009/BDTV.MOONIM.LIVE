@@ -9,21 +9,79 @@ function openActor(personId) {
 
 const WRITING_JOBS = ["Screenplay", "Writer", "Story"];
 
+// ─── Streaming sources ──────────────────────────────────────────────────────
+const MOVIE_SOURCES = [
+  {
+    id: "vidking",
+    label: "VidKing",
+    url: (id) => {
+      const p = new URLSearchParams({ color: "e50914", autoPlay: "true", nextEpisode: "false" });
+      return `https://www.vidking.net/embed/movie/${encodeURIComponent(id)}?${p.toString()}`;
+    },
+  },
+  {
+    id: "vidsrc",
+    label: "VidSrc",
+    url: (id) => `https://vidsrc.to/embed/movie/${encodeURIComponent(id)}`,
+  },
+  {
+    id: "2embed",
+    label: "2Embed",
+    url: (id) => `https://www.2embed.cc/embed/${encodeURIComponent(id)}`,
+  },
+  {
+    id: "multiembed",
+    label: "MultiEmbed",
+    url: (id) => `https://multiembed.mov/?video_id=${encodeURIComponent(id)}&tmdb=1`,
+  },
+  {
+    id: "vidlink",
+    label: "VidLink",
+    url: (id) => `https://vidlink.pro/movie/${encodeURIComponent(id)}`,
+  },
+];
+
+let _movieId = null;
+let _activeMovieSource = "vidking";
+
+function buildMovieSourceSwitcher(id) {
+  const container = document.getElementById("movieSourceSwitcher");
+  if (!container) return;
+  // Remove any previously built buttons (keep the label span)
+  const label = container.querySelector(".source-switcher-label");
+  container.innerHTML = "";
+  if (label) container.appendChild(label);
+
+  MOVIE_SOURCES.forEach((src) => {
+    const btn = document.createElement("button");
+    btn.className = "source-btn" + (src.id === _activeMovieSource ? " source-btn--active" : "");
+    btn.textContent = src.label;
+    btn.dataset.sourceId = src.id;
+    btn.addEventListener("click", () => {
+      _activeMovieSource = src.id;
+      document.getElementById("movieFrame").src = src.url(id);
+      container.querySelectorAll(".source-btn").forEach((b) => {
+        b.classList.toggle("source-btn--active", b.dataset.sourceId === src.id);
+      });
+    });
+    container.appendChild(btn);
+  });
+}
+
 async function loadMovie() {
   const id = getMovieIdFromUrl();
   if (!id) {
     document.getElementById("movieTitle").textContent = "Missing movie ID.";
     return;
   }
+  _movieId = id;
 
-  // VidKing embed (movie)
-  const params = new URLSearchParams({
-    color: "e50914",
-    autoPlay: "true",
-    nextEpisode: "false",
-  });
-  document.getElementById("movieFrame").src =
-    `https://www.vidking.net/embed/movie/${encodeURIComponent(id)}?${params.toString()}`;
+  // Default source embed
+  const defaultSrc = MOVIE_SOURCES.find((s) => s.id === _activeMovieSource) || MOVIE_SOURCES[0];
+  document.getElementById("movieFrame").src = defaultSrc.url(id);
+
+  // Build source switcher
+  buildMovieSourceSwitcher(id);
 
   if (!TMDB_API_KEY) {
     document.getElementById("movieTitle").textContent = "Movie Player";
