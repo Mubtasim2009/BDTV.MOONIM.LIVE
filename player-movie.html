@@ -53,8 +53,9 @@
       </div>
 
       <div class="vidking-wrapper">
-      <!-- sandbox intentionally omitted: third-party embed providers detect and block sandboxed iframes -->
-        <iframe id="movieFrame" allowfullscreen allow="autoplay; fullscreen; picture-in-picture" referrerpolicy="origin"></iframe>
+      <!-- allow-top-navigation omitted so JS auto-redirects are blocked; allow-popups included so providers don't detect a cage -->
+        <iframe id="movieFrame" allowfullscreen allow="autoplay; fullscreen; picture-in-picture" referrerpolicy="origin"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-presentation allow-fullscreen allow-downloads allow-top-navigation-by-user-activation"></iframe>
       </div>
 
       <p class="disclaimer">
