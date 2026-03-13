@@ -9,6 +9,55 @@ function openActor(personId) {
 
 const WRITING_JOBS = ["Screenplay", "Writer", "Story"];
 
+const MOVIE_PROVIDERS = [
+  {
+    id: "vidking",
+    name: "VidKing",
+    getUrl: (id) => {
+      const params = new URLSearchParams({ color: "e50914", autoPlay: "true", nextEpisode: "false" });
+      return `https://www.vidking.net/embed/movie/${encodeURIComponent(id)}?${params.toString()}`;
+    },
+  },
+  {
+    id: "vidsrc",
+    name: "VidSrc",
+    getUrl: (id) => `https://vidsrc.to/embed/movie/${encodeURIComponent(id)}`,
+  },
+  {
+    id: "embedsu",
+    name: "EmbedSu",
+    getUrl: (id) => `https://embed.su/embed/movie/${encodeURIComponent(id)}`,
+  },
+  {
+    id: "2embed",
+    name: "2Embed",
+    getUrl: (id) => `https://www.2embed.cc/embed/${encodeURIComponent(id)}`,
+  },
+];
+
+function buildMovieProviderBar(id) {
+  const bar = document.getElementById("providerBar");
+  if (!bar) return;
+  bar.innerHTML = "";
+  let activeId = "vidking";
+  MOVIE_PROVIDERS.forEach((p) => {
+    const btn = document.createElement("button");
+    btn.className = "provider-btn" + (p.id === activeId ? " provider-btn--active" : "");
+    btn.textContent = p.name;
+    btn.setAttribute("aria-pressed", p.id === activeId ? "true" : "false");
+    btn.addEventListener("click", () => {
+      bar.querySelectorAll(".provider-btn").forEach((b) => {
+        b.classList.remove("provider-btn--active");
+        b.setAttribute("aria-pressed", "false");
+      });
+      btn.classList.add("provider-btn--active");
+      btn.setAttribute("aria-pressed", "true");
+      document.getElementById("movieFrame").src = p.getUrl(id);
+    });
+    bar.appendChild(btn);
+  });
+}
+
 async function loadMovie() {
   const id = getMovieIdFromUrl();
   if (!id) {
@@ -16,14 +65,9 @@ async function loadMovie() {
     return;
   }
 
-  // VidKing embed (movie)
-  const params = new URLSearchParams({
-    color: "e50914",
-    autoPlay: "true",
-    nextEpisode: "false",
-  });
-  document.getElementById("movieFrame").src =
-    `https://www.vidking.net/embed/movie/${encodeURIComponent(id)}?${params.toString()}`;
+  // Build provider switcher and load default (VidKing) embed
+  buildMovieProviderBar(id);
+  document.getElementById("movieFrame").src = MOVIE_PROVIDERS[0].getUrl(id);
 
   if (!TMDB_API_KEY) {
     document.getElementById("movieTitle").textContent = "Movie Player";

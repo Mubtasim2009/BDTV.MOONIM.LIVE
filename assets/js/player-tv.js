@@ -7,17 +7,63 @@ function openActor(personId) {
   window.location.href = `actor.html?id=${encodeURIComponent(personId)}`;
 }
 
+const TV_PROVIDERS = [
+  {
+    id: "vidking",
+    name: "VidKing",
+    getUrl: (id, season, episode) => {
+      const params = new URLSearchParams({ color: "e50914", autoPlay: "true", nextEpisode: "true", episodeSelector: "true" });
+      return `https://www.vidking.net/embed/tv/${encodeURIComponent(id)}/${season}/${episode}?${params.toString()}`;
+    },
+  },
+  {
+    id: "vidsrc",
+    name: "VidSrc",
+    getUrl: (id, season, episode) => `https://vidsrc.to/embed/tv/${encodeURIComponent(id)}/${season}/${episode}`,
+  },
+  {
+    id: "embedsu",
+    name: "EmbedSu",
+    getUrl: (id, season, episode) => `https://embed.su/embed/tv/${encodeURIComponent(id)}/${season}/${episode}`,
+  },
+  {
+    id: "2embed",
+    name: "2Embed",
+    getUrl: (id, season, episode) => `https://www.2embed.cc/embedtv/${encodeURIComponent(id)}?s=${season}&e=${episode}`,
+  },
+];
+
+function buildTvProviderBar(id, season, episode) {
+  const bar = document.getElementById("providerBar");
+  if (!bar) return;
+  bar.innerHTML = "";
+  let activeId = "vidking";
+  TV_PROVIDERS.forEach((p) => {
+    const btn = document.createElement("button");
+    btn.className = "provider-btn" + (p.id === activeId ? " provider-btn--active" : "");
+    btn.textContent = p.name;
+    btn.setAttribute("aria-pressed", p.id === activeId ? "true" : "false");
+    btn.addEventListener("click", () => {
+      bar.querySelectorAll(".provider-btn").forEach((b) => {
+        b.classList.remove("provider-btn--active");
+        b.setAttribute("aria-pressed", "false");
+      });
+      btn.classList.add("provider-btn--active");
+      btn.setAttribute("aria-pressed", "true");
+      document.getElementById("tvFrame").src = p.getUrl(id, season, episode);
+    });
+    bar.appendChild(btn);
+  });
+}
+
 async function loadTvShow() {
   const tvId = getTvIdFromUrl() || "119051";
+  const season = 1;
+  const episode = 1;
 
-  const params = new URLSearchParams({
-    color: "e50914",
-    autoPlay: "true",
-    nextEpisode: "true",
-    episodeSelector: "true",
-  });
-  document.getElementById("tvFrame").src =
-    `https://www.vidking.net/embed/tv/${encodeURIComponent(tvId)}/1/1?${params.toString()}`;
+  // Build provider switcher and load default (VidKing) embed
+  buildTvProviderBar(tvId, season, episode);
+  document.getElementById("tvFrame").src = TV_PROVIDERS[0].getUrl(tvId, season, episode);
 
   try {
     const url = `${TMDB_BASE}/tv/${encodeURIComponent(tvId)}?api_key=${TMDB_API_KEY}&language=en-US`;
