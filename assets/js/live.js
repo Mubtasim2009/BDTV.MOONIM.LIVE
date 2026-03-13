@@ -7,8 +7,6 @@ function withProxy(url) {
 // Fetch an M3U playlist, falling back to the CORS proxy only when the direct
 // request fails. Playlist files (GitHub Gist, raw.githubusercontent.com, etc.)
 // usually include CORS headers, so we try directly first to avoid proxy overhead.
-// Stream segments on external CDNs never have CORS headers, so those are always
-// proxied inside playChannel via fetchSetup / xhrSetup.
 async function fetchPlaylist(url) {
   try {
     const res = await fetch(url);
@@ -107,7 +105,7 @@ function playChannel(url, videoEl) {
             modifyRequestHeader(xhr) { return xhr; },
           };
         }, true);
-      } catch (_e) { /* RequestModifier unavailable in this build */ }
+      } catch (err) { console.warn("RequestModifier unavailable in this dash.js build:", err); }
       dashInstance.initialize(videoEl, url, true);
     } else {
       videoEl.src = withProxy(url);
@@ -116,23 +114,47 @@ function playChannel(url, videoEl) {
     return;
   }
 
-  if (typeof Hls !== "undefined" && Hls.isSupported()) {
-    // Proxy EVERY HLS.js request (manifest + variant playlists + all TS segments)
-    // through the CORS proxy so browsers don't block cross-origin stream requests.
-    hlsInstance = new Hls({
-      // Modern HLS.js uses the Fetch API by default
-      fetchSetup(context, initParams) {
-        return new Request(withProxy(context.url), initParams);
-      },
-      // Fallback for environments where HLS.js falls back to XHR.
-      // We override xhr.open so the proxied URL is used when HLS.js calls it.
-      xhrSetup(xhr, originalUrl) {
-        const proxied = withProxy(originalUrl);
-        const origOpen = xhr.open.bind(xhr);
-        // Replace open so the proxied address is used regardless of what URL HLS.js passes.
-        xhr.open = (method, _url, async) => origOpen(method, proxied, async !== false);
-      },
-    });
+  if (typeof Hls !== "undefined" && Hls.isSupported() && Hls.DefaultConfig && Hls.DefaultConfig.loader) {
+    // Custom loader that routes every HLS.js network request through the CORS
+    // proxy (manifest, variant playlists, TS/MP4 segments, AES-128 keys).
+    //
+    // Two problems with fetchSetup/xhrSetup that this fixes:
+    //  1. fetchSetup – the browser sets response.url to the *proxy* URL, so
+    //     HLS.js resolves relative segment paths against the proxy origin
+    //     instead of the real CDN, producing broken URLs like
+    //     "https://corsproxy.io/720p.m3u8" instead of "https://cdn.../720p.m3u8".
+    //  2. xhrSetup  – patching xhr.open is fragile; calling it directly is correct.
+    //
+    // The ProxyLoader wrapper:
+    //  • sets context.url to the proxied URL before delegating to the inner loader,
+    //  • resets response.url back to the original URL in onSuccess so HLS.js
+    //    always uses the real CDN path as the base for relative-URL resolution.
+    class ProxyLoader {
+      constructor(config) {
+        this._inner = new Hls.DefaultConfig.loader(config);
+      }
+      get context() { return this._inner.context; }
+      get stats()   { return this._inner.stats; }
+      destroy()     { this._inner.destroy(); }
+      abort()       { this._inner.abort(); }
+      getCacheAge() { return this._inner.getCacheAge(); }
+      getResponseHeader(n) { return this._inner.getResponseHeader(n); }
+      load(context, loaderConfig, callbacks) {
+        const originalUrl = context.url;
+        context.url = withProxy(originalUrl);
+        this._inner.load(context, loaderConfig, {
+          ...callbacks,
+          onSuccess: (response, stats, ctx, networkDetails) => {
+            // Restore the real URL so relative paths in the manifest are
+            // resolved against the correct CDN base, not the proxy base.
+            response.url = originalUrl;
+            callbacks.onSuccess(response, stats, ctx, networkDetails);
+          },
+        });
+      }
+    }
+
+    hlsInstance = new Hls({ loader: ProxyLoader });
     hlsInstance.loadSource(url);
     hlsInstance.attachMedia(videoEl);
     hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => videoEl.play().catch(() => {}));
