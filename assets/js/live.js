@@ -4,6 +4,11 @@ function withProxy(url) {
   return CORS_PROXY + encodeURIComponent(url);
 }
 
+// Fetch an M3U playlist, falling back to the CORS proxy only when the direct
+// request fails. Playlist files (GitHub Gist, raw.githubusercontent.com, etc.)
+// usually include CORS headers, so we try directly first to avoid proxy overhead.
+// Stream segments on external CDNs never have CORS headers, so those are always
+// proxied inside playChannel via fetchSetup / xhrSetup.
 async function fetchPlaylist(url) {
   try {
     const res = await fetch(url);
@@ -84,45 +89,64 @@ function destroyPlayers() {
   if (dashInstance) { dashInstance.reset(); dashInstance = null; }
 }
 
-function playChannel(url, videoEl, _proxied) {
+function playChannel(url, videoEl) {
   destroyPlayers();
   videoEl.removeAttribute("src");
   videoEl.load();
 
-  const proxied = !!_proxied;
-  const streamUrl = proxied ? withProxy(url) : url;
   const isDash = /\.mpd(\?|$)/i.test(url);
 
   if (isDash) {
     if (typeof dashjs !== "undefined") {
       dashInstance = dashjs.MediaPlayer().create();
-      dashInstance.initialize(videoEl, streamUrl, true);
+      // Proxy every DASH segment request through the CORS proxy
+      try {
+        dashInstance.extend("RequestModifier", function () {
+          return {
+            modifyRequestURL(requestUrl) { return withProxy(requestUrl); },
+            modifyRequestHeader(xhr) { return xhr; },
+          };
+        }, true);
+      } catch (_e) { /* RequestModifier unavailable in this build */ }
+      dashInstance.initialize(videoEl, url, true);
     } else {
-      videoEl.src = streamUrl;
+      videoEl.src = withProxy(url);
       videoEl.play().catch(() => {});
     }
     return;
   }
 
   if (typeof Hls !== "undefined" && Hls.isSupported()) {
-    hlsInstance = new Hls();
-    hlsInstance.loadSource(streamUrl);
+    // Proxy EVERY HLS.js request (manifest + variant playlists + all TS segments)
+    // through the CORS proxy so browsers don't block cross-origin stream requests.
+    hlsInstance = new Hls({
+      // Modern HLS.js uses the Fetch API by default
+      fetchSetup(context, initParams) {
+        return new Request(withProxy(context.url), initParams);
+      },
+      // Fallback for environments where HLS.js falls back to XHR.
+      // We override xhr.open so the proxied URL is used when HLS.js calls it.
+      xhrSetup(xhr, originalUrl) {
+        const proxied = withProxy(originalUrl);
+        const origOpen = xhr.open.bind(xhr);
+        // Replace open so the proxied address is used regardless of what URL HLS.js passes.
+        xhr.open = (method, _url, async) => origOpen(method, proxied, async !== false);
+      },
+    });
+    hlsInstance.loadSource(url);
     hlsInstance.attachMedia(videoEl);
     hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => videoEl.play().catch(() => {}));
     hlsInstance.on(Hls.Events.ERROR, (_event, data) => {
-      if (data.fatal && data.type === Hls.ErrorTypes.NETWORK_ERROR) {
-        if (!proxied) {
-          playChannel(url, videoEl, true);
-        } else {
-          console.error("Stream failed even with CORS proxy:", url);
-        }
+      if (data.fatal) {
+        console.error("Fatal HLS error:", data.type, data.details, url);
       }
     });
   } else if (videoEl.canPlayType("application/vnd.apple.mpegurl")) {
-    videoEl.src = streamUrl;
+    // Safari native HLS – direct URL, Safari handles CORS differently
+    videoEl.src = url;
     videoEl.play().catch(() => {});
   } else {
-    videoEl.src = streamUrl;
+    videoEl.src = url;
     videoEl.play().catch(() => {});
   }
 }
