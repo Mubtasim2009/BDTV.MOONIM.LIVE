@@ -1,19 +1,19 @@
 const PLAYLISTS = {
   fast1: {
     name: "Fast 1",
-    url: "https://is.gd/H5l9iz.m3u",
+    url: "https://file.garden/aPorwu8r4WIJS6PP/Live%20Stream.m3u",
   },
   fast2gb: {
     name: "Fast 2 GB",
-    url: "https://is.gd/qs5Iz7.m3u",
+    url: "https://gist.githubusercontent.com/rajarong/9918075967fdbe03f54fdf026d480c8f/raw/4253fae5585aecf43035eb15e3872dfb6202b67d/Raja-Krisno2.m3u",
   },
   usa: {
     name: "USA",
-    url: "https://is.gd/lLRDLX.m3u",
+    url: "https://gist.githubusercontent.com/rajarong/b44aa7a67a3440302e9d404c72f36a6f/raw/f4047e7c95497a6c2ef395325873b5f2448c7c53/sports.m3u",
   },
   usa2: {
     name: "USA 2",
-    url: "https://is.gd/XcZpct.m3u",
+    url: "https://raw.githubusercontent.com/edisontotv/tv/refs/heads/main/cine2.m3u",
   },
   falcon: {
     name: "Falcon Cast",
