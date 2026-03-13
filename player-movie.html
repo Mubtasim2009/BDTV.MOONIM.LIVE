@@ -48,8 +48,14 @@
       </div>
       <div id="movieWatchlistBtnContainer" style="margin-bottom:0.75rem;"></div>
 
+      <div class="source-switcher" id="movieSourceSwitcher">
+        <span class="source-switcher-label"><i class="fa-solid fa-circle-play"></i> Source</span>
+      </div>
+
       <div class="vidking-wrapper">
-        <iframe id="movieFrame" allowfullscreen referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-fullscreen"></iframe>
+      <!-- allow-top-navigation omitted so JS auto-redirects are blocked; allow-popups included so providers don't detect a cage -->
+        <iframe id="movieFrame" allowfullscreen allow="autoplay; fullscreen; picture-in-picture" referrerpolicy="origin"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-presentation allow-fullscreen allow-downloads allow-top-navigation-by-user-activation"></iframe>
       </div>
 
       <p class="disclaimer">

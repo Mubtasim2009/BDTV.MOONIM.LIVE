@@ -7,17 +7,108 @@ function openActor(personId) {
   window.location.href = `actor.html?id=${encodeURIComponent(personId)}`;
 }
 
+// ─── Streaming sources ──────────────────────────────────────────────────────
+const TV_SOURCES = [
+  {
+    id: "vidking",
+    label: "VidKing",
+    hasEpisodeControls: false,
+    url: (id, s, e) => {
+      const p = new URLSearchParams({ color: "e50914", autoPlay: "true", nextEpisode: "true", episodeSelector: "true" });
+      return `https://www.vidking.net/embed/tv/${encodeURIComponent(id)}/${s}/${e}?${p.toString()}`;
+    },
+  },
+  {
+    id: "vidsrc",
+    label: "VidSrc",
+    hasEpisodeControls: true,
+    url: (id, s, e) => `https://vidsrc.to/embed/tv/${encodeURIComponent(id)}/${s}/${e}`,
+  },
+  {
+    id: "2embed",
+    label: "2Embed",
+    hasEpisodeControls: true,
+    url: (id, s, e) => `https://www.2embed.cc/embedtv/${encodeURIComponent(id)}?s=${s}&e=${e}`,
+  },
+  {
+    id: "multiembed",
+    label: "MultiEmbed",
+    hasEpisodeControls: true,
+    url: (id, s, e) => `https://multiembed.mov/?video_id=${encodeURIComponent(id)}&tmdb=1&s=${s}&e=${e}`,
+  },
+  {
+    id: "vidlink",
+    label: "VidLink",
+    hasEpisodeControls: true,
+    url: (id, s, e) => `https://vidlink.pro/tv/${encodeURIComponent(id)}/${s}/${e}`,
+  },
+];
+
+let _tvId = null;
+let _activeTvSource = "vidking";
+
+function getCurrentEpisode() {
+  const s = parseInt(document.getElementById("tvSeason")?.value, 10) || 1;
+  const e = parseInt(document.getElementById("tvEpisode")?.value, 10) || 1;
+  return { s, e };
+}
+
+function applyTvSource(id, sourceId, s, e) {
+  const src = TV_SOURCES.find((x) => x.id === sourceId) || TV_SOURCES[0];
+  document.getElementById("tvFrame").src = src.url(id, s, e);
+
+  const episodeControls = document.getElementById("tvEpisodeControls");
+  if (episodeControls) {
+    episodeControls.style.display = src.hasEpisodeControls ? "" : "none";
+  }
+
+  const container = document.getElementById("tvSourceSwitcher");
+  if (container) {
+    container.querySelectorAll(".source-btn").forEach((b) => {
+      b.classList.toggle("source-btn--active", b.dataset.sourceId === sourceId);
+    });
+  }
+}
+
+function buildTvSourceSwitcher(id) {
+  const container = document.getElementById("tvSourceSwitcher");
+  if (!container) return;
+  const label = container.querySelector(".source-switcher-label");
+  container.innerHTML = "";
+  if (label) container.appendChild(label);
+
+  TV_SOURCES.forEach((src) => {
+    const btn = document.createElement("button");
+    btn.className = "source-btn" + (src.id === _activeTvSource ? " source-btn--active" : "");
+    btn.textContent = src.label;
+    btn.dataset.sourceId = src.id;
+    btn.addEventListener("click", () => {
+      _activeTvSource = src.id;
+      const { s, e } = getCurrentEpisode();
+      applyTvSource(id, src.id, s, e);
+    });
+    container.appendChild(btn);
+  });
+
+  // Wire up the Go button for episode navigation
+  const goBtn = document.getElementById("tvGoEpisode");
+  if (goBtn) {
+    goBtn.addEventListener("click", () => {
+      const { s, e } = getCurrentEpisode();
+      applyTvSource(id, _activeTvSource, s, e);
+    });
+  }
+}
+
 async function loadTvShow() {
   const tvId = getTvIdFromUrl() || "119051";
+  _tvId = tvId;
 
-  const params = new URLSearchParams({
-    color: "e50914",
-    autoPlay: "true",
-    nextEpisode: "true",
-    episodeSelector: "true",
-  });
-  document.getElementById("tvFrame").src =
-    `https://www.vidking.net/embed/tv/${encodeURIComponent(tvId)}/1/1?${params.toString()}`;
+  // Default source embed (S1E1)
+  applyTvSource(tvId, _activeTvSource, 1, 1);
+
+  // Build source switcher
+  buildTvSourceSwitcher(tvId);
 
   try {
     const url = `${TMDB_BASE}/tv/${encodeURIComponent(tvId)}?api_key=${TMDB_API_KEY}&language=en-US`;
