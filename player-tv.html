@@ -61,7 +61,8 @@
       </div>
 
       <div class="vidking-wrapper">
-        <iframe id="tvFrame" allowfullscreen referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-fullscreen"></iframe>
+      <!-- sandbox intentionally omitted: third-party embed providers detect and block sandboxed iframes -->
+        <iframe id="tvFrame" allowfullscreen allow="autoplay; fullscreen; picture-in-picture" referrerpolicy="origin"></iframe>
       </div>
 
       <p class="disclaimer">
