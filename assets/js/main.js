@@ -86,6 +86,16 @@ function buildBackdropUrl(path) {
   return `${TMDB_IMG_BACKDROP}${path}`;
 }
 
+function createDownloadBtn(downloadUrl) {
+  const btn = document.createElement('a');
+  btn.className = 'player-dl-btn';
+  btn.href = downloadUrl;
+  btn.target = '_blank';
+  btn.rel = 'noopener noreferrer';
+  btn.innerHTML = '<i class="fa-solid fa-download"></i> Download';
+  return btn;
+}
+
 // Portrait card (posters) — info shown as overlay; plot revealed on hover
 function createMediaCard(item, type) {
   const linkTarget = type === "tv" ? "player-tv.html" : "player-movie.html";

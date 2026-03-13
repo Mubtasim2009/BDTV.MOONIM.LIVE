@@ -3,12 +3,24 @@ function getTvIdFromUrl() {
   return url.searchParams.get("id");
 }
 
+function getTvSeasonFromUrl() {
+  const url = new URL(window.location.href);
+  return url.searchParams.get("season") || "1";
+}
+
+function getTvEpisodeFromUrl() {
+  const url = new URL(window.location.href);
+  return url.searchParams.get("episode") || "1";
+}
+
 function openActor(personId) {
   window.location.href = `actor.html?id=${encodeURIComponent(personId)}`;
 }
 
 async function loadTvShow() {
   const tvId = getTvIdFromUrl() || "119051";
+  const season = getTvSeasonFromUrl();
+  const episode = getTvEpisodeFromUrl();
 
   const params = new URLSearchParams({
     color: "e50914",
@@ -17,7 +29,7 @@ async function loadTvShow() {
     episodeSelector: "true",
   });
   document.getElementById("tvFrame").src =
-    `https://www.vidking.net/embed/tv/${encodeURIComponent(tvId)}/1/1?${params.toString()}`;
+    `https://www.vidking.net/embed/tv/${encodeURIComponent(tvId)}/${encodeURIComponent(season)}/${encodeURIComponent(episode)}?${params.toString()}`;
 
   try {
     const url = `${TMDB_BASE}/tv/${encodeURIComponent(tvId)}?api_key=${TMDB_API_KEY}&language=en-US`;
@@ -69,6 +81,11 @@ async function loadTvShow() {
         }
       });
       watchlistBtnContainer.appendChild(wlBtn);
+
+      // Download button
+      watchlistBtnContainer.appendChild(
+        createDownloadBtn(`https://dl.vidsrc.vip/tv/${encodeURIComponent(tvId)}/${encodeURIComponent(season)}/${encodeURIComponent(episode)}`)
+      );
     }
 
     // Tagline: use network name if available
