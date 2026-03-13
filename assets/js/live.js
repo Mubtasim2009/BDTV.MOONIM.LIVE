@@ -1,4 +1,8 @@
-const CORS_PROXY = "https://corsproxy.io/?";
+// Same-origin Cloudflare Pages Function proxy (functions/proxy.js).
+// Using a same-origin path means the browser never performs a CORS check on
+// the proxy request itself.  The Cloudflare edge node in Dhaka (Bangladesh)
+// fetches the upstream stream server-side, so BDIX-only streams are reachable.
+const CORS_PROXY = "/proxy?url=";
 
 function withProxy(url) {
   return CORS_PROXY + encodeURIComponent(url);
