@@ -1,3 +1,28 @@
+// Same-origin Cloudflare Pages Function proxy (functions/proxy.js).
+// Using a same-origin path means the browser never performs a CORS check on
+// the proxy request itself.  The Cloudflare edge node in Dhaka (Bangladesh)
+// fetches the upstream stream server-side, so BDIX-only streams are reachable.
+const CORS_PROXY = "/proxy?url=";
+
+function withProxy(url) {
+  return CORS_PROXY + encodeURIComponent(url);
+}
+
+// Fetch an M3U playlist, falling back to the CORS proxy only when the direct
+// request fails. Playlist files (GitHub Gist, raw.githubusercontent.com, etc.)
+// usually include CORS headers, so we try directly first to avoid proxy overhead.
+async function fetchPlaylist(url) {
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
+    return res;
+  } catch (_e) {
+    const res = await fetch(withProxy(url));
+    if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
+    return res;
+  }
+}
+
 const PLAYLISTS = {
   fast1: {
     name: "Fast 1",
@@ -59,17 +84,91 @@ let globalChannels = [];   // flat list of all channels with .server property se
 let globalPlaylistsLoaded = false;
 let globalPlaylistsLoading = false;
 
+let dashInstance = null;
+
+function destroyPlayers() {
+  if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
+  if (dashInstance) { dashInstance.reset(); dashInstance = null; }
+}
+
 function playChannel(url, videoEl) {
-  if (hlsInstance) {
-    hlsInstance.destroy();
-    hlsInstance = null;
+  destroyPlayers();
+  videoEl.removeAttribute("src");
+  videoEl.load();
+
+  const isDash = /\.mpd(\?|$)/i.test(url);
+
+  if (isDash) {
+    if (typeof dashjs !== "undefined") {
+      dashInstance = dashjs.MediaPlayer().create();
+      // Proxy every DASH segment request through the CORS proxy
+      try {
+        dashInstance.extend("RequestModifier", function () {
+          return {
+            modifyRequestURL(requestUrl) { return withProxy(requestUrl); },
+            modifyRequestHeader(xhr) { return xhr; },
+          };
+        }, true);
+      } catch (err) { console.warn("RequestModifier unavailable in this dash.js build:", err); }
+      dashInstance.initialize(videoEl, url, true);
+    } else {
+      videoEl.src = withProxy(url);
+      videoEl.play().catch(() => {});
+    }
+    return;
   }
-  if (typeof Hls !== "undefined" && Hls.isSupported()) {
-    hlsInstance = new Hls();
+
+  if (typeof Hls !== "undefined" && Hls.isSupported() && Hls.DefaultConfig && Hls.DefaultConfig.loader) {
+    // Custom loader that routes every HLS.js network request through the CORS
+    // proxy (manifest, variant playlists, TS/MP4 segments, AES-128 keys).
+    //
+    // Two problems with fetchSetup/xhrSetup that this fixes:
+    //  1. fetchSetup – the browser sets response.url to the *proxy* URL, so
+    //     HLS.js resolves relative segment paths against the proxy origin
+    //     instead of the real CDN, producing broken URLs like
+    //     "https://corsproxy.io/720p.m3u8" instead of "https://cdn.../720p.m3u8".
+    //  2. xhrSetup  – patching xhr.open is fragile; calling it directly is correct.
+    //
+    // The ProxyLoader wrapper:
+    //  • sets context.url to the proxied URL before delegating to the inner loader,
+    //  • resets response.url back to the original URL in onSuccess so HLS.js
+    //    always uses the real CDN path as the base for relative-URL resolution.
+    class ProxyLoader {
+      constructor(config) {
+        this._inner = new Hls.DefaultConfig.loader(config);
+      }
+      get context() { return this._inner.context; }
+      get stats()   { return this._inner.stats; }
+      destroy()     { this._inner.destroy(); }
+      abort()       { this._inner.abort(); }
+      getCacheAge() { return this._inner.getCacheAge(); }
+      getResponseHeader(n) { return this._inner.getResponseHeader(n); }
+      load(context, loaderConfig, callbacks) {
+        const originalUrl = context.url;
+        context.url = withProxy(originalUrl);
+        this._inner.load(context, loaderConfig, {
+          ...callbacks,
+          onSuccess: (response, stats, ctx, networkDetails) => {
+            // Restore the real URL so relative paths in the manifest are
+            // resolved against the correct CDN base, not the proxy base.
+            response.url = originalUrl;
+            callbacks.onSuccess(response, stats, ctx, networkDetails);
+          },
+        });
+      }
+    }
+
+    hlsInstance = new Hls({ loader: ProxyLoader });
     hlsInstance.loadSource(url);
     hlsInstance.attachMedia(videoEl);
     hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => videoEl.play().catch(() => {}));
+    hlsInstance.on(Hls.Events.ERROR, (_event, data) => {
+      if (data.fatal) {
+        console.error("Fatal HLS error:", data.type, data.details, url);
+      }
+    });
   } else if (videoEl.canPlayType("application/vnd.apple.mpegurl")) {
+    // Safari native HLS – direct URL, Safari handles CORS differently
     videoEl.src = url;
     videoEl.play().catch(() => {});
   } else {
@@ -218,8 +317,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const results = await Promise.allSettled(
       Object.entries(PLAYLISTS).map(async ([key, cfg]) => {
-        const res = await fetch(cfg.url);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const res = await fetchPlaylist(cfg.url);
         const text = await res.text();
         const channels = parseM3U(text).map((ch) => ({ ...ch, server: cfg.name }));
         return channels;
@@ -248,14 +346,13 @@ document.addEventListener("DOMContentLoaded", () => {
     statusEl.textContent = `Loading ${cfg.name}…`;
     currentChannels = [];
     listEl.innerHTML = "";
-    if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
+    destroyPlayers();
     video.removeAttribute("src");
     video.load();
     if (searchEl) searchEl.value = "";
 
     try {
-      const res = await fetch(cfg.url);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const res = await fetchPlaylist(cfg.url);
       const text = await res.text();
       currentChannels = parseM3U(text);
 
