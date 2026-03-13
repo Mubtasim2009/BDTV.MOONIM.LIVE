@@ -78,6 +78,11 @@ async function loadMovie() {
         }
       });
       watchlistBtnContainer.appendChild(wlBtn);
+
+      // Download button
+      watchlistBtnContainer.appendChild(
+        createDownloadBtn(`https://dl.vidsrc.vip/movie/${encodeURIComponent(id)}`)
+      );
     }
 
     // Tagline
