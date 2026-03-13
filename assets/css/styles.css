@@ -1561,11 +1561,23 @@ a {
 /* Footer */
 
 .site-footer {
-  padding: 2rem 1rem;
+  padding: 1rem;
   text-align: center;
   border-top: 1px solid var(--border);
   color: var(--text-muted);
   font-size: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.site-footer img {
+  height: 240px;
+  width: auto;
+  max-width: 280px;
+  object-fit: contain;
+  display: block;
 }
 
 /* Ad section */
