@@ -1,3 +1,21 @@
+const CORS_PROXY = "https://corsproxy.io/?";
+
+function withProxy(url) {
+  return CORS_PROXY + encodeURIComponent(url);
+}
+
+async function fetchPlaylist(url) {
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
+    return res;
+  } catch (_e) {
+    const res = await fetch(withProxy(url));
+    if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
+    return res;
+  }
+}
+
 const PLAYLISTS = {
   fast1: {
     name: "Fast 1",
@@ -59,21 +77,52 @@ let globalChannels = [];   // flat list of all channels with .server property se
 let globalPlaylistsLoaded = false;
 let globalPlaylistsLoading = false;
 
-function playChannel(url, videoEl) {
-  if (hlsInstance) {
-    hlsInstance.destroy();
-    hlsInstance = null;
+let dashInstance = null;
+
+function destroyPlayers() {
+  if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
+  if (dashInstance) { dashInstance.reset(); dashInstance = null; }
+}
+
+function playChannel(url, videoEl, _proxied) {
+  destroyPlayers();
+  videoEl.removeAttribute("src");
+  videoEl.load();
+
+  const proxied = !!_proxied;
+  const streamUrl = proxied ? withProxy(url) : url;
+  const isDash = /\.mpd(\?|$)/i.test(url);
+
+  if (isDash) {
+    if (typeof dashjs !== "undefined") {
+      dashInstance = dashjs.MediaPlayer().create();
+      dashInstance.initialize(videoEl, streamUrl, true);
+    } else {
+      videoEl.src = streamUrl;
+      videoEl.play().catch(() => {});
+    }
+    return;
   }
+
   if (typeof Hls !== "undefined" && Hls.isSupported()) {
     hlsInstance = new Hls();
-    hlsInstance.loadSource(url);
+    hlsInstance.loadSource(streamUrl);
     hlsInstance.attachMedia(videoEl);
     hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => videoEl.play().catch(() => {}));
+    hlsInstance.on(Hls.Events.ERROR, (_event, data) => {
+      if (data.fatal && data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+        if (!proxied) {
+          playChannel(url, videoEl, true);
+        } else {
+          console.error("Stream failed even with CORS proxy:", url);
+        }
+      }
+    });
   } else if (videoEl.canPlayType("application/vnd.apple.mpegurl")) {
-    videoEl.src = url;
+    videoEl.src = streamUrl;
     videoEl.play().catch(() => {});
   } else {
-    videoEl.src = url;
+    videoEl.src = streamUrl;
     videoEl.play().catch(() => {});
   }
 }
@@ -218,8 +267,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const results = await Promise.allSettled(
       Object.entries(PLAYLISTS).map(async ([key, cfg]) => {
-        const res = await fetch(cfg.url);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const res = await fetchPlaylist(cfg.url);
         const text = await res.text();
         const channels = parseM3U(text).map((ch) => ({ ...ch, server: cfg.name }));
         return channels;
@@ -248,14 +296,13 @@ document.addEventListener("DOMContentLoaded", () => {
     statusEl.textContent = `Loading ${cfg.name}…`;
     currentChannels = [];
     listEl.innerHTML = "";
-    if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
+    destroyPlayers();
     video.removeAttribute("src");
     video.load();
     if (searchEl) searchEl.value = "";
 
     try {
-      const res = await fetch(cfg.url);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const res = await fetchPlaylist(cfg.url);
       const text = await res.text();
       currentChannels = parseM3U(text);
 
