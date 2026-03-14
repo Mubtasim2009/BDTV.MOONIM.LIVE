@@ -48,8 +48,16 @@
       </div>
       <div id="movieWatchlistBtnContainer" class="player-btn-row"></div>
 
+      <div class="source-switcher" id="movieSourceSwitcher">
+        <span class="source-switcher-label"><i class="fa-solid fa-server"></i> Server:</span>
+        <button class="source-btn source-btn--active" data-source="vidking">VidKing</button>
+        <button class="source-btn" data-source="videasy">Videasy</button>
+        <button class="source-btn" data-source="vidfast">VidFast</button>
+        <button class="source-btn" data-source="vidify">Vidify</button>
+      </div>
+
       <div class="vidking-wrapper">
-        <iframe id="movieFrame" allowfullscreen referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-fullscreen"></iframe>
+        <iframe id="movieFrame" allowfullscreen referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-fullscreen allow-pointer-lock"></iframe>
       </div>
 
       <p class="disclaimer">
