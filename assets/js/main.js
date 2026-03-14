@@ -356,9 +356,9 @@ document.addEventListener('keydown', (e) => {
 // ─── Anti-redirect: window.open guard ─────────────────────────────────────────
 // Popup-based redirect attacks work by calling window.open(url, "_self") from
 // inside an iframe, which hijacks the current tab.  The sandbox attribute
-// (allow-popups without allow-top-navigation) already prevents this for
-// sandboxed frames, but this guard adds a hard JS-level backstop for any frame
-// not yet sandboxed and for the parent page itself.
+// (which no longer includes allow-popups) already prevents this for sandboxed
+// frames, but this guard adds a hard JS-level backstop for any frame not yet
+// sandboxed and for the parent page itself.
 (function () {
   var _origOpen = window.open.bind(window);
   window.open = function (url, target, features) {
@@ -382,12 +382,14 @@ document.addEventListener('keydown', (e) => {
 })();
 
 // ─── Player sandbox helper ───────────────────────────────────────────────────
-// Apply a permissive sandbox to every source.  The value intentionally omits
+// Apply a restrictive sandbox to every source.  The value intentionally omits
 // allow-top-navigation (and allow-top-navigation-by-user-activation) so that
 // embedded scripts can never navigate the parent page away (the primary ad/
-// redirect mechanism), while keeping everything else a player legitimately
-// needs — including allow-popups, allow-modals, allow-pointer-lock, etc. —
-// so that sandbox-detection heuristics used by player providers do not trigger.
+// redirect mechanism).  allow-popups is also omitted: on mobile browsers
+// (particularly iOS Safari) a sandboxed iframe with allow-popups can call
+// window.open() and have the browser treat it as a same-tab navigation rather
+// than opening a new window, which is the most common redirect vector on
+// phones.  Removing allow-popups closes this hole without affecting playback.
 //
 // Security note: allow-same-origin is included so each player can access its
 // own cookies/storage on its own domain.  Because ALL player sources are
@@ -396,7 +398,7 @@ document.addEventListener('keydown', (e) => {
 const SANDBOXED_PLAYER_SOURCES = new Set(["vidking", "vidify"]);
 const PLAYER_SANDBOX_VALUE =
   "allow-scripts allow-same-origin allow-forms allow-presentation " +
-  "allow-popups allow-modals allow-pointer-lock allow-downloads";
+  "allow-modals allow-pointer-lock allow-downloads";
 
 function applyPlayerSandbox(frame, source) {
   if (SANDBOXED_PLAYER_SOURCES.has(source)) {
