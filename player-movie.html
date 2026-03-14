@@ -48,8 +48,18 @@
       </div>
       <div id="movieWatchlistBtnContainer" class="player-btn-row"></div>
 
+      <div class="source-switcher" id="movieSourceSwitcher">
+        <span class="source-switcher-label"><i class="fa-solid fa-server"></i> Server:</span>
+        <button class="source-btn source-btn--active" data-source="vidking"><img src="https://www.google.com/s2/favicons?domain=vidking.net&sz=16" alt="" aria-hidden="true" class="source-btn-icon" />MAX</button>
+        <button class="source-btn" data-source="videasy"><img src="https://www.google.com/s2/favicons?domain=videasy.net&sz=16" alt="" aria-hidden="true" class="source-btn-icon" />RICCARDO</button>
+        <button class="source-btn" data-source="vidfast"><img src="https://www.google.com/s2/favicons?domain=vidfast.pro&sz=16" alt="" aria-hidden="true" class="source-btn-icon" />KIMI</button>
+        <button class="source-btn" data-source="vidify"><img src="https://www.google.com/s2/favicons?domain=vidify.top&sz=16" alt="" aria-hidden="true" class="source-btn-icon" />OSCAR</button>
+      </div>
+      <p class="dub-hint"><i class="fa-solid fa-cloud"></i> RICCARDO, KIMI &amp; OSCAR may offer multilingual dubs — click the <i class="fa-solid fa-cloud"></i> cloud icon inside the player to switch language.</p>
+
       <div class="vidking-wrapper">
-        <iframe id="movieFrame" allowfullscreen referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin allow-forms allow-presentation allow-fullscreen"></iframe>
+        <iframe id="movieFrame" allowfullscreen referrerpolicy="no-referrer"
+          allow="autoplay; fullscreen; encrypted-media; picture-in-picture"></iframe>
       </div>
 
       <p class="disclaimer">

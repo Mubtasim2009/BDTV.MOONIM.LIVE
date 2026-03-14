@@ -17,19 +17,49 @@ function openActor(personId) {
   window.location.href = `actor.html?id=${encodeURIComponent(personId)}`;
 }
 
+const TV_SOURCES = {
+  vidking: (id, season, episode) =>
+    `https://www.vidking.net/embed/tv/${encodeURIComponent(id)}/${encodeURIComponent(season)}/${encodeURIComponent(episode)}?color=7c6af7&autoPlay=true&nextEpisode=true&episodeSelector=true`,
+  videasy: (id, season, episode) =>
+    `https://player.videasy.net/tv/${encodeURIComponent(id)}/${encodeURIComponent(season)}/${encodeURIComponent(episode)}?color=6f63ff`,
+  vidfast: (id, season, episode) =>
+    `https://vidfast.pro/tv/${encodeURIComponent(id)}/${encodeURIComponent(season)}/${encodeURIComponent(episode)}?color=6f63ff`,
+  vidify: (id, season, episode) =>
+    `https://player.vidify.top/embed/tv/${encodeURIComponent(id)}/${encodeURIComponent(season)}/${encodeURIComponent(episode)}?primarycolor=6f63ff&secondarycolor=9f94ff&fontcolor=6f63ff&autoplay=true&poster=true`,
+};
+
+let currentTvSource = "vidking";
+let currentTvId = null;
+let currentTvSeason = "1";
+let currentTvEpisode = "1";
+
+function setTvSource(source) {
+  if (!TV_SOURCES[source] || !currentTvId) return;
+  currentTvSource = source;
+  const frame = document.getElementById("tvFrame");
+  if (frame) frame.src = TV_SOURCES[source](currentTvId, currentTvSeason, currentTvEpisode);
+
+  document.querySelectorAll("#tvSourceSwitcher .source-btn").forEach(btn => {
+    btn.classList.toggle("source-btn--active", btn.dataset.source === source);
+  });
+}
+
 async function loadTvShow() {
   const tvId = getTvIdFromUrl() || "119051";
   const season = getTvSeasonFromUrl();
   const episode = getTvEpisodeFromUrl();
 
-  const params = new URLSearchParams({
-    color: "e50914",
-    autoPlay: "true",
-    nextEpisode: "true",
-    episodeSelector: "true",
+  currentTvId = tvId;
+  currentTvSeason = season;
+  currentTvEpisode = episode;
+
+  // Load default source
+  document.getElementById("tvFrame").src = TV_SOURCES[currentTvSource](tvId, season, episode);
+
+  // Wire up source switcher
+  document.querySelectorAll("#tvSourceSwitcher .source-btn").forEach(btn => {
+    btn.addEventListener("click", () => setTvSource(btn.dataset.source));
   });
-  document.getElementById("tvFrame").src =
-    `https://www.vidking.net/embed/tv/${encodeURIComponent(tvId)}/${encodeURIComponent(season)}/${encodeURIComponent(episode)}?${params.toString()}`;
 
   try {
     const url = `${TMDB_BASE}/tv/${encodeURIComponent(tvId)}?api_key=${TMDB_API_KEY}&language=en-US`;
@@ -356,16 +386,14 @@ async function loadEpisodes(tvId, seasonNum, activeEpisode, epList) {
         epList.querySelectorAll(".ep-card").forEach(c => c.classList.remove("ep-card--active"));
         card.classList.add("ep-card--active");
 
-        // Update iframe
-        const params = new URLSearchParams({
-          color: "e50914",
-          autoPlay: "true",
-          nextEpisode: "true",
-          episodeSelector: "true",
-        });
+        // Track current episode for source switching
+        currentTvSeason = String(seasonNum);
+        currentTvEpisode = String(ep.episode_number);
+
+        // Update iframe using active source
         const frameEl = document.getElementById("tvFrame");
         if (frameEl) {
-          frameEl.src = `https://www.vidking.net/embed/tv/${encodeURIComponent(tvId)}/${encodeURIComponent(seasonNum)}/${encodeURIComponent(ep.episode_number)}?${params.toString()}`;
+          frameEl.src = TV_SOURCES[currentTvSource](tvId, seasonNum, ep.episode_number);
         }
 
         // Update download button

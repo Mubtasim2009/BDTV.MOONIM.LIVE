@@ -1136,6 +1136,17 @@ a {
   margin-top: 0.35rem;
 }
 
+.dub-hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.4rem;
+  margin-bottom: 0;
+}
+
+.dub-hint i {
+  color: #60a5fa;
+}
+
 /* Poster + details */
 
 .poster-wrapper {
@@ -2578,6 +2589,61 @@ a {
 .genre-back-btn:hover {
   background: var(--accent-soft);
   color: var(--text-primary);
+}
+
+/* ─── Source Switcher ────────────────────────────────────────────────────── */
+
+.source-switcher {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.6rem;
+}
+
+.source-switcher-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-right: 0.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.source-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-strong);
+  color: var(--text-secondary);
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.18s var(--ease), color 0.18s var(--ease), border-color 0.18s var(--ease);
+}
+
+.source-btn:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--text-primary);
+}
+
+.source-btn--active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent-hover);
+}
+
+.source-btn-icon {
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 /* ─── Player Watchlist Button ────────────────────────────────────────────── */
