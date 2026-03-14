@@ -1751,6 +1751,12 @@ a {
   display: block;
 }
 
+/* Ad section */
+
+.ad-section {
+  margin: 1rem 0;
+  text-align: center;
+}
 
 /* About page */
 
