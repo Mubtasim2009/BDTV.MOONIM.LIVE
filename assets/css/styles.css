@@ -2613,6 +2613,7 @@ a {
 .source-btn {
   display: inline-flex;
   align-items: center;
+  gap: 0.35rem;
   background: var(--bg-elevated);
   border: 1px solid var(--border-strong);
   color: var(--text-secondary);
@@ -2635,6 +2636,14 @@ a {
   background: var(--accent-soft);
   border-color: var(--accent);
   color: var(--accent-hover);
+}
+
+.source-btn-icon {
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 /* ─── Player Watchlist Button ────────────────────────────────────────────── */
