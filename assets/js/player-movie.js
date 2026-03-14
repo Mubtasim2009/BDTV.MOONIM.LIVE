@@ -11,8 +11,6 @@ const WRITING_JOBS = ["Screenplay", "Writer", "Story"];
 
 const MOVIE_SOURCES = {
   vidking: (id) => `https://www.vidking.net/embed/movie/${encodeURIComponent(id)}?color=7c6af7&autoPlay=true`,
-  videasy: (id) => `https://player.videasy.net/movie/${encodeURIComponent(id)}?color=6f63ff`,
-  vidfast: (id) => `https://vidfast.pro/movie/${encodeURIComponent(id)}?color=6f63ff`,
   vidify: (id) => `https://player.vidify.top/embed/movie/${encodeURIComponent(id)}?primarycolor=6f63ff&secondarycolor=9f94ff&fontcolor=6f63ff&autoplay=true&poster=true`,
 };
 
@@ -23,7 +21,10 @@ function setMovieSource(source) {
   if (!MOVIE_SOURCES[source] || !currentMovieId) return;
   currentMovieSource = source;
   const frame = document.getElementById("movieFrame");
-  if (frame) frame.src = MOVIE_SOURCES[source](currentMovieId);
+  if (frame) {
+    applyPlayerSandbox(frame, source);
+    frame.src = MOVIE_SOURCES[source](currentMovieId);
+  }
 
   document.querySelectorAll("#movieSourceSwitcher .source-btn").forEach(btn => {
     btn.classList.toggle("source-btn--active", btn.dataset.source === source);
@@ -40,7 +41,9 @@ async function loadMovie() {
   currentMovieId = id;
 
   // Load default source
-  document.getElementById("movieFrame").src = MOVIE_SOURCES[currentMovieSource](id);
+  const defaultFrame = document.getElementById("movieFrame");
+  applyPlayerSandbox(defaultFrame, currentMovieSource);
+  defaultFrame.src = MOVIE_SOURCES[currentMovieSource](id);
 
   // Wire up source switcher
   document.querySelectorAll("#movieSourceSwitcher .source-btn").forEach(btn => {

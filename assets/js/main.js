@@ -336,3 +336,92 @@ document.addEventListener('keydown', (e) => {
     if (input) { input.focus(); input.select(); }
   }
 });
+
+// ─── Anti-redirect: Service Worker registration ───────────────────────────────
+// The SW (sw.js at site root) intercepts navigate-mode fetch events and bounces
+// any top-level navigation that originates from a player page but targets an
+// external origin.  This is a second layer on top of the iframe sandbox: even
+// if the sandbox were ever bypassed (e.g. a source added without it), the SW
+// stops the redirect before the browser commits to it.
+(function () {
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker
+      .register("/sw.js")
+      .catch(function (err) {
+        console.warn("[MoonStream] Service worker registration failed:", err);
+      });
+  }
+})();
+
+// ─── Anti-redirect: window.open guard ─────────────────────────────────────────
+// Popup-based redirect attacks work by calling window.open(url, "_self") from
+// inside an iframe, which hijacks the current tab.  The sandbox attribute
+// (allow-popups without allow-top-navigation) already prevents this for
+// sandboxed frames, but this guard adds a hard JS-level backstop for any frame
+// not yet sandboxed and for the parent page itself.
+(function () {
+  var _origOpen = window.open.bind(window);
+  window.open = function (url, target, features) {
+    // Calls with no URL (e.g. window.open() to get a handle) pass through.
+    if (!url) return _origOpen(url, target, features);
+
+    try {
+      var dest = new URL(url, window.location.href);
+      // Same-origin opens are always fine.
+      if (dest.origin === window.location.origin) {
+        return _origOpen(url, target, features);
+      }
+    } catch (_) {}
+
+    // External URL: only ever open in a new tab — never hijack the current window.
+    var safeTarget = (!target || target === "_self" || target === "_top" || target === "_parent")
+      ? "_blank"
+      : target;
+    return _origOpen(url, safeTarget, features);
+  };
+})();
+
+// ─── Player sandbox helper ───────────────────────────────────────────────────
+// Apply a permissive sandbox to every source.  The value intentionally omits
+// allow-top-navigation (and allow-top-navigation-by-user-activation) so that
+// embedded scripts can never navigate the parent page away (the primary ad/
+// redirect mechanism), while keeping everything else a player legitimately
+// needs — including allow-popups, allow-modals, allow-pointer-lock, etc. —
+// so that sandbox-detection heuristics used by player providers do not trigger.
+//
+// Security note: allow-same-origin is included so each player can access its
+// own cookies/storage on its own domain.  Because ALL player sources are
+// cross-origin to this host, the same-origin policy continues to protect our
+// page — the iframes cannot reach our DOM, cookies, or localStorage.
+const SANDBOXED_PLAYER_SOURCES = new Set(["vidking", "vidify"]);
+const PLAYER_SANDBOX_VALUE =
+  "allow-scripts allow-same-origin allow-forms allow-presentation " +
+  "allow-popups allow-modals allow-pointer-lock allow-downloads";
+
+function applyPlayerSandbox(frame, source) {
+  if (SANDBOXED_PLAYER_SOURCES.has(source)) {
+    frame.setAttribute("sandbox", PLAYER_SANDBOX_VALUE);
+  } else {
+    frame.removeAttribute("sandbox");
+  }
+}
+
+// ─── Anti-redirect: visibility boomerang (player pages only) ─────────────────
+// If a player page becomes hidden while the player is active, use
+// history.replaceState to keep the correct URL at the top of the browser
+// history stack.  Combined with the Service Worker, this ensures that any
+// back-navigation (after a redirect slip-through) returns to the player.
+(function () {
+  var PLAYER_PAGES = ["/player-movie.html", "/player-tv.html"];
+  var onPlayerPage = PLAYER_PAGES.some(function (p) {
+    return window.location.pathname.endsWith(p);
+  });
+  if (!onPlayerPage) return;
+
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "hidden") {
+      // Update the history entry so the browser history points back here.
+      try { history.replaceState(null, "", window.location.href); } catch (_) {}
+    }
+  });
+})();

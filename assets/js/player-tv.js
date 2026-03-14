@@ -20,10 +20,6 @@ function openActor(personId) {
 const TV_SOURCES = {
   vidking: (id, season, episode) =>
     `https://www.vidking.net/embed/tv/${encodeURIComponent(id)}/${encodeURIComponent(season)}/${encodeURIComponent(episode)}?color=7c6af7&autoPlay=true&nextEpisode=true&episodeSelector=true`,
-  videasy: (id, season, episode) =>
-    `https://player.videasy.net/tv/${encodeURIComponent(id)}/${encodeURIComponent(season)}/${encodeURIComponent(episode)}?color=6f63ff`,
-  vidfast: (id, season, episode) =>
-    `https://vidfast.pro/tv/${encodeURIComponent(id)}/${encodeURIComponent(season)}/${encodeURIComponent(episode)}?color=6f63ff`,
   vidify: (id, season, episode) =>
     `https://player.vidify.top/embed/tv/${encodeURIComponent(id)}/${encodeURIComponent(season)}/${encodeURIComponent(episode)}?primarycolor=6f63ff&secondarycolor=9f94ff&fontcolor=6f63ff&autoplay=true&poster=true`,
 };
@@ -37,7 +33,10 @@ function setTvSource(source) {
   if (!TV_SOURCES[source] || !currentTvId) return;
   currentTvSource = source;
   const frame = document.getElementById("tvFrame");
-  if (frame) frame.src = TV_SOURCES[source](currentTvId, currentTvSeason, currentTvEpisode);
+  if (frame) {
+    applyPlayerSandbox(frame, source);
+    frame.src = TV_SOURCES[source](currentTvId, currentTvSeason, currentTvEpisode);
+  }
 
   document.querySelectorAll("#tvSourceSwitcher .source-btn").forEach(btn => {
     btn.classList.toggle("source-btn--active", btn.dataset.source === source);
@@ -54,7 +53,9 @@ async function loadTvShow() {
   currentTvEpisode = episode;
 
   // Load default source
-  document.getElementById("tvFrame").src = TV_SOURCES[currentTvSource](tvId, season, episode);
+  const defaultTvFrame = document.getElementById("tvFrame");
+  applyPlayerSandbox(defaultTvFrame, currentTvSource);
+  defaultTvFrame.src = TV_SOURCES[currentTvSource](tvId, season, episode);
 
   // Wire up source switcher
   document.querySelectorAll("#tvSourceSwitcher .source-btn").forEach(btn => {
@@ -393,6 +394,7 @@ async function loadEpisodes(tvId, seasonNum, activeEpisode, epList) {
         // Update iframe using active source
         const frameEl = document.getElementById("tvFrame");
         if (frameEl) {
+          applyPlayerSandbox(frameEl, currentTvSource);
           frameEl.src = TV_SOURCES[currentTvSource](tvId, seasonNum, ep.episode_number);
         }
 
