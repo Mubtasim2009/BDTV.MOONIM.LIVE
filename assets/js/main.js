@@ -336,3 +336,16 @@ document.addEventListener('keydown', (e) => {
     if (input) { input.focus(); input.select(); }
   }
 });
+
+// ─── Player sandbox helper ───────────────────────────────────────────────────
+// Sources that do NOT detect/block sandbox — apply restriction to prevent redirects.
+const SANDBOXED_PLAYER_SOURCES = new Set(["vidking"]);
+const PLAYER_SANDBOX_VALUE = "allow-scripts allow-same-origin allow-forms allow-presentation";
+
+function applyPlayerSandbox(frame, source) {
+  if (SANDBOXED_PLAYER_SOURCES.has(source)) {
+    frame.setAttribute("sandbox", PLAYER_SANDBOX_VALUE);
+  } else {
+    frame.removeAttribute("sandbox");
+  }
+}

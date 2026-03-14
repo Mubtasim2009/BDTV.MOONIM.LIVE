@@ -23,7 +23,10 @@ function setMovieSource(source) {
   if (!MOVIE_SOURCES[source] || !currentMovieId) return;
   currentMovieSource = source;
   const frame = document.getElementById("movieFrame");
-  if (frame) frame.src = MOVIE_SOURCES[source](currentMovieId);
+  if (frame) {
+    applyPlayerSandbox(frame, source);
+    frame.src = MOVIE_SOURCES[source](currentMovieId);
+  }
 
   document.querySelectorAll("#movieSourceSwitcher .source-btn").forEach(btn => {
     btn.classList.toggle("source-btn--active", btn.dataset.source === source);
@@ -40,7 +43,9 @@ async function loadMovie() {
   currentMovieId = id;
 
   // Load default source
-  document.getElementById("movieFrame").src = MOVIE_SOURCES[currentMovieSource](id);
+  const defaultFrame = document.getElementById("movieFrame");
+  applyPlayerSandbox(defaultFrame, currentMovieSource);
+  defaultFrame.src = MOVIE_SOURCES[currentMovieSource](id);
 
   // Wire up source switcher
   document.querySelectorAll("#movieSourceSwitcher .source-btn").forEach(btn => {
