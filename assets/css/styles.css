@@ -1136,6 +1136,17 @@ a {
   margin-top: 0.35rem;
 }
 
+.dub-hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.4rem;
+  margin-bottom: 0;
+}
+
+.dub-hint i {
+  color: #60a5fa;
+}
+
 /* Poster + details */
 
 .poster-wrapper {
