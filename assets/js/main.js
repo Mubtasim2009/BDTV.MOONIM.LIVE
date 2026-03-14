@@ -349,7 +349,7 @@ document.addEventListener('keydown', (e) => {
 // own cookies/storage on its own domain.  Because ALL player sources are
 // cross-origin to this host, the same-origin policy continues to protect our
 // page — the iframes cannot reach our DOM, cookies, or localStorage.
-const SANDBOXED_PLAYER_SOURCES = new Set(["vidking", "vidify", "videasy", "vidfast"]);
+const SANDBOXED_PLAYER_SOURCES = new Set(["vidking", "vidify"]);
 const PLAYER_SANDBOX_VALUE =
   "allow-scripts allow-same-origin allow-forms allow-presentation " +
   "allow-popups allow-modals allow-pointer-lock allow-downloads";

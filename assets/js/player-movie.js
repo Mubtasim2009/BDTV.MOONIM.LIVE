@@ -11,8 +11,6 @@ const WRITING_JOBS = ["Screenplay", "Writer", "Story"];
 
 const MOVIE_SOURCES = {
   vidking: (id) => `https://www.vidking.net/embed/movie/${encodeURIComponent(id)}?color=7c6af7&autoPlay=true`,
-  videasy: (id) => `https://player.videasy.net/movie/${encodeURIComponent(id)}?color=6f63ff`,
-  vidfast: (id) => `https://vidfast.pro/movie/${encodeURIComponent(id)}?color=6f63ff`,
   vidify: (id) => `https://player.vidify.top/embed/movie/${encodeURIComponent(id)}?primarycolor=6f63ff&secondarycolor=9f94ff&fontcolor=6f63ff&autoplay=true&poster=true`,
 };
 
