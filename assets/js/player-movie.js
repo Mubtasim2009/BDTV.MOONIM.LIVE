@@ -10,10 +10,10 @@ function openActor(personId) {
 const WRITING_JOBS = ["Screenplay", "Writer", "Story"];
 
 const MOVIE_SOURCES = {
-  vidking: (id) => `https://www.vidking.net/embed/movie/${encodeURIComponent(id)}?color=e50914&autoPlay=true`,
-  videasy: (id) => `https://player.videasy.net/movie/${encodeURIComponent(id)}`,
-  vidfast: (id) => `https://vidfast.pro/movie/${encodeURIComponent(id)}`,
-  vidify: (id) => `https://player.vidify.top/embed/movie/${encodeURIComponent(id)}`,
+  vidking: (id) => `https://www.vidking.net/embed/movie/${encodeURIComponent(id)}?color=7c6af7&autoPlay=true`,
+  videasy: (id) => `https://player.videasy.net/movie/${encodeURIComponent(id)}?color=7c6af7`,
+  vidfast: (id) => `https://vidfast.pro/movie/${encodeURIComponent(id)}?color=7c6af7`,
+  vidify: (id) => `https://player.vidify.top/embed/movie/${encodeURIComponent(id)}?color=7c6af7`,
 };
 
 let currentMovieSource = "vidking";

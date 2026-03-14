@@ -19,13 +19,13 @@ function openActor(personId) {
 
 const TV_SOURCES = {
   vidking: (id, season, episode) =>
-    `https://www.vidking.net/embed/tv/${encodeURIComponent(id)}/${encodeURIComponent(season)}/${encodeURIComponent(episode)}?color=e50914&autoPlay=true&nextEpisode=true&episodeSelector=true`,
+    `https://www.vidking.net/embed/tv/${encodeURIComponent(id)}/${encodeURIComponent(season)}/${encodeURIComponent(episode)}?color=7c6af7&autoPlay=true&nextEpisode=true&episodeSelector=true`,
   videasy: (id, season, episode) =>
-    `https://player.videasy.net/tv/${encodeURIComponent(id)}/${encodeURIComponent(season)}/${encodeURIComponent(episode)}`,
+    `https://player.videasy.net/tv/${encodeURIComponent(id)}/${encodeURIComponent(season)}/${encodeURIComponent(episode)}?color=7c6af7`,
   vidfast: (id, season, episode) =>
-    `https://vidfast.pro/tv/${encodeURIComponent(id)}/${encodeURIComponent(season)}/${encodeURIComponent(episode)}`,
+    `https://vidfast.pro/tv/${encodeURIComponent(id)}/${encodeURIComponent(season)}/${encodeURIComponent(episode)}?color=7c6af7`,
   vidify: (id, season, episode) =>
-    `https://player.vidify.top/embed/tv/${encodeURIComponent(id)}/${encodeURIComponent(season)}/${encodeURIComponent(episode)}`,
+    `https://player.vidify.top/embed/tv/${encodeURIComponent(id)}/${encodeURIComponent(season)}/${encodeURIComponent(episode)}?color=7c6af7`,
 };
 
 let currentTvSource = "vidking";
