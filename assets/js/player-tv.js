@@ -23,9 +23,9 @@ const TV_SOURCES = {
   videasy: (id, season, episode) =>
     `https://player.videasy.net/tv/${encodeURIComponent(id)}/${encodeURIComponent(season)}/${encodeURIComponent(episode)}`,
   vidfast: (id, season, episode) =>
-    `https://vidfast.pro/embed/tv/${encodeURIComponent(id)}/${encodeURIComponent(season)}/${encodeURIComponent(episode)}`,
+    `https://vidfast.pro/tv/${encodeURIComponent(id)}/${encodeURIComponent(season)}/${encodeURIComponent(episode)}`,
   vidify: (id, season, episode) =>
-    `https://vidify.top/embed/tv/${encodeURIComponent(id)}/${encodeURIComponent(season)}/${encodeURIComponent(episode)}`,
+    `https://player.vidify.top/embed/tv/${encodeURIComponent(id)}/${encodeURIComponent(season)}/${encodeURIComponent(episode)}`,
 };
 
 let currentTvSource = "vidking";
