@@ -338,9 +338,21 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ─── Player sandbox helper ───────────────────────────────────────────────────
-// Sources that do NOT detect/block sandbox — apply restriction to prevent redirects.
-const SANDBOXED_PLAYER_SOURCES = new Set(["vidking", "vidify"]);
-const PLAYER_SANDBOX_VALUE = "allow-scripts allow-same-origin allow-forms allow-presentation";
+// Apply a permissive sandbox to every source.  The value intentionally omits
+// allow-top-navigation (and allow-top-navigation-by-user-activation) so that
+// embedded scripts can never navigate the parent page away (the primary ad/
+// redirect mechanism), while keeping everything else a player legitimately
+// needs — including allow-popups, allow-modals, allow-pointer-lock, etc. —
+// so that sandbox-detection heuristics used by player providers do not trigger.
+//
+// Security note: allow-same-origin is included so each player can access its
+// own cookies/storage on its own domain.  Because ALL player sources are
+// cross-origin to this host, the same-origin policy continues to protect our
+// page — the iframes cannot reach our DOM, cookies, or localStorage.
+const SANDBOXED_PLAYER_SOURCES = new Set(["vidking", "vidify", "videasy", "vidfast"]);
+const PLAYER_SANDBOX_VALUE =
+  "allow-scripts allow-same-origin allow-forms allow-presentation " +
+  "allow-popups allow-modals allow-pointer-lock allow-downloads";
 
 function applyPlayerSandbox(frame, source) {
   if (SANDBOXED_PLAYER_SOURCES.has(source)) {
