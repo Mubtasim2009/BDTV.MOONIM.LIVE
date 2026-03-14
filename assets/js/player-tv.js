@@ -24,7 +24,7 @@ const TV_SOURCES = {
     `https://player.videasy.net/tv/${encodeURIComponent(id)}/${encodeURIComponent(season)}/${encodeURIComponent(episode)}`,
   vidfast: (id, season, episode) =>
     `https://vidfast.pro/embed/tv/${encodeURIComponent(id)}/${encodeURIComponent(season)}/${encodeURIComponent(episode)}`,
-  vidify:  (id, season, episode) =>
+  vidify: (id, season, episode) =>
     `https://vidify.top/embed/tv/${encodeURIComponent(id)}/${encodeURIComponent(season)}/${encodeURIComponent(episode)}`,
 };
 
