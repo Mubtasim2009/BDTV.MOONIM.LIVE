@@ -339,7 +339,7 @@ document.addEventListener('keydown', (e) => {
 
 // ─── Player sandbox helper ───────────────────────────────────────────────────
 // Sources that do NOT detect/block sandbox — apply restriction to prevent redirects.
-const SANDBOXED_PLAYER_SOURCES = new Set(["vidking"]);
+const SANDBOXED_PLAYER_SOURCES = new Set(["vidking", "vidify"]);
 const PLAYER_SANDBOX_VALUE = "allow-scripts allow-same-origin allow-forms allow-presentation";
 
 function applyPlayerSandbox(frame, source) {
