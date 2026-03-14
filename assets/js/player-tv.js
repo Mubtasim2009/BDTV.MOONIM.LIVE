@@ -21,11 +21,11 @@ const TV_SOURCES = {
   vidking: (id, season, episode) =>
     `https://www.vidking.net/embed/tv/${encodeURIComponent(id)}/${encodeURIComponent(season)}/${encodeURIComponent(episode)}?color=7c6af7&autoPlay=true&nextEpisode=true&episodeSelector=true`,
   videasy: (id, season, episode) =>
-    `https://player.videasy.net/tv/${encodeURIComponent(id)}/${encodeURIComponent(season)}/${encodeURIComponent(episode)}?color=7c6af7`,
+    `https://player.videasy.net/tv/${encodeURIComponent(id)}/${encodeURIComponent(season)}/${encodeURIComponent(episode)}?color=6f63ff`,
   vidfast: (id, season, episode) =>
-    `https://vidfast.pro/tv/${encodeURIComponent(id)}/${encodeURIComponent(season)}/${encodeURIComponent(episode)}?color=7c6af7`,
+    `https://vidfast.pro/tv/${encodeURIComponent(id)}/${encodeURIComponent(season)}/${encodeURIComponent(episode)}?color=6f63ff`,
   vidify: (id, season, episode) =>
-    `https://player.vidify.top/embed/tv/${encodeURIComponent(id)}/${encodeURIComponent(season)}/${encodeURIComponent(episode)}?color=7c6af7`,
+    `https://player.vidify.top/embed/tv/${encodeURIComponent(id)}/${encodeURIComponent(season)}/${encodeURIComponent(episode)}?primarycolor=6f63ff&secondarycolor=9f94ff&fontcolor=6f63ff&autoplay=true&poster=true`,
 };
 
 let currentTvSource = "vidking";
